@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import "./energy-node.js";
 import "./node-detail.js";
 import type { CardConfig, EntityTypeConfig } from "./types.js";
+import { DEFAULT_ENTITY_TYPES } from "./types.js";
 import { HomeAssistant, FlowInfo, computeFlowInfo } from "./flow.js";
 
 export type { HomeAssistant, FlowInfo };
@@ -25,11 +26,13 @@ const LINE_COLOR: Record<string, string> = {
   ev:      "#26c6da",
 };
 
+// Layout: B1=Solar, C1=EV, A2=Grid, B2=Home, C2=Battery
+// Viewbox "0 0 3 N" — row centres at y = row − 0.5
 const LINE_ENDPOINTS: Record<string, [number, number, number, number]> = {
-  solar:   [1.5, 0.62, 1.5, 1.38],
-  grid:    [0.62, 1.5, 1.38, 1.5],
-  battery: [2.38, 1.5, 1.62, 1.5],
-  ev:      [1.5, 2.38, 1.5, 1.62],
+  solar:   [1.5, 0.5, 1.5, 1.5],  // B1 → B2  vertical
+  grid:    [0.5, 1.5, 1.5, 1.5],  // A2 → B2  horizontal
+  battery: [2.5, 1.5, 1.5, 1.5],  // C2 → B2  horizontal
+  ev:      [2.5, 0.5, 1.5, 1.5],  // C1 → B2  diagonal
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -51,16 +54,12 @@ export class HecFlowLayout extends LitElement {
       position: relative;
     }
 
-    .slot-solar   { grid-column: 2; grid-row: 1; }
-    .slot-grid    { grid-column: 1; grid-row: 2; }
-    .slot-home    { grid-column: 2; grid-row: 2; }
-    .slot-battery { grid-column: 3; grid-row: 2; }
-    .slot-ev      { grid-column: 2; grid-row: 3; }
-
-    .spacer-r1c1 { grid-column: 1; grid-row: 1; }
-    .spacer-r1c3 { grid-column: 3; grid-row: 1; }
-    .spacer-r3c1 { grid-column: 1; grid-row: 3; }
-    .spacer-r3c3 { grid-column: 3; grid-row: 3; }
+    /* ── Standard slots ─────────────────────────────────────── */
+    .slot-solar   { grid-column: 2; grid-row: 1; }  /* B1 */
+    .slot-ev      { grid-column: 3; grid-row: 1; }  /* C1 */
+    .slot-grid    { grid-column: 1; grid-row: 2; }  /* A2 */
+    .slot-home    { grid-column: 2; grid-row: 2; }  /* B2 */
+    .slot-battery { grid-column: 3; grid-row: 2; }  /* C2 */
 
     .hidden { visibility: hidden; pointer-events: none; }
 
@@ -109,6 +108,18 @@ export class HecFlowLayout extends LitElement {
     return computeFlowInfo(type, cfg, this.hass?.states ?? {});
   }
 
+  /**
+   * A node (and its flow line) is visible when:
+   *   - it is configured, AND
+   *   - either show_zero is not false, OR the flow is not idle
+   */
+  private _isVisible(type: string): boolean {
+    if (!this._configured(type)) return false;
+    const cfg = this.config?.entity_types?.[type] ?? {};
+    if (cfg.show_zero === false && this._flowInfo(type).direction === "idle") return false;
+    return true;
+  }
+
   private _soc(type: string): number | null {
     const id = this.config?.entity_types?.[type]?.soc;
     if (!id || !this.hass) return null;
@@ -126,7 +137,7 @@ export class HecFlowLayout extends LitElement {
 
     return svg`
       ${(["solar", "grid", "battery", "ev"] as const)
-        .filter((t) => this._configured(t))
+        .filter((t) => this._isVisible(t))
         .map((type) => {
           const flow = this._flowInfo(type);
           const [x1, y1, x2, y2] = LINE_ENDPOINTS[type];
@@ -156,15 +167,14 @@ export class HecFlowLayout extends LitElement {
   // ── Node render ───────────────────────────────────────────────────────────
 
   private _node(type: string, slotClass: string, showSoc = false) {
-    const configured = this._configured(type) || type === "home";
+    const visible = type === "home" ? true : this._isVisible(type);
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     const display = this.config?.display ?? {};
     const flow = this._flowInfo(type);
-    const suppress = cfg.show_zero === false && flow.direction === "idle";
 
     return html`
       <hec-energy-node
-        class="${slotClass}${!configured || suppress ? " hidden" : ""}"
+        class="${slotClass}${!visible ? " hidden" : ""}"
         .type=${type}
         .label=${cfg.label ?? type}
         .colour=${cfg.colour ?? ""}
@@ -176,10 +186,41 @@ export class HecFlowLayout extends LitElement {
     `;
   }
 
-  private _ghost(slotClass: string) {
+  // ── Custom type helpers ───────────────────────────────────────────────────
+
+  /** Returns configured types beyond the five standard ones, in insertion order. */
+  private _customTypes(): string[] {
+    return Object.keys(this.config?.entity_types ?? {}).filter(
+      k => !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(k),
+    );
+  }
+
+  /**
+   * Map custom-type index (0-based) to CSS grid [column, row].
+   * Fill order: B3→A3→C3→B4→A4→C4…  (col order: 2,1,3 per row)
+   */
+  private _customSlot(i: number): [col: number, row: number] {
+    return [[2, 1, 3][i % 3], 3 + Math.floor(i / 3)];
+  }
+
+  /** Render a custom node with inline grid placement. */
+  private _customNode(type: string, col: number, row: number) {
+    const visible = this._isVisible(type);
+    const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
+    const display = this.config?.display ?? {};
+    const flow = this._flowInfo(type);
     return html`
-      <hec-energy-node class="${slotClass} hidden" type="home" .power=${null}>
-      </hec-energy-node>
+      <hec-energy-node
+        style="grid-column:${col}; grid-row:${row}"
+        class="${!visible ? "hidden" : ""}"
+        .type=${type}
+        .label=${cfg.label ?? type}
+        .colour=${cfg.colour ?? ""}
+        .power=${flow.power}
+        .soc=${null}
+        .unit=${display.unit ?? "auto"}
+        .decimalPlaces=${display.decimal_places ?? 1}
+      ></hec-energy-node>
     `;
   }
 
@@ -195,29 +236,30 @@ export class HecFlowLayout extends LitElement {
   render() {
     if (!this.config) return nothing;
 
-    const showSolar = this._configured("solar");
-    const showEV    = this._configured("ev");
+    const customTypes = this._customTypes();
+    // Rows: 2 base + 1 per every 3 custom types
+    const totalRows = 2 + Math.ceil(customTypes.length / 3);
 
     return html`
       <div class="grid" @hec-node-click=${this._onNodeClick}>
-        <svg class="svg-overlay" viewBox="0 0 3 3" preserveAspectRatio="none">
+        <svg class="svg-overlay" viewBox="0 0 3 ${totalRows}" preserveAspectRatio="none">
           ${this._svgLines()}
         </svg>
 
-        <!-- Row 1 -->
-        <div class="spacer-r1c1"></div>
-        ${showSolar ? this._node("solar", "slot-solar") : this._ghost("slot-solar")}
-        <div class="spacer-r1c3"></div>
+        <!-- Row 1: B1=Solar, C1=EV (omitted entirely if neither configured) -->
+        ${this._configured("solar") ? this._node("solar", "slot-solar")   : nothing}
+        ${this._configured("ev")    ? this._node("ev",    "slot-ev", true) : nothing}
 
-        <!-- Row 2 -->
+        <!-- Row 2: A2=Grid, B2=Home, C2=Battery -->
         ${this._node("grid",    "slot-grid")}
         ${this._node("home",    "slot-home")}
         ${this._node("battery", "slot-battery", true)}
 
-        <!-- Row 3 -->
-        <div class="spacer-r3c1"></div>
-        ${showEV ? this._node("ev", "slot-ev", true) : this._ghost("slot-ev")}
-        <div class="spacer-r3c3"></div>
+        <!-- Rows 3+: custom types (B→A→C per row) -->
+        ${customTypes.map((type, i) => {
+          const [col, row] = this._customSlot(i);
+          return this._customNode(type, col, row);
+        })}
       </div>
 
       <hec-node-detail
