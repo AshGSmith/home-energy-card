@@ -1,18 +1,15 @@
 import { defineConfig } from "vite";
-import { resolve } from "path";
 
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/power-flow-card-modern.ts"),
-      name: "PowerFlowCardModern",
-      fileName: "power-flow-card-modern",
+      entry: "src/home-energy-card.ts",
       formats: ["es"],
+      fileName: () => "home-energy-card.js",
     },
+    outDir: "dist",
     rollupOptions: {
       external: [],
     },
-    outDir: "dist",
-    sourcemap: true,
   },
 });

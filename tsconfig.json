@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
+    "module": "ES2020",
     "moduleResolution": "bundler",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "strict": true,
-    "noEmit": true,
     "useDefineForClassFields": false,
     "experimentalDecorators": true,
-    "skipLibCheck": true
+    "strict": true,
+    "outDir": "dist",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
   "include": ["src"]
 }
