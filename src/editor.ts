@@ -54,48 +54,37 @@ export class HomeEnergyCardEditor extends LitElement {
       font-size: 0.95em;
     }
 
-    .type-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 4px 0 8px;
+    ha-expansion-panel {
+      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-content-padding: 0 16px;
     }
 
-    .color-row {
+    /* ── Entity type sections ── */
+    .type-section {
+      padding: 4px 0 12px;
+    }
+
+    .type-section + .type-section {
+      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.08));
+      padding-top: 12px;
+    }
+
+    .type-heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 40px;
-      font-size: 0.95em;
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary-color, #03a9f4);
+      margin-bottom: 8px;
     }
 
-    input[type="color"] {
-      width: 44px;
-      height: 28px;
-      border: 1px solid var(--divider-color, #e0e0e0);
-      border-radius: 4px;
-      padding: 2px 3px;
-      cursor: pointer;
-      background: none;
-    }
-
-    .add-type {
+    .type-fields {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--divider-color, #e0e0e0);
-    }
-
-    .add-type ha-textfield {
-      flex: 1;
-    }
-
-    .remove-type {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 4px;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .subsection-label {
@@ -107,22 +96,27 @@ export class HomeEnergyCardEditor extends LitElement {
       margin: 12px 0 4px;
     }
 
+    .add-type {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.08));
+    }
+
+    .add-type ha-textfield { flex: 1; }
+
     button.text-btn {
       background: none;
       border: none;
       color: var(--error-color, #db4437);
-      font-size: 0.85em;
+      font-size: 0.8em;
       cursor: pointer;
       padding: 0;
-    }
-
-    ha-expansion-panel {
-      --expansion-panel-summary-padding: 0 16px;
-      --expansion-panel-content-padding: 0 16px;
-    }
-
-    .inner-panel {
-      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
     }
 
     .section-content {
@@ -132,20 +126,22 @@ export class HomeEnergyCardEditor extends LitElement {
       padding: 8px 0;
     }
 
-    .detect-row {
+    .detect-block {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      margin-bottom: 8px;
-      background: var(--secondary-background-color, #f5f5f5);
-      border-radius: 8px;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .detect-block ha-button {
+      width: 100%;
+      --mdc-button-horizontal-padding: 16px;
     }
 
     .detect-status {
-      flex: 1;
       font-size: 0.8em;
-      opacity: 0.7;
+      opacity: 0.65;
+      padding: 0 2px;
     }
 
     .detect-status.error {
@@ -219,27 +215,31 @@ export class HomeEnergyCardEditor extends LitElement {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     return html`
       <div class="type-fields">
+
         <ha-entity-picker
-          label="Power import"
+          label="Import power"
           .hass=${this.hass}
           .value=${cfg.power_import ?? ""}
           @value-changed=${(e: CustomEvent) =>
             this._setEntityType(type, "power_import", e.detail.value)}
         ></ha-entity-picker>
+
         <ha-entity-picker
-          label="Power export"
+          label="Export power"
           .hass=${this.hass}
           .value=${cfg.power_export ?? ""}
           @value-changed=${(e: CustomEvent) =>
             this._setEntityType(type, "power_export", e.detail.value)}
         ></ha-entity-picker>
+
         <ha-entity-picker
-          label="Power combined"
+          label="Combined power"
           .hass=${this.hass}
           .value=${cfg.power_combined ?? ""}
           @value-changed=${(e: CustomEvent) =>
             this._setEntityType(type, "power_combined", e.detail.value)}
         ></ha-entity-picker>
+
         <ha-entity-picker
           label="Daily usage"
           .hass=${this.hass}
@@ -247,67 +247,14 @@ export class HomeEnergyCardEditor extends LitElement {
           @value-changed=${(e: CustomEvent) =>
             this._setEntityType(type, "daily_usage", e.detail.value)}
         ></ha-entity-picker>
+
         <ha-entity-picker
-          label="Daily export"
-          .hass=${this.hass}
-          .value=${cfg.daily_export ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setEntityType(type, "daily_export", e.detail.value)}
-        ></ha-entity-picker>
-        <ha-entity-picker
-          label="State of charge"
+          label="State of charge (%)"
           .hass=${this.hass}
           .value=${cfg.soc ?? ""}
           @value-changed=${(e: CustomEvent) =>
             this._setEntityType(type, "soc", e.detail.value)}
         ></ha-entity-picker>
-        <ha-textfield
-          label="Label"
-          .value=${cfg.label ?? ""}
-          @change=${(e: Event) =>
-            this._setEntityType(
-              type,
-              "label",
-              (e.target as HTMLInputElement).value
-            )}
-        ></ha-textfield>
-        <div class="color-row">
-          <span>Colour</span>
-          <input
-            type="color"
-            .value=${cfg.colour ?? "#4caf50"}
-            @change=${(e: Event) =>
-              this._setEntityType(
-                type,
-                "colour",
-                (e.target as HTMLInputElement).value
-              )}
-          />
-        </div>
-        <div class="switch-row">
-          <span>Show when zero</span>
-          <ha-switch
-            .checked=${cfg.show_zero ?? false}
-            @change=${(e: Event) =>
-              this._setEntityType(
-                type,
-                "show_zero",
-                (e.target as HTMLInputElement).checked
-              )}
-          ></ha-switch>
-        </div>
-        <ha-textfield
-          label="Zero tolerance"
-          type="number"
-          min="0"
-          .value=${String(cfg.zero_tolerance ?? 0)}
-          @change=${(e: Event) =>
-            this._setEntityType(
-              type,
-              "zero_tolerance",
-              Number((e.target as HTMLInputElement).value)
-            )}
-        ></ha-textfield>
 
         ${type === "grid" ? html`
           <div class="subsection-label">Octopus Energy</div>
@@ -333,11 +280,13 @@ export class HomeEnergyCardEditor extends LitElement {
               this._setOctopus(type, "slots_entity", e.detail.value)}
           ></ha-entity-picker>
         ` : nothing}
+
       </div>
     `;
   }
 
   private _capitalize(s: string) {
+    if (s === "ev") return "EV";
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
 
@@ -365,48 +314,36 @@ export class HomeEnergyCardEditor extends LitElement {
       (k) => !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(k)
     );
 
+    const renderSection = (type: string, isCustom = false) => html`
+      <div class="type-section">
+        <div class="type-heading">
+          <span>${this._capitalize(type)}</span>
+          ${isCustom ? html`
+            <button class="text-btn" @click=${() => this._removeCustomType(type)}>
+              Remove
+            </button>
+          ` : nothing}
+        </div>
+        ${this._renderEntityTypeFields(type)}
+      </div>
+    `;
+
     return html`
       <ha-expansion-panel header="Entity Types" outlined>
-        ${DEFAULT_ENTITY_TYPES.map(
-          (type) => html`
-            <ha-expansion-panel
-              class="inner-panel"
-              .header=${this._capitalize(type)}
-              outlined
-            >
-              ${this._renderEntityTypeFields(type)}
-            </ha-expansion-panel>
-          `
-        )}
-        ${customTypes.map(
-          (type) => html`
-            <ha-expansion-panel
-              class="inner-panel"
-              .header=${this._capitalize(type)}
-              outlined
-            >
-              ${this._renderEntityTypeFields(type)}
-              <div class="remove-type">
-                <button
-                  class="text-btn"
-                  @click=${() => this._removeCustomType(type)}
-                >
-                  Remove type
-                </button>
-              </div>
-            </ha-expansion-panel>
-          `
-        )}
-        <div class="add-type">
-          <ha-textfield
-            label="New type name"
-            .value=${this._newTypeName}
-            @input=${(e: Event) =>
-              (this._newTypeName = (e.target as HTMLInputElement).value)}
-            @keydown=${(e: KeyboardEvent) =>
-              e.key === "Enter" && this._addCustomType()}
-          ></ha-textfield>
-          <mwc-button @click=${this._addCustomType}>Add</mwc-button>
+        <div class="section-content">
+          ${DEFAULT_ENTITY_TYPES.map(t => renderSection(t))}
+          ${customTypes.map(t => renderSection(t, true))}
+          <div class="add-type">
+            <ha-textfield
+              label="New type name"
+              .value=${this._newTypeName}
+              @input=${(e: Event) =>
+                (this._newTypeName = (e.target as HTMLInputElement).value)}
+              @keydown=${(e: KeyboardEvent) =>
+                e.key === "Enter" && this._addCustomType()}
+            ></ha-textfield>
+            <mwc-button @click=${this._addCustomType}>Add</mwc-button>
+          </div>
         </div>
       </ha-expansion-panel>
     `;
@@ -541,20 +478,14 @@ export class HomeEnergyCardEditor extends LitElement {
     if (!this.config) return nothing;
 
     return html`
-      <div class="detect-row">
-        <mwc-button outlined @click=${this._runAutoDetect}>Auto-detect</mwc-button>
-        ${this._detectStatus
-          ? html`<span class="detect-status ${this._detectIsError ? "error" : ""}">${this._detectStatus}</span>`
-          : html`<span class="detect-status">Scan entities to pre-fill fields.</span>`}
+      <div class="detect-block">
+        <ha-button unelevated @click=${this._runAutoDetect}>Auto-detect entities</ha-button>
+        <span class="detect-status ${this._detectIsError ? "error" : ""}">
+          ${this._detectStatus || "Scan your entities and pre-fill fields automatically."}
+        </span>
       </div>
 
       <div class="top-fields">
-        <ha-textfield
-          label="Device"
-          .value=${this.config.device ?? ""}
-          @change=${(e: Event) =>
-            this._set("device", (e.target as HTMLInputElement).value || undefined)}
-        ></ha-textfield>
         <ha-textfield
           label="Title"
           .value=${this.config.title ?? ""}
@@ -562,7 +493,7 @@ export class HomeEnergyCardEditor extends LitElement {
             this._set("title", (e.target as HTMLInputElement).value || undefined)}
         ></ha-textfield>
         <div class="switch-row">
-          <span>Show header</span>
+          <span>Show title</span>
           <ha-switch
             .checked=${this.config.show_header ?? true}
             @change=${(e: Event) =>
