@@ -59,26 +59,42 @@ export class HomeEnergyCardEditor extends LitElement {
       --expansion-panel-content-padding: 0 16px;
     }
 
-    /* ── Entity type sections ── */
+    /* ── Divider between major editor groups ── */
+    .group-divider {
+      height: 1px;
+      background: var(--divider-color, rgba(0,0,0,0.12));
+      margin: 8px 0;
+    }
+
+    /* ── Group heading (e.g. "Entities") ── */
+    .group-heading {
+      font-size: 0.72em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      opacity: 0.45;
+      padding: 4px 0 2px;
+    }
+
+    /* ── Individual entity type section ── */
     .type-section {
-      padding: 4px 0 12px;
+      padding: 10px 0 4px;
     }
 
     .type-section + .type-section {
-      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.08));
-      padding-top: 12px;
+      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.06));
     }
 
     .type-heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.8em;
+      font-size: 0.82em;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: var(--primary-color, #03a9f4);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .type-fields {
@@ -88,12 +104,12 @@ export class HomeEnergyCardEditor extends LitElement {
     }
 
     .subsection-label {
-      font-size: 0.75em;
-      font-weight: 600;
+      font-size: 0.72em;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      opacity: 0.5;
-      margin: 12px 0 4px;
+      opacity: 0.45;
+      margin: 10px 0 2px;
     }
 
     .add-type {
@@ -111,12 +127,12 @@ export class HomeEnergyCardEditor extends LitElement {
       background: none;
       border: none;
       color: var(--error-color, #db4437);
-      font-size: 0.8em;
-      cursor: pointer;
-      padding: 0;
+      font-size: 0.78em;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
     }
 
     .section-content {
@@ -307,7 +323,7 @@ export class HomeEnergyCardEditor extends LitElement {
     this._set("entity_types", entityTypes);
   }
 
-  private _renderEntityTypesSection() {
+  private _renderEntityTypeSections() {
     const customTypes = Object.keys(
       this.config?.entity_types ?? {}
     ).filter(
@@ -319,9 +335,7 @@ export class HomeEnergyCardEditor extends LitElement {
         <div class="type-heading">
           <span>${this._capitalize(type)}</span>
           ${isCustom ? html`
-            <button class="text-btn" @click=${() => this._removeCustomType(type)}>
-              Remove
-            </button>
+            <button class="text-btn" @click=${() => this._removeCustomType(type)}>Remove</button>
           ` : nothing}
         </div>
         ${this._renderEntityTypeFields(type)}
@@ -329,23 +343,25 @@ export class HomeEnergyCardEditor extends LitElement {
     `;
 
     return html`
-      <ha-expansion-panel header="Entity Types" outlined>
-        <div class="section-content">
-          ${DEFAULT_ENTITY_TYPES.map(t => renderSection(t))}
-          ${customTypes.map(t => renderSection(t, true))}
-          <div class="add-type">
-            <ha-textfield
-              label="New type name"
-              .value=${this._newTypeName}
-              @input=${(e: Event) =>
-                (this._newTypeName = (e.target as HTMLInputElement).value)}
-              @keydown=${(e: KeyboardEvent) =>
-                e.key === "Enter" && this._addCustomType()}
-            ></ha-textfield>
-            <mwc-button @click=${this._addCustomType}>Add</mwc-button>
-          </div>
-        </div>
-      </ha-expansion-panel>
+      <div class="group-divider"></div>
+      <div class="group-heading">Entities</div>
+
+      ${DEFAULT_ENTITY_TYPES.map(t => renderSection(t))}
+      ${customTypes.map(t => renderSection(t, true))}
+
+      <div class="add-type">
+        <ha-textfield
+          label="Add custom type"
+          .value=${this._newTypeName}
+          @input=${(e: Event) =>
+            (this._newTypeName = (e.target as HTMLInputElement).value)}
+          @keydown=${(e: KeyboardEvent) =>
+            e.key === "Enter" && this._addCustomType()}
+        ></ha-textfield>
+        <mwc-button @click=${this._addCustomType}>Add</mwc-button>
+      </div>
+
+      <div class="group-divider"></div>
     `;
   }
 
@@ -509,7 +525,7 @@ export class HomeEnergyCardEditor extends LitElement {
         ></ha-entity-picker>
       </div>
 
-      ${this._renderEntityTypesSection()}
+      ${this._renderEntityTypeSections()}
       ${this._renderLiveDataSection()}
       ${this._renderSystemSection()}
       ${this._renderDisplaySection()}
