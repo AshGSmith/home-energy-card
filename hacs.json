@@ -1,0 +1,7 @@
+{
+  "name": "Power Flow Card Modern",
+  "description": "A modern Home Assistant Lovelace card for visualising home energy flow.",
+  "render_readme": true,
+  "filename": "power-flow-card-modern.js",
+  "content_in_root": false
+}
