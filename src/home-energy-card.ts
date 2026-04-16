@@ -36,14 +36,11 @@ export class HomeEnergyCard extends LitElement {
 
     return html`
       <ha-card>
-        ${this.config.show_header !== false
-          ? html`
-              <hec-card-header
-                .hass=${this.hass}
-                .config=${this.config}
-              ></hec-card-header>
-            `
-          : nothing}
+        <hec-card-header
+          .hass=${this.hass}
+          .config=${this.config}
+          .showTitle=${this.config.show_header !== false}
+        ></hec-card-header>
         <div class="card-body">
           <hec-flow-layout
             .hass=${this.hass}
@@ -59,4 +56,23 @@ declare global {
   interface HTMLElementTagNameMap {
     "home-energy-card": HomeEnergyCard;
   }
+  interface Window {
+    customCards?: Array<{
+      type: string;
+      name: string;
+      description?: string;
+      preview?: boolean;
+      documentationURL?: string;
+    }>;
+  }
 }
+
+// Register with the HA card picker
+window.customCards = window.customCards ?? [];
+window.customCards.push({
+  type: "home-energy-card",
+  name: "Home Energy Card",
+  description: "Power flow and daily energy summary for solar, battery, grid and EV.",
+  preview: true,
+  documentationURL: "https://github.com/AshGSmith/home-energy-card",
+});

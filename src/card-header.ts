@@ -51,6 +51,7 @@ function tariffStyle(raw: string): TariffStyle {
 export class HecCardHeader extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
   @property({ attribute: false }) config?: CardConfig;
+  @property({ type: Boolean }) showTitle = true;
 
   static styles = css`
     :host { display: block; }
@@ -93,6 +94,7 @@ export class HecCardHeader extends LitElement {
     .stats-row {
       display: flex;
       align-items: baseline;
+      justify-content: center;
       flex-wrap: wrap;
       gap: 0 14px;
       margin-top: 5px;
@@ -185,17 +187,21 @@ export class HecCardHeader extends LitElement {
     return html`
       <div class="header">
 
-        <div class="title-row">
-          <span class="title">${this.config.title ?? "Home Energy"}</span>
-          ${tariff
-            ? html`
-                <span
-                  class="tariff"
-                  style="background:${tariff.bg};color:${tariff.fg};"
-                >${tariff.label}</span>
-              `
-            : nothing}
-        </div>
+        ${this.showTitle || tariff ? html`
+          <div class="title-row">
+            ${this.showTitle
+              ? html`<span class="title">${this.config.title ?? "Home Energy"}</span>`
+              : nothing}
+            ${tariff
+              ? html`
+                  <span
+                    class="tariff"
+                    style="background:${tariff.bg};color:${tariff.fg};"
+                  >${tariff.label}</span>
+                `
+              : nothing}
+          </div>
+        ` : nothing}
 
         ${hasStats ? html`
           <div class="stats-row">

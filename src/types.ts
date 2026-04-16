@@ -42,8 +42,6 @@ export interface DisplayConfig {
 
 export interface CardConfig {
   type: string;
-  integration_type?: IntegrationType;
-  device?: string;
   title?: string;
   show_header?: boolean;
   tariff_entity?: string;

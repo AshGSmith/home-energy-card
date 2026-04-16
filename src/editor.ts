@@ -19,6 +19,7 @@ export class HomeEnergyCardEditor extends LitElement {
   @state() private _newTypeName = "";
   @state() private _detectStatus = "";
   @state() private _detectIsError = false;
+  @state() private _openSections = new Set<string>();
 
   static styles = css`
     :host {
@@ -59,14 +60,13 @@ export class HomeEnergyCardEditor extends LitElement {
       --expansion-panel-content-padding: 0 16px;
     }
 
-    /* ── Divider between major editor groups ── */
+    /* ── Section dividers / group labels ── */
     .group-divider {
       height: 1px;
       background: var(--divider-color, rgba(0,0,0,0.12));
       margin: 8px 0;
     }
 
-    /* ── Group heading (e.g. "Entities") ── */
     .group-heading {
       font-size: 0.72em;
       font-weight: 700;
@@ -76,49 +76,72 @@ export class HomeEnergyCardEditor extends LitElement {
       padding: 4px 0 2px;
     }
 
-    /* ── Individual entity type section ── */
-    .type-section {
-      padding: 10px 0 4px;
+    /* ── Custom accordion: one block per entity type ── */
+    .type-block {
+      border: 1px solid var(--divider-color, rgba(0,0,0,0.12));
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 4px;
     }
 
-    .type-section + .type-section {
-      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.06));
-    }
-
-    .type-heading {
+    .type-toggle {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.82em;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--primary-color, #03a9f4);
-      margin-bottom: 10px;
+      width: 100%;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95em;
+      font-weight: 500;
+      text-align: left;
+      color: var(--primary-text-color);
+      gap: 8px;
     }
 
-    .type-fields {
+    .type-toggle:hover {
+      background: var(--secondary-background-color, rgba(0,0,0,0.04));
+    }
+
+    .type-toggle ha-icon {
+      --mdc-icon-size: 18px;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .type-body {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      padding: 4px 16px 16px;
+      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.08));
     }
 
+    .type-body[hidden] { display: none; }
+
+    /* ── Entity pickers inside type body ── */
     .subsection-label {
       font-size: 0.72em;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       opacity: 0.45;
-      margin: 10px 0 2px;
+      margin: 6px 0 0;
     }
 
+    .remove-row {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 8px;
+    }
+
+    /* ── Add custom type ── */
     .add-type {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--divider-color, rgba(0,0,0,0.08));
+      margin-top: 4px;
     }
 
     .add-type ha-textfield { flex: 1; }
@@ -323,6 +346,12 @@ export class HomeEnergyCardEditor extends LitElement {
     this._set("entity_types", entityTypes);
   }
 
+  private _toggleSection(type: string) {
+    const s = new Set(this._openSections);
+    s.has(type) ? s.delete(type) : s.add(type);
+    this._openSections = s;
+  }
+
   private _renderEntityTypeSections() {
     const customTypes = Object.keys(
       this.config?.entity_types ?? {}
@@ -330,21 +359,31 @@ export class HomeEnergyCardEditor extends LitElement {
       (k) => !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(k)
     );
 
-    const renderSection = (type: string, isCustom = false) => html`
-      <div class="type-section">
-        <div class="type-heading">
-          <span>${this._capitalize(type)}</span>
-          ${isCustom ? html`
-            <button class="text-btn" @click=${() => this._removeCustomType(type)}>Remove</button>
-          ` : nothing}
+    const renderSection = (type: string, isCustom = false) => {
+      const open = this._openSections.has(type);
+      return html`
+        <div class="type-block">
+          <button class="type-toggle" @click=${() => this._toggleSection(type)}>
+            <span>${this._capitalize(type)}</span>
+            <ha-icon icon="mdi:chevron-${open ? "up" : "down"}"></ha-icon>
+          </button>
+          <div class="type-body" ?hidden=${!open}>
+            ${this._renderEntityTypeFields(type)}
+            ${isCustom ? html`
+              <div class="remove-row">
+                <button class="text-btn" @click=${() => this._removeCustomType(type)}>
+                  Remove type
+                </button>
+              </div>
+            ` : nothing}
+          </div>
         </div>
-        ${this._renderEntityTypeFields(type)}
-      </div>
-    `;
+      `;
+    };
 
     return html`
       <div class="group-divider"></div>
-      <div class="group-heading">Entities</div>
+      <div class="group-heading">Type</div>
 
       ${DEFAULT_ENTITY_TYPES.map(t => renderSection(t))}
       ${customTypes.map(t => renderSection(t, true))}

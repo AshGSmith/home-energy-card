@@ -384,6 +384,7 @@ export function autoDetect(hass: unknown): DetectionResult {
 
 /**
  * Merge a DetectionResult into a CardConfig.
+ * Only entity field values (entity IDs) are written — no metadata.
  * When overwrite=false (default), existing non-empty fields are preserved.
  */
 export function mergeDetection(
@@ -391,7 +392,7 @@ export function mergeDetection(
   detected: DetectionResult,
   overwrite = false,
 ): CardConfig {
-  const merged: CardConfig = { ...config, integration_type: detected.integration_type };
+  const merged: CardConfig = { ...config };
 
   if (detected.tariff_entity && (overwrite || !config.tariff_entity)) {
     merged.tariff_entity = detected.tariff_entity;

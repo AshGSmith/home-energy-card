@@ -55,7 +55,7 @@ export class HecEnergyNode extends LitElement {
   static styles = css`
     :host {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
     }
 
@@ -63,7 +63,7 @@ export class HecEnergyNode extends LitElement {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      width: 100%;
       padding: 10px 12px 8px;
       border-radius: 14px;
       min-width: 76px;
@@ -97,8 +97,10 @@ export class HecEnergyNode extends LitElement {
       font-size: 0.85em;
       font-weight: 700;
       white-space: nowrap;
+      color: #1a1a2e;
     }
 
+    /* Reserves the same vertical space whether or not SOC is present */
     .soc-wrap {
       width: 100%;
       margin-top: 4px;
@@ -106,6 +108,11 @@ export class HecEnergyNode extends LitElement {
       flex-direction: column;
       align-items: center;
       gap: 2px;
+      /* invisible placeholder keeps height consistent */
+      visibility: hidden;
+    }
+    .soc-wrap.has-soc {
+      visibility: visible;
     }
 
     .soc-bar-bg {
@@ -151,22 +158,18 @@ export class HecEnergyNode extends LitElement {
       >
         <ha-icon .icon=${s.icon}></ha-icon>
         <span class="label" style="color: ${accent};">${this.label || this.type}</span>
-        <span class="power" style="color: var(--primary-text-color);">
+        <span class="power">
           ${formatPower(this.power, this.unit, this.decimalPlaces)}
         </span>
-        ${this.soc !== null
-          ? html`
-              <div class="soc-wrap">
-                <div class="soc-bar-bg">
-                  <div
-                    class="soc-bar"
-                    style="width: ${Math.max(0, Math.min(100, this.soc))}%; background: ${socColor(this.soc)};"
-                  ></div>
-                </div>
-                <span class="soc-pct">${this.soc.toFixed(0)}%</span>
-              </div>
-            `
-          : nothing}
+        <div class="soc-wrap${this.soc !== null ? " has-soc" : ""}">
+          <div class="soc-bar-bg">
+            <div
+              class="soc-bar"
+              style="width: ${this.soc !== null ? Math.max(0, Math.min(100, this.soc)) : 0}%; background: ${this.soc !== null ? socColor(this.soc) : "transparent"};"
+            ></div>
+          </div>
+          <span class="soc-pct">${this.soc !== null ? `${this.soc.toFixed(0)}%` : ""}</span>
+        </div>
       </div>
     `;
   }
