@@ -21,9 +21,9 @@ function animDuration(magnitude: number | null, dynamic: boolean): string {
 
 const LINE_COLOR: Record<string, string> = {
   solar:   "#ffc107",
-  grid:    "#42a5f5",
+  grid:    "#f06292",
   battery: "#66bb6a",
-  ev:      "#26c6da",
+  ev:      "#42a5f5",
 };
 
 // Layout: B1=Solar, C1=EV, A2=Grid, B2=Home, C2=Battery
@@ -52,6 +52,8 @@ export class HecFlowLayout extends LitElement {
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
       position: relative;
+      align-items: center;   /* vertically centre circles in each row */
+      justify-items: center; /* horizontally centre circles in each column */
     }
 
     /* ── Standard slots ─────────────────────────────────────── */

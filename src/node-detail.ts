@@ -16,10 +16,10 @@ const TYPE_ICON: Record<string, string> = {
 
 const TYPE_ACCENT: Record<string, string> = {
   solar:   "#f9a825",
-  grid:    "#1e88e5",
+  grid:    "#e91e63",
   battery: "#43a047",
-  home:    "#e91e63",
-  ev:      "#00acc1",
+  home:    "#388e3c",
+  ev:      "#1e88e5",
 };
 
 // Human-readable flow direction per type
@@ -420,6 +420,8 @@ export class HecNodeDetail extends LitElement {
       overflow-y: auto;
       overscroll-behavior: contain;
       box-shadow: 0 -4px 24px rgba(0,0,0,0.14);
+      /* push content above the home indicator on iOS/Android */
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     /* ── Dialog header ── */
@@ -460,7 +462,7 @@ export class HecNodeDetail extends LitElement {
       padding: 14px 16px;
       border-bottom: 1px solid var(--divider-color, rgba(0,0,0,0.07));
     }
-    .section:last-child { border-bottom: none; padding-bottom: 20px; }
+    .section:last-child { border-bottom: none; padding-bottom: 40px; }
 
     .s-title {
       font-size: 0.63em;

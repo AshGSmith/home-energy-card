@@ -10,10 +10,10 @@ export interface NodeStyles {
 
 const TYPE_STYLES: Record<string, NodeStyles> = {
   solar:   { gradStart: "#fff8e1", gradEnd: "#ffe082", accent: "#f9a825", icon: "mdi:solar-power-variant" },
-  grid:    { gradStart: "#e3f2fd", gradEnd: "#90caf9", accent: "#1e88e5", icon: "mdi:transmission-tower" },
+  grid:    { gradStart: "#fce4ec", gradEnd: "#f48fb1", accent: "#e91e63", icon: "mdi:transmission-tower" },
   battery: { gradStart: "#e8f5e9", gradEnd: "#a5d6a7", accent: "#43a047", icon: "mdi:battery" },
-  home:    { gradStart: "#fce4ec", gradEnd: "#f48fb1", accent: "#e91e63", icon: "mdi:home-lightning-bolt" },
-  ev:      { gradStart: "#e0f7fa", gradEnd: "#80deea", accent: "#00acc1", icon: "mdi:car-electric" },
+  home:    { gradStart: "#f1f8e9", gradEnd: "#c5e1a5", accent: "#388e3c", icon: "mdi:home-lightning-bolt" },
+  ev:      { gradStart: "#e3f2fd", gradEnd: "#90caf9", accent: "#1e88e5", icon: "mdi:car-electric" },
 };
 
 const FALLBACK_STYLES: NodeStyles = {
@@ -23,16 +23,17 @@ const FALLBACK_STYLES: NodeStyles = {
   icon: "mdi:lightning-bolt",
 };
 
-function socColor(soc: number): string {
-  if (soc < 20) return "#ef5350";
-  if (soc < 50) return "#ffa726";
-  return "#66bb6a";
-}
+// ── Ring geometry ──────────────────────────────────────────────────────────────
+// SVG viewBox is "0 0 84 84"; centre at (42, 42).
+// r=38, stroke-width=4  →  outer edge at r=40 (82 px from left, inside 84 ✓)
+//                          inner edge at r=36 — node inset 8 px has r=34, 2 px gap.
+const RING_R = 38;
+const RING_C = +(2 * Math.PI * RING_R).toFixed(4); // ≈ 238.7610
 
 export function formatPower(
   watts: number | null,
   unit: "W" | "kW" | "auto",
-  decimals: number
+  decimals: number,
 ): string {
   if (watts === null) return "—";
   const abs = Math.abs(watts);
@@ -55,85 +56,97 @@ export class HecEnergyNode extends LitElement {
   static styles = css`
     :host {
       display: flex;
-      align-items: stretch;
+      align-items: center;
       justify-content: center;
     }
 
+    /* ── Outer wrapper — uniform size for all nodes ── */
+    .node-wrap {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      flex-shrink: 0;
+    }
+
+    /* ── SOC progress ring (SVG overlay) ── */
+    .soc-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .soc-ring.has-soc { opacity: 1; }
+
+    .ring-track {
+      fill: none;
+      stroke: rgba(0, 0, 0, 0.10);
+      stroke-width: 4;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: #66bb6a;
+      stroke-width: 4;
+      stroke-linecap: round;
+      /* start at 12 o'clock */
+      transform: rotate(-90deg);
+      transform-origin: 42px 42px;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+
+    /* ── Inner circle ── */
     .node {
+      position: absolute;
+      inset: 8px;           /* 84 − 2×8 = 68 px diameter */
+      border-radius: 50%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
-      padding: 10px 12px 8px;
-      border-radius: 14px;
-      min-width: 76px;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
+      justify-content: center;
+      gap: 1px;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+      overflow: hidden;
       transition: box-shadow 0.15s ease, transform 0.1s ease;
     }
     .node:hover {
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
-      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+      transform: scale(1.05);
     }
-    .node:active {
-      transform: translateY(0);
-    }
+    .node:active { transform: scale(1.00); }
 
-    ha-icon {
-      --mdc-icon-size: 26px;
-    }
+    ha-icon { --mdc-icon-size: 22px; }
 
     .label {
-      font-size: 0.65em;
-      font-weight: 600;
+      font-size: 0.58em;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       opacity: 0.65;
       white-space: nowrap;
     }
 
     .power {
-      font-size: 0.85em;
+      font-size: 0.78em;
       font-weight: 700;
       white-space: nowrap;
       color: #1a1a2e;
     }
 
-    /* Reserves the same vertical space whether or not SOC is present */
-    .soc-wrap {
-      width: 100%;
-      margin-top: 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      /* invisible placeholder keeps height consistent */
-      visibility: hidden;
-    }
-    .soc-wrap.has-soc {
-      visibility: visible;
-    }
-
-    .soc-bar-bg {
-      width: 100%;
-      height: 3px;
-      border-radius: 2px;
-      background: rgba(0, 0, 0, 0.12);
-      overflow: hidden;
-    }
-
-    .soc-bar {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.6s ease;
-    }
-
+    /* ── SOC text (only rendered when SOC is present) ── */
     .soc-pct {
-      font-size: 0.6em;
-      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      font-size: 0.55em;
       font-weight: 600;
+      opacity: 0.72;
+      white-space: nowrap;
     }
+
+    .soc-icon { --mdc-icon-size: 11px; }
   `;
 
   private _handleClick() {
@@ -147,29 +160,47 @@ export class HecEnergyNode extends LitElement {
   }
 
   render() {
-    const s = (TYPE_STYLES[this.type] ?? FALLBACK_STYLES);
+    const s      = TYPE_STYLES[this.type] ?? FALLBACK_STYLES;
     const accent = this.colour || s.accent;
+    const hasSoc = this.soc !== null;
+    const pct    = hasSoc ? Math.max(0, Math.min(100, this.soc!)) : 0;
+    // dashoffset 0 = full ring; dashoffset = RING_C = empty
+    const offset = +(RING_C * (1 - pct / 100)).toFixed(4);
 
     return html`
-      <div
-        class="node"
-        style="background: linear-gradient(150deg, ${s.gradStart} 0%, ${s.gradEnd} 100%); color: ${accent};"
-        @click=${this._handleClick}
-      >
-        <ha-icon .icon=${s.icon}></ha-icon>
-        <span class="label" style="color: ${accent};">${this.label || this.type}</span>
-        <span class="power">
-          ${formatPower(this.power, this.unit, this.decimalPlaces)}
-        </span>
-        <div class="soc-wrap${this.soc !== null ? " has-soc" : ""}">
-          <div class="soc-bar-bg">
-            <div
-              class="soc-bar"
-              style="width: ${this.soc !== null ? Math.max(0, Math.min(100, this.soc)) : 0}%; background: ${this.soc !== null ? socColor(this.soc) : "transparent"};"
-            ></div>
-          </div>
-          <span class="soc-pct">${this.soc !== null ? `${this.soc.toFixed(0)}%` : ""}</span>
+      <div class="node-wrap">
+
+        <!-- SOC ring — always in DOM, invisible without SOC data -->
+        <svg
+          class="soc-ring${hasSoc ? " has-soc" : ""}"
+          viewBox="0 0 84 84"
+          aria-hidden="true"
+        >
+          <circle class="ring-track"    cx="42" cy="42" r="${RING_R}"/>
+          <circle
+            class="ring-progress"
+            cx="42" cy="42" r="${RING_R}"
+            style="stroke-dasharray:${RING_C};stroke-dashoffset:${offset};"
+          />
+        </svg>
+
+        <!-- Circle node -->
+        <div
+          class="node"
+          style="background:linear-gradient(150deg,${s.gradStart} 0%,${s.gradEnd} 100%);color:${accent};"
+          @click=${this._handleClick}
+        >
+          <ha-icon .icon=${s.icon}></ha-icon>
+          <span class="label" style="color:${accent};">${this.label || this.type}</span>
+          <span class="power">${formatPower(this.power, this.unit, this.decimalPlaces)}</span>
+          ${hasSoc ? html`
+            <span class="soc-pct">
+              <ha-icon class="soc-icon" icon="mdi:battery"></ha-icon>
+              ${this.soc!.toFixed(0)}%
+            </span>
+          ` : nothing}
         </div>
+
       </div>
     `;
   }

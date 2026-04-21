@@ -96,14 +96,14 @@ export class HecCardHeader extends LitElement {
       align-items: baseline;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 0 14px;
+      gap: 0 8px;
       margin-top: 5px;
     }
 
     /* divider between stat groups */
     .stats-row > * + *::before {
       content: "·";
-      margin-right: 14px;
+      margin-right: 8px;
       opacity: 0.3;
       font-size: 0.75em;
     }
@@ -216,7 +216,7 @@ export class HecCardHeader extends LitElement {
 
             ${hasUsage ? html`
               <div class="stat">
-                <span class="stat-label" style="color:#e91e63;">⌂ Usage</span>
+                <span class="stat-label" style="color:#e91e63;">⌂ Home</span>
                 <span class="stat-val">${fmtKwh(usage, d)}</span>
                 <span class="stat-unit">kWh</span>
               </div>
