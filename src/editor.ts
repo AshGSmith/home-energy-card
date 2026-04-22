@@ -203,6 +203,102 @@ export class HomeEnergyCardEditor extends LitElement {
             })
           )}
       ></ha-selector>
+      <div class="switch-row">
+        <span>Grid Show when idle</span>
+        <ha-switch
+          .checked=${this.config.entity_types?.grid?.show_zero ?? true}
+          @change=${(e: Event) =>
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: {
+                  config: {
+                    ...this.config!,
+                    entity_types: {
+                      ...(this.config!.entity_types ?? {}),
+                      grid: {
+                        ...(this.config!.entity_types?.grid ?? {}),
+                        show_zero: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                  },
+                },
+                bubbles: true,
+                composed: true,
+              })
+            )}
+        ></ha-switch>
+      </div>
+      <ha-textfield
+        label="Grid Zero Tolerance"
+        type="number"
+        min="0"
+        .value=${this.config.entity_types?.grid?.zero_tolerance != null ? String(this.config.entity_types?.grid?.zero_tolerance) : ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    grid: {
+                      ...(this.config!.entity_types?.grid ?? {}),
+                      zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Grid Label"
+        .value=${this.config.entity_types?.grid?.label ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    grid: {
+                      ...(this.config!.entity_types?.grid ?? {}),
+                      label: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Grid Colour"
+        .value=${this.config.entity_types?.grid?.colour ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    grid: {
+                      ...(this.config!.entity_types?.grid ?? {}),
+                      colour: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
 
       <ha-selector
         label="Solar Combined Power"
@@ -255,6 +351,102 @@ export class HomeEnergyCardEditor extends LitElement {
             })
           )}
       ></ha-selector>
+      <div class="switch-row">
+        <span>Solar Show when idle</span>
+        <ha-switch
+          .checked=${this.config.entity_types?.solar?.show_zero ?? true}
+          @change=${(e: Event) =>
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: {
+                  config: {
+                    ...this.config!,
+                    entity_types: {
+                      ...(this.config!.entity_types ?? {}),
+                      solar: {
+                        ...(this.config!.entity_types?.solar ?? {}),
+                        show_zero: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                  },
+                },
+                bubbles: true,
+                composed: true,
+              })
+            )}
+        ></ha-switch>
+      </div>
+      <ha-textfield
+        label="Solar Zero Tolerance"
+        type="number"
+        min="0"
+        .value=${this.config.entity_types?.solar?.zero_tolerance != null ? String(this.config.entity_types?.solar?.zero_tolerance) : ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    solar: {
+                      ...(this.config!.entity_types?.solar ?? {}),
+                      zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Solar Label"
+        .value=${this.config.entity_types?.solar?.label ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    solar: {
+                      ...(this.config!.entity_types?.solar ?? {}),
+                      label: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Solar Colour"
+        .value=${this.config.entity_types?.solar?.colour ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    solar: {
+                      ...(this.config!.entity_types?.solar ?? {}),
+                      colour: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
 
       <ha-selector
         label="Battery State of Charge"
@@ -333,6 +525,102 @@ export class HomeEnergyCardEditor extends LitElement {
             })
           )}
       ></ha-selector>
+      <div class="switch-row">
+        <span>Battery Show when idle</span>
+        <ha-switch
+          .checked=${this.config.entity_types?.battery?.show_zero ?? true}
+          @change=${(e: Event) =>
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: {
+                  config: {
+                    ...this.config!,
+                    entity_types: {
+                      ...(this.config!.entity_types ?? {}),
+                      battery: {
+                        ...(this.config!.entity_types?.battery ?? {}),
+                        show_zero: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                  },
+                },
+                bubbles: true,
+                composed: true,
+              })
+            )}
+        ></ha-switch>
+      </div>
+      <ha-textfield
+        label="Battery Zero Tolerance"
+        type="number"
+        min="0"
+        .value=${this.config.entity_types?.battery?.zero_tolerance != null ? String(this.config.entity_types?.battery?.zero_tolerance) : ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    battery: {
+                      ...(this.config!.entity_types?.battery ?? {}),
+                      zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Battery Label"
+        .value=${this.config.entity_types?.battery?.label ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    battery: {
+                      ...(this.config!.entity_types?.battery ?? {}),
+                      label: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Battery Colour"
+        .value=${this.config.entity_types?.battery?.colour ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    battery: {
+                      ...(this.config!.entity_types?.battery ?? {}),
+                      colour: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
 
       <ha-selector
         label="Home Combined Power"
@@ -385,6 +673,102 @@ export class HomeEnergyCardEditor extends LitElement {
             })
           )}
       ></ha-selector>
+      <div class="switch-row">
+        <span>Home Show when idle</span>
+        <ha-switch
+          .checked=${this.config.entity_types?.home?.show_zero ?? true}
+          @change=${(e: Event) =>
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: {
+                  config: {
+                    ...this.config!,
+                    entity_types: {
+                      ...(this.config!.entity_types ?? {}),
+                      home: {
+                        ...(this.config!.entity_types?.home ?? {}),
+                        show_zero: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                  },
+                },
+                bubbles: true,
+                composed: true,
+              })
+            )}
+        ></ha-switch>
+      </div>
+      <ha-textfield
+        label="Home Zero Tolerance"
+        type="number"
+        min="0"
+        .value=${this.config.entity_types?.home?.zero_tolerance != null ? String(this.config.entity_types?.home?.zero_tolerance) : ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    home: {
+                      ...(this.config!.entity_types?.home ?? {}),
+                      zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Home Label"
+        .value=${this.config.entity_types?.home?.label ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    home: {
+                      ...(this.config!.entity_types?.home ?? {}),
+                      label: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Home Colour"
+        .value=${this.config.entity_types?.home?.colour ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    home: {
+                      ...(this.config!.entity_types?.home ?? {}),
+                      colour: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
 
       <ha-selector
         label="EV State of Charge"
@@ -437,6 +821,102 @@ export class HomeEnergyCardEditor extends LitElement {
             })
           )}
       ></ha-selector>
+      <div class="switch-row">
+        <span>EV Show when idle</span>
+        <ha-switch
+          .checked=${this.config.entity_types?.ev?.show_zero ?? true}
+          @change=${(e: Event) =>
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: {
+                  config: {
+                    ...this.config!,
+                    entity_types: {
+                      ...(this.config!.entity_types ?? {}),
+                      ev: {
+                        ...(this.config!.entity_types?.ev ?? {}),
+                        show_zero: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                  },
+                },
+                bubbles: true,
+                composed: true,
+              })
+            )}
+        ></ha-switch>
+      </div>
+      <ha-textfield
+        label="EV Zero Tolerance"
+        type="number"
+        min="0"
+        .value=${this.config.entity_types?.ev?.zero_tolerance != null ? String(this.config.entity_types?.ev?.zero_tolerance) : ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    ev: {
+                      ...(this.config!.entity_types?.ev ?? {}),
+                      zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="EV Label"
+        .value=${this.config.entity_types?.ev?.label ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    ev: {
+                      ...(this.config!.entity_types?.ev ?? {}),
+                      label: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="EV Colour"
+        .value=${this.config.entity_types?.ev?.colour ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    ev: {
+                      ...(this.config!.entity_types?.ev ?? {}),
+                      colour: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
 
       <ha-selector
         label="Custom Import Power"
@@ -567,6 +1047,102 @@ export class HomeEnergyCardEditor extends LitElement {
             })
           )}
       ></ha-selector>
+      <div class="switch-row">
+        <span>Custom Show when idle</span>
+        <ha-switch
+          .checked=${this.config.entity_types?.custom_1?.show_zero ?? true}
+          @change=${(e: Event) =>
+            this.dispatchEvent(
+              new CustomEvent("config-changed", {
+                detail: {
+                  config: {
+                    ...this.config!,
+                    entity_types: {
+                      ...(this.config!.entity_types ?? {}),
+                      custom_1: {
+                        ...(this.config!.entity_types?.custom_1 ?? {}),
+                        show_zero: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                  },
+                },
+                bubbles: true,
+                composed: true,
+              })
+            )}
+        ></ha-switch>
+      </div>
+      <ha-textfield
+        label="Custom Zero Tolerance"
+        type="number"
+        min="0"
+        .value=${this.config.entity_types?.custom_1?.zero_tolerance != null ? String(this.config.entity_types?.custom_1?.zero_tolerance) : ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    custom_1: {
+                      ...(this.config!.entity_types?.custom_1 ?? {}),
+                      zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Custom Label"
+        .value=${this.config.entity_types?.custom_1?.label ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    custom_1: {
+                      ...(this.config!.entity_types?.custom_1 ?? {}),
+                      label: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
+      <ha-textfield
+        label="Custom Colour"
+        .value=${this.config.entity_types?.custom_1?.colour ?? ""}
+        @change=${(e: Event) =>
+          this.dispatchEvent(
+            new CustomEvent("config-changed", {
+              detail: {
+                config: {
+                  ...this.config!,
+                  entity_types: {
+                    ...(this.config!.entity_types ?? {}),
+                    custom_1: {
+                      ...(this.config!.entity_types?.custom_1 ?? {}),
+                      colour: (e.target as HTMLInputElement).value || undefined,
+                    },
+                  },
+                },
+              },
+              bubbles: true,
+              composed: true,
+            })
+          )}
+      ></ha-textfield>
     `;
   }
 }
