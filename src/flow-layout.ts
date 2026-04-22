@@ -1,4 +1,5 @@
 import { LitElement, html, css, svg, nothing } from "lit";
+import { repeat } from "lit/directives/repeat.js";
 import { customElement, property, state } from "lit/decorators.js";
 import "./energy-node.js";
 import "./node-detail.js";
@@ -41,6 +42,7 @@ export class HecFlowLayout extends LitElement {
   };
 
   private _resizeObserver?: ResizeObserver;
+  private _measureFrame: number | null = null;
 
   static styles = css`
     :host { display: block; }
@@ -99,23 +101,25 @@ export class HecFlowLayout extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._resizeObserver = new ResizeObserver(() => this._measureLineLayout());
+    this._resizeObserver = new ResizeObserver(() => this._scheduleMeasureLineLayout());
   }
 
   disconnectedCallback() {
     this._resizeObserver?.disconnect();
     this._resizeObserver = undefined;
+    if (this._measureFrame !== null) cancelAnimationFrame(this._measureFrame);
+    this._measureFrame = null;
     super.disconnectedCallback();
   }
 
   protected firstUpdated() {
     const grid = this.renderRoot.querySelector(".grid");
     if (grid && this._resizeObserver) this._resizeObserver.observe(grid);
-    this._measureLineLayout();
+    this._scheduleMeasureLineLayout();
   }
 
-  protected updated() {
-    this._measureLineLayout();
+  protected updated(changed: Map<string, unknown>) {
+    if (changed.has("config")) this._scheduleMeasureLineLayout();
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -151,6 +155,14 @@ export class HecFlowLayout extends LitElement {
   }
 
   // ── SVG lines ─────────────────────────────────────────────────────────────
+
+  private _scheduleMeasureLineLayout() {
+    if (this._measureFrame !== null) return;
+    this._measureFrame = requestAnimationFrame(() => {
+      this._measureFrame = null;
+      this._measureLineLayout();
+    });
+  }
 
   private _measureLineLayout() {
     const grid = this.renderRoot.querySelector(".grid");
@@ -207,8 +219,10 @@ export class HecFlowLayout extends LitElement {
     if (!homeCenter || !this._lineLayout.width || !this._lineLayout.height) return nothing;
 
     return svg`
-      ${this._lineTypes()
-        .map((type) => {
+      ${repeat(
+        this._lineTypes(),
+        (type) => type,
+        (type) => {
           const flow = this._flowInfo(type);
           const center = this._lineLayout.centers[type];
           if (!center) return nothing;
@@ -235,7 +249,8 @@ export class HecFlowLayout extends LitElement {
               pathLength="100"
             />
           `;
-        })}
+        },
+      )}
     `;
   }
 
@@ -343,7 +358,7 @@ export class HecFlowLayout extends LitElement {
         ${this._node("battery", "slot-battery", true)}
 
         <!-- Rows 3+: custom types (B→A→C per row) -->
-        ${customTypes.map((type, i) => {
+        ${repeat(customTypes, (type) => type, (type, i) => {
           const [col, row] = this._customSlot(i);
           return this._customNode(type, col, row);
         })}
