@@ -250,87 +250,82 @@ export class HomeEnergyCardEditor extends LitElement {
     this._set("entity_types", entityTypes);
   }
 
+  // ── Per-type entity picker blocks ────────────────────────────────────────
+  // Each method is hardcoded for its type — no conditional template logic.
+
+  private _pickersGrid(cfg: EntityTypeConfig, type: string) {
+    return html`
+      <ha-entity-picker label="Import power"    .hass=${this.hass} .value=${cfg.power_import ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_import",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Export power"    .hass=${this.hass} .value=${cfg.power_export ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_export",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Combined power"  .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"     .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+      <div class="subsection-label">Octopus Energy</div>
+      <ha-entity-picker label="Rate entity"         .hass=${this.hass} .value=${cfg.octopus?.rate_entity  ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus(type, "rate_entity",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Cost today entity"   .hass=${this.hass} .value=${cfg.octopus?.cost_entity  ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus(type, "cost_entity",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Slots / rates entity" .hass=${this.hass} .value=${cfg.octopus?.slots_entity ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus(type, "slots_entity", e.detail.value)}></ha-entity-picker>
+    `;
+  }
+
+  private _pickersSolar(cfg: EntityTypeConfig, type: string) {
+    return html`
+      <ha-entity-picker label="Combined power" .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"    .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+    `;
+  }
+
+  private _pickersBattery(cfg: EntityTypeConfig, type: string) {
+    return html`
+      <ha-entity-picker label="State of charge (%)" .hass=${this.hass} .value=${cfg.soc ?? ""}            @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+    `;
+  }
+
+  private _pickersHome(cfg: EntityTypeConfig, type: string) {
+    return html`
+      <ha-entity-picker label="Combined power" .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"    .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+    `;
+  }
+
+  private _pickersEv(cfg: EntityTypeConfig, type: string) {
+    return html`
+      <ha-entity-picker label="State of charge (%)" .hass=${this.hass} .value=${cfg.soc ?? ""}            @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+    `;
+  }
+
+  private _pickersCustom(cfg: EntityTypeConfig, type: string) {
+    return html`
+      <ha-entity-picker label="Import power"         .hass=${this.hass} .value=${cfg.power_import  ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_import",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Export power"         .hass=${this.hass} .value=${cfg.power_export  ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_export",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage   ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="State of charge (%)"  .hass=${this.hass} .value=${cfg.soc           ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
+    `;
+  }
+
+  // ── Combined field renderer ───────────────────────────────────────────────
+
   private _renderEntityTypeFields(type: string) {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
-    const isCustom = !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(type);
 
-    const hasImportExport = type === "grid" || isCustom;
-    const hasSoc          = type === "battery" || type === "ev" || isCustom;
-
-    const pick = (key: keyof EntityTypeConfig) => (e: CustomEvent) =>
-      this._setEntityType(type, key, e.detail.value);
-    const text = (key: keyof EntityTypeConfig) => (e: Event) =>
-      this._setEntityType(type, key, (e.target as HTMLInputElement).value || undefined);
+    // Dispatch to the correct hardcoded picker block — no conditional template logic
+    const pickerMap: Record<string, () => unknown> = {
+      grid:    () => this._pickersGrid(cfg, type),
+      solar:   () => this._pickersSolar(cfg, type),
+      battery: () => this._pickersBattery(cfg, type),
+      home:    () => this._pickersHome(cfg, type),
+      ev:      () => this._pickersEv(cfg, type),
+    };
+    const renderPickers = pickerMap[type] ?? (() => this._pickersCustom(cfg, type));
 
     return html`
 
-      <!-- ── Group 1: Entities ── -->
       <div class="subsection-label">Entities</div>
+      ${renderPickers()}
 
-      ${hasImportExport ? html`
-        <ha-entity-picker
-          label="Import power"
-          .hass=${this.hass}
-          .value=${cfg.power_import ?? ""}
-          @value-changed=${pick("power_import")}
-        ></ha-entity-picker>
-        <ha-entity-picker
-          label="Export power"
-          .hass=${this.hass}
-          .value=${cfg.power_export ?? ""}
-          @value-changed=${pick("power_export")}
-        ></ha-entity-picker>
-      ` : nothing}
-
-      <ha-entity-picker
-        label="Combined power"
-        .hass=${this.hass}
-        .value=${cfg.power_combined ?? ""}
-        @value-changed=${pick("power_combined")}
-      ></ha-entity-picker>
-
-      <ha-entity-picker
-        label="Daily usage"
-        .hass=${this.hass}
-        .value=${cfg.daily_usage ?? ""}
-        @value-changed=${pick("daily_usage")}
-      ></ha-entity-picker>
-
-      ${hasSoc ? html`
-        <ha-entity-picker
-          label="State of charge (%)"
-          .hass=${this.hass}
-          .value=${cfg.soc ?? ""}
-          @value-changed=${pick("soc")}
-        ></ha-entity-picker>
-      ` : nothing}
-
-      ${type === "grid" ? html`
-        <div class="subsection-label">Octopus Energy</div>
-        <ha-entity-picker
-          label="Rate entity"
-          .hass=${this.hass}
-          .value=${cfg.octopus?.rate_entity ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setOctopus(type, "rate_entity", e.detail.value)}
-        ></ha-entity-picker>
-        <ha-entity-picker
-          label="Cost today entity"
-          .hass=${this.hass}
-          .value=${cfg.octopus?.cost_entity ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setOctopus(type, "cost_entity", e.detail.value)}
-        ></ha-entity-picker>
-        <ha-entity-picker
-          label="Slots / rates entity"
-          .hass=${this.hass}
-          .value=${cfg.octopus?.slots_entity ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setOctopus(type, "slots_entity", e.detail.value)}
-        ></ha-entity-picker>
-      ` : nothing}
-
-      <!-- ── Group 2: Display ── -->
       <div class="subsection-label">Display</div>
 
       <div class="switch-row">
@@ -356,14 +351,16 @@ export class HomeEnergyCardEditor extends LitElement {
       <ha-textfield
         label="Label"
         .value=${cfg.label ?? ""}
-        @change=${text("label")}
+        @change=${(e: Event) =>
+          this._setEntityType(type, "label", (e.target as HTMLInputElement).value || undefined)}
       ></ha-textfield>
 
       <ha-textfield
         label="Colour"
         .value=${cfg.colour ?? ""}
         placeholder="#e91e63"
-        @change=${text("colour")}
+        @change=${(e: Event) =>
+          this._setEntityType(type, "colour", (e.target as HTMLInputElement).value || undefined)}
       ></ha-textfield>
 
     `;
