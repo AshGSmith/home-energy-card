@@ -137,6 +137,12 @@ export class HecEnergyNode extends LitElement {
       color: #1a1a2e;
     }
 
+    .direction-icon {
+      --mdc-icon-size: 14px;
+      opacity: 0.72;
+      margin-top: -1px;
+    }
+
     /* ── SOC text (only rendered when SOC is present) ── */
   `;
 
@@ -155,6 +161,16 @@ export class HecEnergyNode extends LitElement {
     const accent = this.colour || s.accent;
     const icon   = this.icon || s.icon;
     const hasSoc = this.soc !== null;
+    const isGrid = this.type === "grid";
+    const displayPower = isGrid && this.power !== null ? Math.abs(this.power) : this.power;
+    const directionIcon =
+      isGrid && this.power !== null
+        ? this.power > 0
+          ? "mdi:arrow-down-thin"
+          : this.power < 0
+            ? "mdi:arrow-up-thin"
+            : ""
+        : "";
     const pct    = hasSoc ? Math.max(0, Math.min(100, this.soc!)) : 0;
     // dashoffset 0 = full ring; dashoffset = RING_C = empty
     const offset = +(RING_C * (1 - pct / 100)).toFixed(4);
@@ -186,7 +202,10 @@ export class HecEnergyNode extends LitElement {
           ${this.showLabel
             ? html`<span class="label" style="color:${accent};">${this.label || this.type}</span>`
             : nothing}
-          <span class="power">${formatPower(this.power, this.unit, this.decimalPlaces)}</span>
+          <span class="power">${formatPower(displayPower, this.unit, this.decimalPlaces)}</span>
+          ${directionIcon
+            ? html`<ha-icon class="direction-icon" .icon=${directionIcon}></ha-icon>`
+            : nothing}
         </div>
 
       </div>
