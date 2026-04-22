@@ -467,10 +467,10 @@ export class HecFlowLayout extends LitElement {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     const display = this.config?.display ?? {};
     const flow = this._flowInfo(type);
-    const bottomText =
-      type === "solar"
-        ? formatEnergyKwh(this._dailyKwh(type), display.decimal_places ?? 1)
-        : "";
+    const bottomText = formatEnergyKwh(
+      this._dailyKwh(type),
+      display.decimal_places ?? 1,
+    );
     return html`
       <hec-energy-node
         data-node-type=${type}

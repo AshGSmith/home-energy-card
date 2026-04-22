@@ -3898,7 +3898,10 @@ let Z = class extends O {
   /** Render a custom node with inline grid placement. */
   _customNode(e, t, s) {
     var l, d, p;
-    const i = this._isVisible(e), o = ((d = (l = this.config) == null ? void 0 : l.entity_types) == null ? void 0 : d[e]) ?? {}, n = ((p = this.config) == null ? void 0 : p.display) ?? {}, r = this._flowInfo(e), c = e === "solar" ? Ms(this._dailyKwh(e), n.decimal_places ?? 1) : "";
+    const i = this._isVisible(e), o = ((d = (l = this.config) == null ? void 0 : l.entity_types) == null ? void 0 : d[e]) ?? {}, n = ((p = this.config) == null ? void 0 : p.display) ?? {}, r = this._flowInfo(e), c = Ms(
+      this._dailyKwh(e),
+      n.decimal_places ?? 1
+    );
     return b`
       <hec-energy-node
         data-node-type=${e}
