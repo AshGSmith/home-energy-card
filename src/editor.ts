@@ -15,7 +15,7 @@ export class HomeEnergyCardEditor extends LitElement {
     }
 
     ha-textfield,
-    ha-entity-picker {
+    ha-selector {
       display: block;
       width: 100%;
     }
@@ -75,9 +75,9 @@ export class HomeEnergyCardEditor extends LitElement {
         ></ha-switch>
       </div>
 
-      <ha-entity-picker
-        label="EV Combined Power"
+      <ha-selector
         .hass=${this.hass}
+        .selector=${{ entity: {} }}
         .value=${this.config.entity_types?.ev?.power_combined ?? ""}
         @value-changed=${(e: CustomEvent) =>
           this.dispatchEvent(
@@ -98,7 +98,7 @@ export class HomeEnergyCardEditor extends LitElement {
               composed: true,
             })
           )}
-      ></ha-entity-picker>
+      ></ha-selector>
     `;
   }
 }
