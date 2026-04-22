@@ -26,15 +26,6 @@ const LINE_COLOR: Record<string, string> = {
   ev:      "#42a5f5",
 };
 
-// Layout: B1=Solar, C1=EV, A2=Grid, B2=Home, C2=Battery
-// Viewbox "0 0 3 N" — row centres at y = row − 0.5
-const LINE_ENDPOINTS: Record<string, [number, number, number, number]> = {
-  solar:   [1.5, 0.5, 1.5, 1.5],  // B1 → B2  vertical
-  grid:    [0.5, 1.5, 1.5, 1.5],  // A2 → B2  horizontal
-  battery: [2.5, 1.5, 1.5, 1.5],  // C2 → B2  horizontal
-  ev:      [2.5, 0.5, 1.5, 1.5],  // C1 → B2  diagonal
-};
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 @customElement("hec-flow-layout")
@@ -43,6 +34,13 @@ export class HecFlowLayout extends LitElement {
   @property({ attribute: false }) config?: CardConfig;
 
   @state() private _dialogType: string | null = null;
+  @state() private _lineLayout = {
+    width: 0,
+    height: 0,
+    centers: {} as Record<string, { x: number; y: number }>,
+  };
+
+  private _resizeObserver?: ResizeObserver;
 
   static styles = css`
     :host { display: block; }
@@ -99,6 +97,27 @@ export class HecFlowLayout extends LitElement {
     .flow-line.paused  { animation-play-state: paused; }
   `;
 
+  connectedCallback() {
+    super.connectedCallback();
+    this._resizeObserver = new ResizeObserver(() => this._measureLineLayout());
+  }
+
+  disconnectedCallback() {
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = undefined;
+    super.disconnectedCallback();
+  }
+
+  protected firstUpdated() {
+    const grid = this.renderRoot.querySelector(".grid");
+    if (grid && this._resizeObserver) this._resizeObserver.observe(grid);
+    this._measureLineLayout();
+  }
+
+  protected updated() {
+    this._measureLineLayout();
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   private _configured(type: string) {
@@ -133,19 +152,73 @@ export class HecFlowLayout extends LitElement {
 
   // ── SVG lines ─────────────────────────────────────────────────────────────
 
+  private _measureLineLayout() {
+    const grid = this.renderRoot.querySelector(".grid");
+    if (!grid) return;
+
+    const gridRect = grid.getBoundingClientRect();
+    if (!gridRect.width || !gridRect.height) return;
+
+    const centers: Record<string, { x: number; y: number }> = {};
+    const nodes = Array.from(
+      this.renderRoot.querySelectorAll<HTMLElement>("hec-energy-node[data-node-type]"),
+    );
+
+    for (const node of nodes) {
+      if (node.classList.contains("hidden")) continue;
+      const type = node.dataset.nodeType;
+      if (!type) continue;
+      const rect = node.getBoundingClientRect();
+      centers[type] = {
+        x: rect.left - gridRect.left + rect.width / 2,
+        y: rect.top - gridRect.top + rect.height / 2,
+      };
+    }
+
+    const next = {
+      width: gridRect.width,
+      height: gridRect.height,
+      centers,
+    };
+
+    const same =
+      this._lineLayout.width === next.width &&
+      this._lineLayout.height === next.height &&
+      JSON.stringify(this._lineLayout.centers) === JSON.stringify(next.centers);
+
+    if (!same) this._lineLayout = next;
+  }
+
+  private _lineTypes(): string[] {
+    return [
+      "solar",
+      "grid",
+      "battery",
+      "ev",
+      ...this._customTypes(),
+    ].filter((type) => this._isVisible(type));
+  }
+
   private _svgLines() {
     const dynamic  = this.config?.display?.dynamic_animation_speed ?? false;
     const animated = this.config?.display?.animation !== false;
+    const homeCenter = this._lineLayout.centers.home;
+
+    if (!homeCenter || !this._lineLayout.width || !this._lineLayout.height) return nothing;
 
     return svg`
-      ${(["solar", "grid", "battery", "ev"] as const)
-        .filter((t) => this._isVisible(t))
+      ${this._lineTypes()
         .map((type) => {
           const flow = this._flowInfo(type);
-          const [x1, y1, x2, y2] = LINE_ENDPOINTS[type];
+          const center = this._lineLayout.centers[type];
+          if (!center) return nothing;
           const idle    = flow.direction === "idle";
           const reverse = flow.direction === "from-home";
           const dur     = animDuration(flow.magnitude, dynamic && !idle);
+          const color =
+            LINE_COLOR[type] ??
+            this.config?.entity_types?.[type]?.colour ??
+            "#9e9e9e";
           const classes = [
             "flow-line",
             reverse   ? "reverse" : "",
@@ -155,8 +228,8 @@ export class HecFlowLayout extends LitElement {
 
           return svg`
             <line
-              x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-              stroke="${LINE_COLOR[type]}"
+              x1="${center.x}" y1="${center.y}" x2="${homeCenter.x}" y2="${homeCenter.y}"
+              stroke="${color}"
               class="${classes}"
               style="--flow-dur:${dur}"
               pathLength="100"
@@ -176,6 +249,7 @@ export class HecFlowLayout extends LitElement {
 
     return html`
       <hec-energy-node
+        data-node-type=${type}
         class="${slotClass}${!visible ? " hidden" : ""}"
         .type=${type}
         .label=${cfg.label ?? type}
@@ -216,6 +290,7 @@ export class HecFlowLayout extends LitElement {
     const flow = this._flowInfo(type);
     return html`
       <hec-energy-node
+        data-node-type=${type}
         style="grid-column:${col}; grid-row:${row}"
         class="${!visible ? "hidden" : ""}"
         .type=${type}
@@ -248,7 +323,11 @@ export class HecFlowLayout extends LitElement {
 
     return html`
       <div class="grid" @hec-node-click=${this._onNodeClick}>
-        <svg class="svg-overlay" viewBox="0 0 3 ${totalRows}" preserveAspectRatio="none">
+        <svg
+          class="svg-overlay"
+          viewBox="0 0 ${this._lineLayout.width || 1} ${this._lineLayout.height || 1}"
+          preserveAspectRatio="none"
+        >
           ${this._svgLines()}
         </svg>
 
