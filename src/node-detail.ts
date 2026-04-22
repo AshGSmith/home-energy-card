@@ -499,26 +499,20 @@ export class HecNodeDetail extends LitElement {
           </div>
         ` : nothing}
 
-        ${importCostToday !== null ? html`
-          <div class="kv">
-            <span class="kv-k">Import Cost Today</span>
-            <span class="kv-v">${fmtCurrencyGbp(importCostToday)}</span>
-          </div>
-        ` : nothing}
+        <div class="kv">
+          <span class="kv-k">Import Cost Today</span>
+          <span class="kv-v">${fmtCurrencyGbp(importCostToday)}</span>
+        </div>
 
-        ${exportPaymentToday !== null ? html`
-          <div class="kv">
-            <span class="kv-k">Export Payment Today</span>
-            <span class="kv-v">${fmtCurrencyGbp(exportPaymentToday)}</span>
-          </div>
-        ` : nothing}
+        <div class="kv">
+          <span class="kv-k">Export Payment Today</span>
+          <span class="kv-v">${fmtCurrencyGbp(exportPaymentToday)}</span>
+        </div>
 
-        ${netCost !== null ? html`
-          <div class="kv">
-            <span class="kv-k">Net Cost</span>
-            <span class="kv-v">${fmtCurrencyGbp(netCost)}</span>
-          </div>
-        ` : nothing}
+        <div class="kv">
+          <span class="kv-k">Net Cost</span>
+          <span class="kv-v">${fmtCurrencyGbp(netCost)}</span>
+        </div>
 
         ${upcoming.length ? html`
           <div class="s-subtitle">Upcoming slots</div>
