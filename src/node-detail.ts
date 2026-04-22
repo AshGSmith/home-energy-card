@@ -46,7 +46,10 @@ const FLOW_LABEL: Record<string, Partial<Record<string, string>>> = {
 type HistoryEntry = { state: string; last_changed: string };
 type RateInterval = { startMs: number; endMs: number; rateGbpPerKwh: number };
 type ResolvedEnergyInterval = {
+  startMs: number;
+  endMs: number;
   energyKwh: number;
+  energyUnit: "kWh";
   tariffGbpPerKwh: number;
   costGbp: number;
 };
@@ -64,6 +67,8 @@ type GridMoneyState = {
   importCostToday: number | null;
   exportPaymentToday: number | null;
   netCost: number | null;
+  importUsageTodayKwh: number | null;
+  resolvedImportIntervals: ResolvedEnergyInterval[];
   peakOffPeak: PeakOffPeakBreakdown | null;
 };
 
@@ -270,7 +275,7 @@ function resolvedEnergyIntervalsFromHistory(
     if (deltaKwh <= 0) continue;
 
     const durationMs = endMs - startMs;
-    const overlaps: { overlapMs: number; rateGbpPerKwh: number }[] = [];
+    const overlaps: { startMs: number; endMs: number; overlapMs: number; rateGbpPerKwh: number }[] = [];
     let coveredMs = 0;
 
     for (const rate of rates) {
@@ -279,7 +284,12 @@ function resolvedEnergyIntervalsFromHistory(
       if (overlapEnd <= overlapStart) continue;
       const overlapMs = overlapEnd - overlapStart;
       coveredMs += overlapMs;
-      overlaps.push({ overlapMs, rateGbpPerKwh: rate.rateGbpPerKwh });
+      overlaps.push({
+        startMs: overlapStart,
+        endMs: overlapEnd,
+        overlapMs,
+        rateGbpPerKwh: rate.rateGbpPerKwh,
+      });
     }
 
     if (coveredMs > 0) {
@@ -287,7 +297,10 @@ function resolvedEnergyIntervalsFromHistory(
       for (const overlap of overlaps) {
         const energyKwh = deltaKwh * (overlap.overlapMs / coveredMs);
         matchedIntervals.push({
+          startMs: overlap.startMs,
+          endMs: overlap.endMs,
           energyKwh,
+          energyUnit: "kWh",
           tariffGbpPerKwh: overlap.rateGbpPerKwh,
           costGbp: energyKwh * overlap.rateGbpPerKwh,
         });
@@ -349,6 +362,44 @@ function peakOffPeakFromMatchedEnergyIntervals(
     : null;
 }
 
+function peakOffPeakStatsFromResolvedIntervals(
+  resolvedIntervals: ResolvedEnergyIntervals | null,
+) {
+  const intervals = resolvedIntervals?.intervals ?? [];
+  const distinctRates = Array.from(
+    new Set(intervals.map((interval) => Number(interval.tariffGbpPerKwh.toFixed(4)))),
+  ).sort((a, b) => a - b);
+
+  if (!intervals.length || !distinctRates.length) {
+    return {
+      distinctRates,
+      peakIntervalCount: 0,
+      offPeakIntervalCount: 0,
+      totalUsageKwh: 0,
+    };
+  }
+
+  const offPeakRate = distinctRates[0];
+  const peakRate = distinctRates[distinctRates.length - 1];
+  let peakIntervalCount = 0;
+  let offPeakIntervalCount = 0;
+  let totalUsageKwh = 0;
+
+  for (const interval of intervals) {
+    totalUsageKwh += interval.energyKwh;
+    const rateValue = Number(interval.tariffGbpPerKwh.toFixed(4));
+    const peakDistance = Math.abs(rateValue - peakRate);
+    const offPeakDistance = Math.abs(rateValue - offPeakRate);
+    if (peakDistance < offPeakDistance) {
+      peakIntervalCount += 1;
+    } else {
+      offPeakIntervalCount += 1;
+    }
+  }
+
+  return { distinctRates, peakIntervalCount, offPeakIntervalCount, totalUsageKwh };
+}
+
 function fmtHour(date: Date): string {
   return `${date.getHours().toString().padStart(2, "0")}:00`;
 }
@@ -356,6 +407,12 @@ function fmtHour(date: Date): string {
 function fmtTime(iso: string): string {
   const d = new Date(iso);
   return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+}
+
+function fmtTimeRange(startMs: number, endMs: number): string {
+  const start = new Date(startMs);
+  const end = new Date(endMs);
+  return `${fmtTime(start.toISOString())}–${fmtTime(end.toISOString())}`;
 }
 
 function rateColor(p: number): string {
@@ -512,19 +569,20 @@ export class HecNodeDetail extends LitElement {
       const fallbackImportCost = readCurrencyGbp(this.hass.states, oct.cost_entity);
 
       if (resolvedImportIntervals?.intervals.length) {
+        const debugStats = peakOffPeakStatsFromResolvedIntervals(resolvedImportIntervals);
         console.debug(
           "[hec-node-detail] resolved grid import intervals",
           resolvedImportIntervals.intervals.slice(0, 5),
           {
-            totalUsageKwh: resolvedImportIntervals.intervals.reduce(
-              (sum, interval) => sum + interval.energyKwh,
-              0,
-            ),
+            totalUsageKwh: debugStats.totalUsageKwh,
             totalCostGbp: resolvedImportIntervals.intervals.reduce(
               (sum, interval) => sum + interval.costGbp,
               0,
             ),
             hasCoverageGap: resolvedImportIntervals.hasCoverageGap,
+            distinctRates: debugStats.distinctRates,
+            peakIntervalCount: debugStats.peakIntervalCount,
+            offPeakIntervalCount: debugStats.offPeakIntervalCount,
           },
         );
       }
@@ -544,6 +602,8 @@ export class HecNodeDetail extends LitElement {
         importCostToday,
         exportPaymentToday,
         netCost,
+        importUsageTodayKwh: importTotalKwh,
+        resolvedImportIntervals: resolvedImportIntervals?.intervals ?? [],
         peakOffPeak,
       };
     } catch (err) {
@@ -658,6 +718,8 @@ export class HecNodeDetail extends LitElement {
     const exportPaymentToday = this._gridMoney?.exportPaymentToday ?? null;
     const netCost = this._gridMoney?.netCost ?? null;
     const peakOffPeak = this._gridMoney?.peakOffPeak ?? null;
+    const importUsageTodayKwh = this._gridMoney?.importUsageTodayKwh ?? null;
+    const resolvedImportIntervals = this._gridMoney?.resolvedImportIntervals ?? [];
 
     if (
       !hasRate &&
@@ -695,6 +757,12 @@ export class HecNodeDetail extends LitElement {
         </div>
 
         ${this._sectionPeakOffPeak(peakOffPeak)}
+        ${this._sectionGridImportDebug(
+          importUsageTodayKwh,
+          importCostToday,
+          peakOffPeak,
+          resolvedImportIntervals,
+        )}
 
         ${upcoming.length ? html`
           <div class="s-subtitle">Upcoming slots</div>
@@ -781,6 +849,77 @@ export class HecNodeDetail extends LitElement {
       <div class="kv">
         <span class="kv-k">Off Peak Cost</span>
         <span class="kv-v">${fmtCurrencyGbp(breakdown.offPeakCostGbp)}</span>
+      </div>
+    `;
+  }
+
+  private _sectionGridImportDebug(
+    importUsageTodayKwh: number | null,
+    importCostToday: number | null,
+    breakdown: PeakOffPeakBreakdown | null,
+    resolvedImportIntervals: ResolvedEnergyInterval[],
+  ) {
+    const stats = peakOffPeakStatsFromResolvedIntervals(
+      resolvedImportIntervals.length
+        ? { intervals: resolvedImportIntervals, hasCoverageGap: false }
+        : null,
+    );
+    const sumResolvedEnergyKwh = stats.totalUsageKwh;
+    const peakUsageKwh = breakdown?.peakUsageKwh ?? 0;
+    const offPeakUsageKwh = breakdown?.offPeakUsageKwh ?? 0;
+    const peakPlusOffPeakKwh = peakUsageKwh + offPeakUsageKwh;
+
+    return html`
+      <div class="s-subtitle">Debug Import Intervals</div>
+      <div class="kv">
+        <span class="kv-k">Import Usage Today</span>
+        <span class="kv-v">${fmtKwh(importUsageTodayKwh, this.config?.display?.decimal_places ?? 1)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Resolved Interval Energy Sum</span>
+        <span class="kv-v">${fmtKwh(sumResolvedEnergyKwh, this.config?.display?.decimal_places ?? 3)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Peak Usage</span>
+        <span class="kv-v">${fmtKwh(peakUsageKwh, this.config?.display?.decimal_places ?? 3)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Off Peak Usage</span>
+        <span class="kv-v">${fmtKwh(offPeakUsageKwh, this.config?.display?.decimal_places ?? 3)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Peak + Off Peak Usage</span>
+        <span class="kv-v">${fmtKwh(peakPlusOffPeakKwh, this.config?.display?.decimal_places ?? 3)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Import Cost Today</span>
+        <span class="kv-v">${fmtCurrencyGbp(importCostToday)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Resolved Interval Records</span>
+        <span class="kv-v">${resolvedImportIntervals.length}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Distinct Tariff Rates</span>
+        <span class="kv-v">${stats.distinctRates.length ? stats.distinctRates.map((rate) => `£${rate.toFixed(4)}/kWh`).join(", ") : "—"}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Peak Intervals</span>
+        <span class="kv-v">${stats.peakIntervalCount}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Off Peak Intervals</span>
+        <span class="kv-v">${stats.offPeakIntervalCount}</span>
+      </div>
+      <div class="debug-records">
+        ${resolvedImportIntervals.slice(0, 5).map((interval) => html`
+          <div class="debug-record">
+            <div class="debug-record-time">${fmtTimeRange(interval.startMs, interval.endMs)}</div>
+            <div class="debug-record-line">Energy: ${interval.energyKwh.toFixed(6)} ${interval.energyUnit}</div>
+            <div class="debug-record-line">Tariff: £${interval.tariffGbpPerKwh.toFixed(4)}/kWh</div>
+            <div class="debug-record-line">Cost: ${fmtCurrencyGbp(interval.costGbp)}</div>
+          </div>
+        `)}
       </div>
     `;
   }
@@ -1050,6 +1189,26 @@ export class HecNodeDetail extends LitElement {
       font-weight: 600;
       color: var(--primary-text-color);
       white-space: nowrap;
+    }
+    .debug-records {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .debug-record {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.035);
+      font-size: 0.8em;
+      line-height: 1.35;
+    }
+    .debug-record-time {
+      font-weight: 700;
+      margin-bottom: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .debug-record-line {
+      opacity: 0.8;
     }
 
     /* ── Octopus slots ── */
