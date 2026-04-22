@@ -94,7 +94,7 @@ export function computeFlowInfo(
   }
 
   if (net === null) return IDLE;
-  if (Math.abs(net) <= tol) return { power: net, magnitude: null, direction: "idle" };
+  if (Math.abs(net) <= tol) return { power: 0, magnitude: null, direction: "idle" };
 
   const magnitude = Math.abs(net);
   let direction: FlowDirection;

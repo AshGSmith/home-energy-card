@@ -2966,7 +2966,7 @@ function js(e, t, s) {
     n = (p ?? 0) - (u ?? 0);
   }
   if (n === null) return o;
-  if (Math.abs(n) <= i) return { power: n, magnitude: null, direction: "idle" };
+  if (Math.abs(n) <= i) return { power: 0, magnitude: null, direction: "idle" };
   const a = Math.abs(n);
   let r;
   switch (e) {
