@@ -3107,8 +3107,8 @@ function di(s, t) {
 }
 const pi = {
   solar: "#ffc107",
-  grid: "#f06292",
-  battery: "#66bb6a",
+  grid: "#8e24aa",
+  battery: "#e53935",
   ev: "#42a5f5"
 };
 let M = class extends S {
