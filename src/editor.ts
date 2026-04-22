@@ -29,6 +29,24 @@ export class HomeEnergyCardEditor extends LitElement {
       width: 100%;
     }
 
+    mwc-button {
+      --mdc-theme-primary: var(--primary-color);
+      align-self: flex-start;
+    }
+
+    .action-button {
+      width: 100%;
+    }
+
+    .delete-button {
+      --mdc-theme-primary: var(--error-color);
+    }
+
+    .action-icon {
+      --mdc-icon-size: 18px;
+      margin-right: 4px;
+    }
+
     .section-body {
       display: flex;
       flex-direction: column;
@@ -1139,12 +1157,20 @@ export class HomeEnergyCardEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <mwc-button @click=${() => this._addCustomType()}>Add Custom Type</mwc-button>
+      <mwc-button class="action-button" raised @click=${() => this._addCustomType()}>
+        <ha-icon class="action-icon" slot="icon" icon="mdi:plus"></ha-icon>
+        Add Custom Type
+      </mwc-button>
 
       ${(this.config.custom_types ?? []).map((customType, index) => html`
         <ha-expansion-panel header="Custom ${index + 1}">
           <div class="section-body">
-            <mwc-button @click=${() => this._deleteCustomType(index)}>
+            <mwc-button
+              class="action-button delete-button"
+              outlined
+              @click=${() => this._deleteCustomType(index)}
+            >
+              <ha-icon class="action-icon" slot="icon" icon="mdi:delete"></ha-icon>
               Delete Custom Type
             </mwc-button>
 

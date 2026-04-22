@@ -2032,12 +2032,20 @@ let at = class extends S {
         </div>
       </ha-expansion-panel>
 
-      <mwc-button @click=${() => this._addCustomType()}>Add Custom Type</mwc-button>
+      <mwc-button class="action-button" raised @click=${() => this._addCustomType()}>
+        <ha-icon class="action-icon" slot="icon" icon="mdi:plus"></ha-icon>
+        Add Custom Type
+      </mwc-button>
 
       ${(this.config.custom_types ?? []).map((h, r) => _`
         <ha-expansion-panel header="Custom ${r + 1}">
           <div class="section-body">
-            <mwc-button @click=${() => this._deleteCustomType(r)}>
+            <mwc-button
+              class="action-button delete-button"
+              outlined
+              @click=${() => this._deleteCustomType(r)}
+            >
+              <ha-icon class="action-icon" slot="icon" icon="mdi:delete"></ha-icon>
               Delete Custom Type
             </mwc-button>
 
@@ -2142,6 +2150,24 @@ at.styles = F`
     ha-selector {
       display: block;
       width: 100%;
+    }
+
+    mwc-button {
+      --mdc-theme-primary: var(--primary-color);
+      align-self: flex-start;
+    }
+
+    .action-button {
+      width: 100%;
+    }
+
+    .delete-button {
+      --mdc-theme-primary: var(--error-color);
+    }
+
+    .action-icon {
+      --mdc-icon-size: 18px;
+      margin-right: 4px;
     }
 
     .section-body {
