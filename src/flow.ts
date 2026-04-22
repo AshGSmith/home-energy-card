@@ -32,6 +32,30 @@ export function readNum(
   return isNaN(v) ? null : v;
 }
 
+export function normalizePowerToWatts(
+  value: number,
+  unitOfMeasurement?: string,
+): number {
+  const unit = unitOfMeasurement?.trim().toLowerCase();
+  if (unit === "kw") return value * 1000;
+  return value;
+}
+
+export function readPowerWatts(
+  states: HomeAssistant["states"],
+  entityId?: string,
+): number | null {
+  if (!entityId) return null;
+  const s = states[entityId];
+  if (!s || s.state === "unavailable" || s.state === "unknown") return null;
+  const value = parseFloat(s.state);
+  if (isNaN(value)) return null;
+  return normalizePowerToWatts(
+    value,
+    s.attributes?.unit_of_measurement as string | undefined,
+  );
+}
+
 /**
  * Derive net power and flow direction for a node.
  *
@@ -56,14 +80,14 @@ export function computeFlowInfo(
   let net: number | null;
 
   if (cfg.power_combined) {
-    net = readNum(states, cfg.power_combined);
+    net = readPowerWatts(states, cfg.power_combined);
   } else {
     const hasImp = Boolean(cfg.power_import);
     const hasExp = Boolean(cfg.power_export);
     if (!hasImp && !hasExp) return IDLE;
 
-    const imp = hasImp ? readNum(states, cfg.power_import) : null;
-    const exp = hasExp ? readNum(states, cfg.power_export) : null;
+    const imp = hasImp ? readPowerWatts(states, cfg.power_import) : null;
+    const exp = hasExp ? readPowerWatts(states, cfg.power_export) : null;
 
     if ((hasImp ? imp === null : true) && (hasExp ? exp === null : true)) return IDLE;
     net = (imp ?? 0) - (exp ?? 0);

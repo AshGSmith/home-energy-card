@@ -1,7 +1,12 @@
 import { LitElement, html, css, svg, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { CardConfig, EntityTypeConfig, OctopusConfig } from "./types.js";
-import { HomeAssistant, computeFlowInfo, FlowInfo } from "./flow.js";
+import {
+  HomeAssistant,
+  computeFlowInfo,
+  FlowInfo,
+  normalizePowerToWatts,
+} from "./flow.js";
 import { formatPower } from "./energy-node.js";
 
 // ── Static maps ───────────────────────────────────────────────────────────────
@@ -39,7 +44,10 @@ type HistoryEntry = { state: string; last_changed: string };
  * Compute time-weighted absolute averages for 24 one-hour buckets.
  * Index 0 = 24 h ago, index 23 = most recent hour.
  */
-function toHourlyAverages(history: HistoryEntry[]): (number | null)[] {
+function toHourlyAverages(
+  history: HistoryEntry[],
+  unitOfMeasurement?: string,
+): (number | null)[] {
   const now = Date.now();
   const windowStart = now - 86_400_000; // 24 h in ms
   const out: (number | null)[] = Array(24).fill(null);
@@ -61,8 +69,9 @@ function toHourlyAverages(history: HistoryEntry[]): (number | null)[] {
       const oEnd   = Math.min(sEnd,   bEnd);
       if (oEnd <= oStart) continue;
 
-      const v = parseFloat(history[i].state);
-      if (isNaN(v)) continue;
+      const raw = parseFloat(history[i].state);
+      if (isNaN(raw)) continue;
+      const v = normalizePowerToWatts(raw, unitOfMeasurement);
 
       const dur = oEnd - oStart;
       weightedSum += Math.abs(v) * dur;
@@ -143,6 +152,8 @@ export class HecNodeDetail extends LitElement {
     const cfg = this.config?.entity_types?.[this.nodeType];
     const entityId = cfg?.power_combined ?? cfg?.power_import ?? cfg?.power_export;
     if (!entityId || !this.hass) return;
+    const unitOfMeasurement =
+      this.hass.states?.[entityId]?.attributes.unit_of_measurement as string | undefined;
 
     this._loading = true;
     this._hourly  = [];
@@ -157,7 +168,7 @@ export class HecNodeDetail extends LitElement {
         `&end_time=${now.toISOString()}`;
 
       const raw = await this.hass.callApi<HistoryEntry[][]>("GET", path);
-      this._hourly = toHourlyAverages(raw?.[0] ?? []);
+      this._hourly = toHourlyAverages(raw?.[0] ?? [], unitOfMeasurement);
     } catch (err) {
       console.warn("[hec-node-detail] history fetch failed", err);
       this._hourly = [];
