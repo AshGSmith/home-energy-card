@@ -1,4 +1,4 @@
-import { LitElement, html, css, svg, nothing } from "lit";
+import { LitElement, html, css, svg, nothing, PropertyValues } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { customElement, property, state } from "lit/decorators.js";
 import "./energy-node.js";
@@ -15,7 +15,7 @@ export { computeFlowInfo };
 function animDuration(magnitude: number | null, dynamic: boolean): string {
   if (!dynamic || !magnitude) return "0.7s";
   const t = Math.min(magnitude / 5000, 1);
-  return `${(2.0 - t * 1.7).toFixed(2)}s`;
+  return `${(Math.round((2.0 - t * 1.7) * 10) / 10).toFixed(1)}s`;
 }
 
 // ── Visual constants ───────────────────────────────────────────────────────────
@@ -26,6 +26,14 @@ const LINE_COLOR: Record<string, string> = {
   battery: "#e53935",
   ev:      "#42a5f5",
 };
+
+interface LineVisualState {
+  color: string;
+  dur: string;
+  idle: boolean;
+  paused: boolean;
+  reverse: boolean;
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -43,6 +51,7 @@ export class HecFlowLayout extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
   private _measureFrame: number | null = null;
+  private _lineVisualState: Record<string, LineVisualState> = {};
 
   static styles = css`
     :host { display: block; }
@@ -116,6 +125,10 @@ export class HecFlowLayout extends LitElement {
     const grid = this.renderRoot.querySelector(".grid");
     if (grid && this._resizeObserver) this._resizeObserver.observe(grid);
     this._scheduleMeasureLineLayout();
+  }
+
+  protected willUpdate(changed: PropertyValues<this>) {
+    if (changed.has("hass") || changed.has("config")) this._updateLineVisualState();
   }
 
   protected updated(changed: Map<string, unknown>) {
@@ -211,9 +224,54 @@ export class HecFlowLayout extends LitElement {
     ].filter((type) => this._isVisible(type));
   }
 
-  private _svgLines() {
+  private _computeLineVisualState(type: string): LineVisualState {
     const dynamic  = this.config?.display?.dynamic_animation_speed ?? false;
     const animated = this.config?.display?.animation !== false;
+    const flow = this._flowInfo(type);
+
+    return {
+      color:
+        LINE_COLOR[type] ??
+        this.config?.entity_types?.[type]?.colour ??
+        "#9e9e9e",
+      dur: animDuration(flow.magnitude, dynamic && flow.direction !== "idle"),
+      idle: flow.direction === "idle",
+      paused: !animated,
+      reverse: flow.direction === "from-home",
+    };
+  }
+
+  private _sameLineVisualState(a?: LineVisualState, b?: LineVisualState): boolean {
+    return Boolean(
+      a &&
+      b &&
+      a.color === b.color &&
+      a.dur === b.dur &&
+      a.idle === b.idle &&
+      a.paused === b.paused &&
+      a.reverse === b.reverse,
+    );
+  }
+
+  private _updateLineVisualState() {
+    const next: Record<string, LineVisualState> = {};
+
+    for (const type of [
+      "solar",
+      "grid",
+      "battery",
+      "ev",
+      ...this._customTypes(),
+    ]) {
+      const visual = this._computeLineVisualState(type);
+      const prev = this._lineVisualState[type];
+      next[type] = this._sameLineVisualState(prev, visual) ? prev! : visual;
+    }
+
+    this._lineVisualState = next;
+  }
+
+  private _svgLines() {
     const homeCenter = this._lineLayout.centers.home;
 
     if (!homeCenter || !this._lineLayout.width || !this._lineLayout.height) return nothing;
@@ -223,29 +281,22 @@ export class HecFlowLayout extends LitElement {
         this._lineTypes(),
         (type) => type,
         (type) => {
-          const flow = this._flowInfo(type);
           const center = this._lineLayout.centers[type];
           if (!center) return nothing;
-          const idle    = flow.direction === "idle";
-          const reverse = flow.direction === "from-home";
-          const dur     = animDuration(flow.magnitude, dynamic && !idle);
-          const color =
-            LINE_COLOR[type] ??
-            this.config?.entity_types?.[type]?.colour ??
-            "#9e9e9e";
+          const visual = this._lineVisualState[type] ?? this._computeLineVisualState(type);
           const classes = [
             "flow-line",
-            reverse   ? "reverse" : "",
-            idle      ? "idle"    : "",
-            !animated ? "paused"  : "",
+            visual.reverse ? "reverse" : "",
+            visual.idle    ? "idle"    : "",
+            visual.paused  ? "paused"  : "",
           ].filter(Boolean).join(" ");
 
           return svg`
             <line
               x1="${center.x}" y1="${center.y}" x2="${homeCenter.x}" y2="${homeCenter.y}"
-              stroke="${color}"
+              stroke="${visual.color}"
               class="${classes}"
-              style="--flow-dur:${dur}"
+              style="--flow-dur:${visual.dur}"
               pathLength="100"
             />
           `;
