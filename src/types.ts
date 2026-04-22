@@ -25,6 +25,7 @@ export interface EntityTypeConfig {
   show_zero?: boolean;
   zero_tolerance?: number;
   reverse_power_flow?: boolean;
+  subtract_from_home?: boolean;
   octopus?: OctopusConfig;
 }
 

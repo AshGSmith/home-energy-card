@@ -21,6 +21,29 @@ export interface FlowInfo {
   direction: FlowDirection;
 }
 
+export function flowInfoFromNet(
+  type: string,
+  net: number | null,
+  tolerance = 0,
+): FlowInfo {
+  const IDLE: FlowInfo = { power: null, magnitude: null, direction: "idle" };
+  if (net === null) return IDLE;
+  if (Math.abs(net) <= tolerance) return { power: 0, magnitude: null, direction: "idle" };
+
+  const magnitude = Math.abs(net);
+  let direction: FlowDirection;
+
+  switch (type) {
+    case "solar":   direction = "to-home"; break;
+    case "grid":    direction = net > 0 ? "to-home"   : "from-home"; break;
+    case "battery": direction = net > 0 ? "to-home"   : "from-home"; break;
+    case "ev":      direction = net > 0 ? "from-home" : "to-home";   break;
+    default:        direction = net > 0 ? "from-home" : "to-home";
+  }
+
+  return { power: net, magnitude, direction };
+}
+
 export function readNum(
   states: HomeAssistant["states"],
   entityId?: string,
@@ -69,14 +92,11 @@ export function readPowerWatts(
  * When both power_import and power_export are set: net = import − export.
  * Missing side treated as 0 when the other side has data.
  */
-export function computeFlowInfo(
+export function computeRawPowerWatts(
   type: string,
   cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "zero_tolerance" | "reverse_power_flow">,
   states: HomeAssistant["states"],
-): FlowInfo {
-  const tol = cfg.zero_tolerance ?? 0;
-  const IDLE: FlowInfo = { power: null, magnitude: null, direction: "idle" };
-
+): number | null {
   let net: number | null;
 
   if (cfg.power_combined) {
@@ -84,29 +104,27 @@ export function computeFlowInfo(
   } else {
     const hasImp = Boolean(cfg.power_import);
     const hasExp = Boolean(cfg.power_export);
-    if (!hasImp && !hasExp) return IDLE;
+    if (!hasImp && !hasExp) return null;
 
     const imp = hasImp ? readPowerWatts(states, cfg.power_import) : null;
     const exp = hasExp ? readPowerWatts(states, cfg.power_export) : null;
 
-    if ((hasImp ? imp === null : true) && (hasExp ? exp === null : true)) return IDLE;
+    if ((hasImp ? imp === null : true) && (hasExp ? exp === null : true)) return null;
     net = (imp ?? 0) - (exp ?? 0);
   }
 
-  if (net === null) return IDLE;
   if (type === "battery" && cfg.reverse_power_flow) net *= -1;
-  if (Math.abs(net) <= tol) return { power: 0, magnitude: null, direction: "idle" };
+  return net;
+}
 
-  const magnitude = Math.abs(net);
-  let direction: FlowDirection;
-
-  switch (type) {
-    case "solar":   direction = "to-home"; break;
-    case "grid":    direction = net > 0 ? "to-home"   : "from-home"; break;
-    case "battery": direction = net > 0 ? "to-home"   : "from-home"; break;
-    case "ev":      direction = net > 0 ? "from-home" : "to-home";   break;
-    default:        direction = net > 0 ? "from-home" : "to-home";
-  }
-
-  return { power: net, magnitude, direction };
+export function computeFlowInfo(
+  type: string,
+  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "zero_tolerance" | "reverse_power_flow">,
+  states: HomeAssistant["states"],
+): FlowInfo {
+  return flowInfoFromNet(
+    type,
+    computeRawPowerWatts(type, cfg, states),
+    cfg.zero_tolerance ?? 0,
+  );
 }

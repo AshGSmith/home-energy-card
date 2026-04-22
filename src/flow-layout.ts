@@ -5,7 +5,7 @@ import "./energy-node.js";
 import "./node-detail.js";
 import type { CardConfig, EntityTypeConfig } from "./types.js";
 import { DEFAULT_ENTITY_TYPES } from "./types.js";
-import { HomeAssistant, FlowInfo, computeFlowInfo } from "./flow.js";
+import { HomeAssistant, FlowInfo, computeFlowInfo, computeRawPowerWatts, flowInfoFromNet } from "./flow.js";
 import { formatEnergyKwh } from "./energy-node.js";
 
 export type { HomeAssistant, FlowInfo };
@@ -164,7 +164,27 @@ export class HecFlowLayout extends LitElement {
 
   private _flowInfo(type: string): FlowInfo {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
-    return computeFlowInfo(type, cfg, this.hass?.states ?? {});
+    const states = this.hass?.states ?? {};
+
+    if (type !== "home") {
+      return computeFlowInfo(type, cfg, states);
+    }
+
+    const homeNet = computeRawPowerWatts("home", cfg, states);
+    if (homeNet === null) return flowInfoFromNet("home", null, cfg.zero_tolerance ?? 0);
+
+    const subtractTotal = this._customTypes().reduce((sum, customType) => {
+      const customCfg: EntityTypeConfig = this.config?.entity_types?.[customType] ?? {};
+      if (!customCfg.subtract_from_home) return sum;
+      const customFlow = computeFlowInfo(customType, customCfg, states);
+      return sum + (customFlow.power ?? 0);
+    }, 0);
+
+    return flowInfoFromNet(
+      "home",
+      homeNet - subtractTotal,
+      cfg.zero_tolerance ?? 0,
+    );
   }
 
   /**

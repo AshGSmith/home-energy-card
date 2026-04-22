@@ -1463,6 +1463,16 @@ export class HomeEnergyCardEditor extends LitElement {
                 })}
             ></ha-textfield>
             <div class="switch-row">
+              <span>Subtract from Home</span>
+              <ha-switch
+                .checked=${customType.subtract_from_home ?? false}
+                @change=${(e: Event) =>
+                  this._setCustomType(index, {
+                    subtract_from_home: (e.target as HTMLInputElement).checked,
+                  })}
+              ></ha-switch>
+            </div>
+            <div class="switch-row">
               <span>Show Label</span>
               <ha-switch
                 .checked=${customType.show_label ?? true}
