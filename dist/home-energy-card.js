@@ -2611,7 +2611,7 @@ let C = class extends S {
     );
   }
   render() {
-    const s = ci[this.type] ?? li, t = this.colour || s.accent, e = this.icon || s.icon, o = this.soc !== null, i = this.type === "grid", n = i && this.power !== null ? Math.abs(this.power) : this.power, a = i && this.power !== null ? this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : "", c = o ? Math.max(0, Math.min(100, this.soc)) : 0, h = +(gs * (1 - c / 100)).toFixed(4);
+    const s = ci[this.type] ?? li, t = this.colour || s.accent, e = this.icon || s.icon, o = this.soc !== null, i = this.type === "grid" || this.type === "battery", n = i && this.power !== null ? Math.abs(this.power) : this.power, a = i && this.power !== null ? this.type === "grid" ? this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : "", c = o ? Math.max(0, Math.min(100, this.soc)) : 0, h = +(gs * (1 - c / 100)).toFixed(4);
     return _`
       <div class="node-wrap">
 

@@ -164,15 +164,22 @@ export class HecEnergyNode extends LitElement {
     const accent = this.colour || s.accent;
     const icon   = this.icon || s.icon;
     const hasSoc = this.soc !== null;
-    const isGrid = this.type === "grid";
-    const displayPower = isGrid && this.power !== null ? Math.abs(this.power) : this.power;
+    const usesDirectionIcon = this.type === "grid" || this.type === "battery";
+    const displayPower =
+      usesDirectionIcon && this.power !== null ? Math.abs(this.power) : this.power;
     const directionIcon =
-      isGrid && this.power !== null
-        ? this.power > 0
-          ? "mdi:arrow-right-bold-circle"
-          : this.power < 0
-            ? "mdi:arrow-left-bold-circle"
-            : ""
+      usesDirectionIcon && this.power !== null
+        ? this.type === "grid"
+          ? this.power > 0
+            ? "mdi:arrow-right-bold-circle"
+            : this.power < 0
+              ? "mdi:arrow-left-bold-circle"
+              : ""
+          : this.power > 0
+            ? "mdi:arrow-right-bold-circle"
+            : this.power < 0
+              ? "mdi:arrow-left-bold-circle"
+              : ""
         : "";
     const pct    = hasSoc ? Math.max(0, Math.min(100, this.soc!)) : 0;
     // dashoffset 0 = full ring; dashoffset = RING_C = empty
