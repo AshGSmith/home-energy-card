@@ -45,9 +45,13 @@ const FLOW_LABEL: Record<string, Partial<Record<string, string>>> = {
 
 type HistoryEntry = { state: string; last_changed: string };
 type RateInterval = { startMs: number; endMs: number; rateGbpPerKwh: number };
-type MatchedEnergyInterval = { energyKwh: number; rateGbpPerKwh: number };
+type ResolvedEnergyInterval = {
+  energyKwh: number;
+  tariffGbpPerKwh: number;
+  costGbp: number;
+};
 type ResolvedEnergyIntervals = {
-  intervals: MatchedEnergyInterval[];
+  intervals: ResolvedEnergyInterval[];
   hasCoverageGap: boolean;
 };
 type PeakOffPeakBreakdown = {
@@ -244,13 +248,13 @@ function cumulativeValueToKwh(value: number, unit?: string): number {
   return String(unit ?? "").trim().toLowerCase() === "wh" ? value / 1000 : value;
 }
 
-function matchedEnergyIntervalsFromHistory(
+function resolvedEnergyIntervalsFromHistory(
   history: HistoryEntry[],
   unit: string | undefined,
   rates: RateInterval[],
 ): ResolvedEnergyIntervals | null {
   if (history.length < 2 || !rates.length) return null;
-  const matchedIntervals: MatchedEnergyInterval[] = [];
+  const matchedIntervals: ResolvedEnergyInterval[] = [];
   let hasCoverageGap = false;
 
   for (let i = 1; i < history.length; i++) {
@@ -266,6 +270,7 @@ function matchedEnergyIntervalsFromHistory(
     if (deltaKwh <= 0) continue;
 
     const durationMs = endMs - startMs;
+    const overlaps: { overlapMs: number; rateGbpPerKwh: number }[] = [];
     let coveredMs = 0;
 
     for (const rate of rates) {
@@ -274,13 +279,19 @@ function matchedEnergyIntervalsFromHistory(
       if (overlapEnd <= overlapStart) continue;
       const overlapMs = overlapEnd - overlapStart;
       coveredMs += overlapMs;
-      matchedIntervals.push({
-        energyKwh: deltaKwh * (overlapMs / durationMs),
-        rateGbpPerKwh: rate.rateGbpPerKwh,
-      });
+      overlaps.push({ overlapMs, rateGbpPerKwh: rate.rateGbpPerKwh });
     }
 
     if (coveredMs > 0) {
+      if (coveredMs < durationMs) hasCoverageGap = true;
+      for (const overlap of overlaps) {
+        const energyKwh = deltaKwh * (overlap.overlapMs / coveredMs);
+        matchedIntervals.push({
+          energyKwh,
+          tariffGbpPerKwh: overlap.rateGbpPerKwh,
+          costGbp: energyKwh * overlap.rateGbpPerKwh,
+        });
+      }
     } else if (durationMs > 0) {
       hasCoverageGap = true;
     }
@@ -296,7 +307,7 @@ function costFromMatchedEnergyIntervals(
 ): number | null {
   if (!resolvedIntervals?.intervals.length || resolvedIntervals.hasCoverageGap) return null;
   return resolvedIntervals.intervals.reduce(
-    (total, interval) => total + interval.energyKwh * interval.rateGbpPerKwh,
+    (total, interval) => total + interval.costGbp,
     0,
   );
 }
@@ -308,7 +319,7 @@ function peakOffPeakFromMatchedEnergyIntervals(
   const matchedIntervals = resolvedIntervals.intervals;
 
   const distinctRates = Array.from(
-    new Set(matchedIntervals.map((interval) => Number(interval.rateGbpPerKwh.toFixed(4)))),
+    new Set(matchedIntervals.map((interval) => Number(interval.tariffGbpPerKwh.toFixed(4)))),
   ).sort((a, b) => a - b);
 
   if (distinctRates.length < 1) return null;
@@ -321,15 +332,15 @@ function peakOffPeakFromMatchedEnergyIntervals(
   let peakCostGbp = 0;
   let offPeakCostGbp = 0;
   for (const interval of matchedIntervals) {
-    const rateValue = Number(interval.rateGbpPerKwh.toFixed(4));
+    const rateValue = Number(interval.tariffGbpPerKwh.toFixed(4));
     const peakDistance = Math.abs(rateValue - peakRate);
     const offPeakDistance = Math.abs(rateValue - offPeakRate);
     if (peakDistance < offPeakDistance) {
       peakUsageKwh += interval.energyKwh;
-      peakCostGbp += interval.energyKwh * interval.rateGbpPerKwh;
+      peakCostGbp += interval.costGbp;
     } else {
       offPeakUsageKwh += interval.energyKwh;
-      offPeakCostGbp += interval.energyKwh * interval.rateGbpPerKwh;
+      offPeakCostGbp += interval.costGbp;
     }
   }
 
@@ -479,26 +490,44 @@ export class HecNodeDetail extends LitElement {
       const exportTotalKwh = readKwh(this.hass.states, gridCfg.daily_export);
       const constantExportRate = constantRateForWindow(exportRateHistory, exportRateState);
 
-      const matchedImportIntervals = matchedEnergyIntervalsFromHistory(
+      const resolvedImportIntervals = resolvedEnergyIntervalsFromHistory(
         importHistory,
         importUnit,
         effectiveImportRates,
       );
       const intervalImportCost = costFromMatchedEnergyIntervals(
-        matchedImportIntervals,
+        resolvedImportIntervals,
       );
       const peakOffPeak = peakOffPeakFromMatchedEnergyIntervals(
-        matchedImportIntervals,
+        resolvedImportIntervals,
       );
-      const matchedExportIntervals = matchedEnergyIntervalsFromHistory(
+      const resolvedExportIntervals = resolvedEnergyIntervalsFromHistory(
         exportHistory,
         exportUnit,
         effectiveExportRates,
       );
       const intervalExportPayment = costFromMatchedEnergyIntervals(
-        matchedExportIntervals,
+        resolvedExportIntervals,
       );
       const fallbackImportCost = readCurrencyGbp(this.hass.states, oct.cost_entity);
+
+      if (resolvedImportIntervals?.intervals.length) {
+        console.debug(
+          "[hec-node-detail] resolved grid import intervals",
+          resolvedImportIntervals.intervals.slice(0, 5),
+          {
+            totalUsageKwh: resolvedImportIntervals.intervals.reduce(
+              (sum, interval) => sum + interval.energyKwh,
+              0,
+            ),
+            totalCostGbp: resolvedImportIntervals.intervals.reduce(
+              (sum, interval) => sum + interval.costGbp,
+              0,
+            ),
+            hasCoverageGap: resolvedImportIntervals.hasCoverageGap,
+          },
+        );
+      }
 
       const importCostToday = intervalImportCost ?? fallbackImportCost;
       const exportPaymentToday =
