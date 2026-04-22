@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import "./editor.js";
 import "./card-header.js";
 import "./flow-layout.js";
-import type { CardConfig } from "./types.js";
+import { normalizeCardConfig, type CardConfig } from "./types.js";
 import type { HomeAssistant } from "./flow.js";
 
 @customElement("home-energy-card")
@@ -20,7 +20,7 @@ export class HomeEnergyCard extends LitElement {
   `;
 
   setConfig(config: CardConfig) {
-    this.config = config;
+    this.config = normalizeCardConfig(config);
   }
 
   static getConfigElement() {

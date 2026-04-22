@@ -221,7 +221,7 @@ export class HecFlowLayout extends LitElement {
         .showLabel=${cfg.show_label ?? true}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
-        .soc=${null}
+        .soc=${cfg.soc ? this._soc(type) : null}
         .unit=${display.unit ?? "auto"}
         .decimalPlaces=${display.decimal_places ?? 1}
       ></hec-energy-node>

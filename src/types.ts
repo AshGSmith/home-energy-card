@@ -1,6 +1,7 @@
 export const DEFAULT_ENTITY_TYPES = ["grid", "solar", "battery", "home", "ev"] as const;
 export type IntegrationType = "tesla" | "octopus" | "manual";
 export type DefaultEntityType = (typeof DEFAULT_ENTITY_TYPES)[number];
+export const CUSTOM_TYPE_PREFIX = "custom_";
 
 export interface OctopusConfig {
   rate_entity?: string;        // current rate sensor (p/kWh or similar)
@@ -47,7 +48,49 @@ export interface CardConfig {
   show_header?: boolean;
   tariff_entity?: string;
   entity_types?: Record<string, EntityTypeConfig>;
+  custom_types?: EntityTypeConfig[];
   live_data?: LiveDataConfig;
   system?: SystemConfig;
   display?: DisplayConfig;
+}
+
+function customTypeSortKey(key: string): number {
+  const match = key.match(/^custom_(\d+)$/);
+  return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+}
+
+export function customTypeKey(index: number): string {
+  return `${CUSTOM_TYPE_PREFIX}${index + 1}`;
+}
+
+export function normalizeCardConfig(config: CardConfig): CardConfig {
+  const entityTypes = config.entity_types ?? {};
+  const defaultEntityTypes = Object.fromEntries(
+    Object.entries(entityTypes).filter(([key]) =>
+      (DEFAULT_ENTITY_TYPES as readonly string[]).includes(key),
+    ),
+  );
+
+  const legacyCustomTypes = Object.entries(entityTypes)
+    .filter(([key]) => !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(key))
+    .sort(([a], [b]) => customTypeSortKey(a) - customTypeSortKey(b))
+    .map(([, value]) => ({ ...value }));
+
+  const customTypes = Array.isArray(config.custom_types)
+    ? config.custom_types.map((value) => ({ ...value }))
+    : legacyCustomTypes;
+
+  const normalizedEntityTypes: Record<string, EntityTypeConfig> = {
+    ...defaultEntityTypes,
+  };
+
+  customTypes.forEach((value, index) => {
+    normalizedEntityTypes[customTypeKey(index)] = { ...value };
+  });
+
+  return {
+    ...config,
+    entity_types: normalizedEntityTypes,
+    custom_types: customTypes,
+  };
 }

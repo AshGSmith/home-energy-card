@@ -1,7 +1,11 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { autoDetect, mergeDetection } from "./auto-detect.js";
-import type { CardConfig } from "./types.js";
+import {
+  normalizeCardConfig,
+  type CardConfig,
+  type EntityTypeConfig,
+} from "./types.js";
 
 @customElement("home-energy-card-editor")
 export class HomeEnergyCardEditor extends LitElement {
@@ -42,7 +46,46 @@ export class HomeEnergyCardEditor extends LitElement {
   `;
 
   setConfig(config: CardConfig) {
-    this.config = config;
+    this.config = normalizeCardConfig(config);
+  }
+
+  private _dispatchConfig(config: CardConfig) {
+    this.dispatchEvent(
+      new CustomEvent("config-changed", {
+        detail: { config: normalizeCardConfig(config) },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private _addCustomType() {
+    const customTypes = [...(this.config?.custom_types ?? []), {}];
+    this._dispatchConfig({
+      ...this.config!,
+      custom_types: customTypes,
+    });
+  }
+
+  private _deleteCustomType(index: number) {
+    const customTypes = [...(this.config?.custom_types ?? [])];
+    customTypes.splice(index, 1);
+    this._dispatchConfig({
+      ...this.config!,
+      custom_types: customTypes,
+    });
+  }
+
+  private _setCustomType(index: number, patch: Partial<EntityTypeConfig>) {
+    const customTypes = [...(this.config?.custom_types ?? [])];
+    customTypes[index] = {
+      ...(customTypes[index] ?? {}),
+      ...patch,
+    };
+    this._dispatchConfig({
+      ...this.config!,
+      custom_types: customTypes,
+    });
   }
 
   render() {
@@ -56,7 +99,9 @@ export class HomeEnergyCardEditor extends LitElement {
               this.dispatchEvent(
                 new CustomEvent("config-changed", {
                   detail: {
-                    config: mergeDetection(this.config!, autoDetect(this.hass), false),
+                    config: normalizeCardConfig(
+                      mergeDetection(this.config!, autoDetect(this.hass), false),
+                    ),
                   },
                   bubbles: true,
                   composed: true,
@@ -1094,260 +1139,111 @@ export class HomeEnergyCardEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <ha-expansion-panel header="Custom">
-        <div class="section-body">
-          <ha-selector
-            label="Custom Import Power"
-            .hass=${this.hass}
-            .selector=${{ entity: {} }}
-            .value=${this.config.entity_types?.custom_1?.power_import ?? ""}
-            @value-changed=${(e: CustomEvent) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          power_import: e.detail.value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-selector>
+      <mwc-button @click=${() => this._addCustomType()}>Add Custom Type</mwc-button>
 
-          <ha-selector
-            label="Custom Export Power"
-            .hass=${this.hass}
-            .selector=${{ entity: {} }}
-            .value=${this.config.entity_types?.custom_1?.power_export ?? ""}
-            @value-changed=${(e: CustomEvent) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          power_export: e.detail.value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-selector>
+      ${(this.config.custom_types ?? []).map((customType, index) => html`
+        <ha-expansion-panel header="Custom ${index + 1}">
+          <div class="section-body">
+            <mwc-button @click=${() => this._deleteCustomType(index)}>
+              Delete Custom Type
+            </mwc-button>
 
-          <ha-selector
-            label="Custom Combined Power"
-            .hass=${this.hass}
-            .selector=${{ entity: {} }}
-            .value=${this.config.entity_types?.custom_1?.power_combined ?? ""}
-            @value-changed=${(e: CustomEvent) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          power_combined: e.detail.value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-selector>
+            <ha-selector
+              label="Custom Import Power"
+              .hass=${this.hass}
+              .selector=${{ entity: {} }}
+              .value=${customType.power_import ?? ""}
+              @value-changed=${(e: CustomEvent) =>
+                this._setCustomType(index, { power_import: e.detail.value || undefined })}
+            ></ha-selector>
 
-          <ha-selector
-            label="Custom Daily Usage"
-            .hass=${this.hass}
-            .selector=${{ entity: {} }}
-            .value=${this.config.entity_types?.custom_1?.daily_usage ?? ""}
-            @value-changed=${(e: CustomEvent) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          daily_usage: e.detail.value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-selector>
+            <ha-selector
+              label="Custom Export Power"
+              .hass=${this.hass}
+              .selector=${{ entity: {} }}
+              .value=${customType.power_export ?? ""}
+              @value-changed=${(e: CustomEvent) =>
+                this._setCustomType(index, { power_export: e.detail.value || undefined })}
+            ></ha-selector>
 
-          <ha-selector
-            label="Custom State of Charge"
-            .hass=${this.hass}
-            .selector=${{ entity: {} }}
-            .value=${this.config.entity_types?.custom_1?.soc ?? ""}
-            @value-changed=${(e: CustomEvent) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          soc: e.detail.value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-selector>
-          <div class="switch-row">
-            <span>Custom Show when idle</span>
-            <ha-switch
-              .checked=${this.config.entity_types?.custom_1?.show_zero ?? true}
+            <ha-selector
+              label="Custom Combined Power"
+              .hass=${this.hass}
+              .selector=${{ entity: {} }}
+              .value=${customType.power_combined ?? ""}
+              @value-changed=${(e: CustomEvent) =>
+                this._setCustomType(index, { power_combined: e.detail.value || undefined })}
+            ></ha-selector>
+
+            <ha-selector
+              label="Custom Daily Usage"
+              .hass=${this.hass}
+              .selector=${{ entity: {} }}
+              .value=${customType.daily_usage ?? ""}
+              @value-changed=${(e: CustomEvent) =>
+                this._setCustomType(index, { daily_usage: e.detail.value || undefined })}
+            ></ha-selector>
+
+            <ha-selector
+              label="Custom State of Charge"
+              .hass=${this.hass}
+              .selector=${{ entity: {} }}
+              .value=${customType.soc ?? ""}
+              @value-changed=${(e: CustomEvent) =>
+                this._setCustomType(index, { soc: e.detail.value || undefined })}
+            ></ha-selector>
+            <div class="switch-row">
+              <span>Custom Show when idle</span>
+              <ha-switch
+                .checked=${customType.show_zero ?? true}
+                @change=${(e: Event) =>
+                  this._setCustomType(index, {
+                    show_zero: (e.target as HTMLInputElement).checked,
+                  })}
+              ></ha-switch>
+            </div>
+            <ha-textfield
+              label="Custom Zero Tolerance"
+              type="number"
+              min="0"
+              .value=${customType.zero_tolerance != null ? String(customType.zero_tolerance) : ""}
               @change=${(e: Event) =>
-                this.dispatchEvent(
-                  new CustomEvent("config-changed", {
-                    detail: {
-                      config: {
-                        ...this.config!,
-                        entity_types: {
-                          ...(this.config!.entity_types ?? {}),
-                          custom_1: {
-                            ...(this.config!.entity_types?.custom_1 ?? {}),
-                            show_zero: (e.target as HTMLInputElement).checked,
-                          },
-                        },
-                      },
-                    },
-                    bubbles: true,
-                    composed: true,
-                  })
-                )}
-            ></ha-switch>
-          </div>
-          <ha-textfield
-            label="Custom Zero Tolerance"
-            type="number"
-            min="0"
-            .value=${this.config.entity_types?.custom_1?.zero_tolerance != null ? String(this.config.entity_types?.custom_1?.zero_tolerance) : ""}
-            @change=${(e: Event) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          zero_tolerance: (e.target as HTMLInputElement).value !== "" ? Number((e.target as HTMLInputElement).value) : undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-textfield>
-          <div class="switch-row">
-            <span>Show Label</span>
-            <ha-switch
-              .checked=${this.config.entity_types?.custom_1?.show_label ?? true}
+                this._setCustomType(index, {
+                  zero_tolerance:
+                    (e.target as HTMLInputElement).value !== ""
+                      ? Number((e.target as HTMLInputElement).value)
+                      : undefined,
+                })}
+            ></ha-textfield>
+            <div class="switch-row">
+              <span>Show Label</span>
+              <ha-switch
+                .checked=${customType.show_label ?? true}
+                @change=${(e: Event) =>
+                  this._setCustomType(index, {
+                    show_label: (e.target as HTMLInputElement).checked,
+                  })}
+              ></ha-switch>
+            </div>
+            <ha-textfield
+              label="Custom Label"
+              .value=${customType.label ?? ""}
               @change=${(e: Event) =>
-                this.dispatchEvent(
-                  new CustomEvent("config-changed", {
-                    detail: {
-                      config: {
-                        ...this.config!,
-                        entity_types: {
-                          ...(this.config!.entity_types ?? {}),
-                          custom_1: {
-                            ...(this.config!.entity_types?.custom_1 ?? {}),
-                            show_label: (e.target as HTMLInputElement).checked,
-                          },
-                        },
-                      },
-                    },
-                    bubbles: true,
-                    composed: true,
-                  })
-                )}
-            ></ha-switch>
+                this._setCustomType(index, {
+                  label: (e.target as HTMLInputElement).value || undefined,
+                })}
+            ></ha-textfield>
+            <ha-textfield
+              label="Custom Colour"
+              .value=${customType.colour ?? ""}
+              @change=${(e: Event) =>
+                this._setCustomType(index, {
+                  colour: (e.target as HTMLInputElement).value || undefined,
+                })}
+            ></ha-textfield>
           </div>
-          <ha-textfield
-            label="Custom Label"
-            .value=${this.config.entity_types?.custom_1?.label ?? ""}
-            @change=${(e: Event) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          label: (e.target as HTMLInputElement).value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-textfield>
-          <ha-textfield
-            label="Custom Colour"
-            .value=${this.config.entity_types?.custom_1?.colour ?? ""}
-            @change=${(e: Event) =>
-              this.dispatchEvent(
-                new CustomEvent("config-changed", {
-                  detail: {
-                    config: {
-                      ...this.config!,
-                      entity_types: {
-                        ...(this.config!.entity_types ?? {}),
-                        custom_1: {
-                          ...(this.config!.entity_types?.custom_1 ?? {}),
-                          colour: (e.target as HTMLInputElement).value || undefined,
-                        },
-                      },
-                    },
-                  },
-                  bubbles: true,
-                  composed: true,
-                })
-              )}
-          ></ha-textfield>
-        </div>
-      </ha-expansion-panel>
+        </ha-expansion-panel>
+      `)}
     `;
   }
 }

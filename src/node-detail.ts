@@ -1,6 +1,11 @@
 import { LitElement, html, css, svg, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import type { CardConfig, EntityTypeConfig, OctopusConfig } from "./types.js";
+import {
+  DEFAULT_ENTITY_TYPES,
+  type CardConfig,
+  type EntityTypeConfig,
+  type OctopusConfig,
+} from "./types.js";
 import {
   HomeAssistant,
   computeFlowInfo,
@@ -383,7 +388,12 @@ export class HecNodeDetail extends LitElement {
 
     const flow = computeFlowInfo(this.nodeType, cfg, states);
 
-    const hasSoc = ["battery", "ev"].includes(this.nodeType) && Boolean(cfg.soc);
+    const hasSoc =
+      Boolean(cfg.soc) &&
+      (
+        ["battery", "ev"].includes(this.nodeType) ||
+        !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(this.nodeType)
+      );
     const soc    = hasSoc ? readNum(states, cfg.soc) : null;
 
     return html`
