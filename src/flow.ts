@@ -14,7 +14,7 @@ export interface HomeAssistant {
 export type FlowDirection = "to-home" | "from-home" | "idle";
 
 export interface FlowInfo {
-  /** Net signed watts. grid: +import/−export. battery/ev: +charging/−discharging. */
+  /** Net signed watts. grid: +import/−export. battery: +discharging/−charging. ev: +charging/−discharging. */
   power: number | null;
   /** Absolute watts after zero_tolerance; null when idle. */
   magnitude: number | null;
@@ -62,7 +62,7 @@ export function readPowerWatts(
  * Sign conventions:
  *   solar   — always to-home
  *   grid    — +import (grid→home) / −export (home→grid)
- *   battery — +charging (home→battery) / −discharging (battery→home)
+ *   battery — +discharging (battery→home) / −charging (home→battery)
  *   ev      — +charging (home→ev) / −V2H (ev→home)
  *   custom  — +from-home / −to-home
  *
@@ -71,7 +71,7 @@ export function readPowerWatts(
  */
 export function computeFlowInfo(
   type: string,
-  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "zero_tolerance">,
+  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "zero_tolerance" | "reverse_power_flow">,
   states: HomeAssistant["states"],
 ): FlowInfo {
   const tol = cfg.zero_tolerance ?? 0;
@@ -94,6 +94,7 @@ export function computeFlowInfo(
   }
 
   if (net === null) return IDLE;
+  if (type === "battery" && cfg.reverse_power_flow) net *= -1;
   if (Math.abs(net) <= tol) return { power: 0, magnitude: null, direction: "idle" };
 
   const magnitude = Math.abs(net);
@@ -102,7 +103,7 @@ export function computeFlowInfo(
   switch (type) {
     case "solar":   direction = "to-home"; break;
     case "grid":    direction = net > 0 ? "to-home"   : "from-home"; break;
-    case "battery":
+    case "battery": direction = net > 0 ? "to-home"   : "from-home"; break;
     case "ev":      direction = net > 0 ? "from-home" : "to-home";   break;
     default:        direction = net > 0 ? "from-home" : "to-home";
   }

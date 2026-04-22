@@ -826,6 +826,31 @@ export class HomeEnergyCardEditor extends LitElement {
               )}
           ></ha-textfield>
           <div class="switch-row">
+            <span>Reverse Power Flow</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.battery?.reverse_power_flow ?? false}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          battery: {
+                            ...(this.config!.entity_types?.battery ?? {}),
+                            reverse_power_flow: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
+          <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
               .checked=${this.config.entity_types?.battery?.show_label ?? true}

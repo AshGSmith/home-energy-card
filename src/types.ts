@@ -24,6 +24,7 @@ export interface EntityTypeConfig {
   colour?: string;
   show_zero?: boolean;
   zero_tolerance?: number;
+  reverse_power_flow?: boolean;
   octopus?: OctopusConfig;
 }
 

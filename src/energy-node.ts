@@ -191,9 +191,9 @@ export class HecEnergyNode extends LitElement {
               ? "mdi:arrow-left-bold-circle"
               : ""
           : this.power > 0
-            ? "mdi:arrow-right-bold-circle"
+            ? "mdi:arrow-up-bold-circle"
             : this.power < 0
-              ? "mdi:arrow-left-bold-circle"
+              ? "mdi:arrow-down-bold-circle"
               : ""
         : "";
     const pct    = hasSoc ? Math.max(0, Math.min(100, this.soc!)) : 0;
