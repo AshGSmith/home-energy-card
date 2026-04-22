@@ -45,10 +45,17 @@ const FLOW_LABEL: Record<string, Partial<Record<string, string>>> = {
 
 type HistoryEntry = { state: string; last_changed: string };
 type RateInterval = { startMs: number; endMs: number; rateGbpPerKwh: number };
+type PeakOffPeakBreakdown = {
+  peakUsageKwh: number;
+  offPeakUsageKwh: number;
+  peakCostGbp: number;
+  offPeakCostGbp: number;
+};
 type GridMoneyState = {
   importCostToday: number | null;
   exportPaymentToday: number | null;
   netCost: number | null;
+  peakOffPeak: PeakOffPeakBreakdown | null;
 };
 
 /**
@@ -277,6 +284,73 @@ function intervalCostFromHistory(
   return matched ? total : null;
 }
 
+function peakOffPeakFromHistory(
+  history: HistoryEntry[],
+  unit: string | undefined,
+  rates: RateInterval[],
+): PeakOffPeakBreakdown | null {
+  if (history.length < 2 || !rates.length) return null;
+
+  const distinctRates = Array.from(
+    new Set(rates.map((rate) => Number(rate.rateGbpPerKwh.toFixed(6)))),
+  ).sort((a, b) => a - b);
+
+  if (distinctRates.length < 2) return null;
+  if (distinctRates.length > 2) return null;
+
+  const offPeakRate = distinctRates[0];
+  const peakRate = distinctRates[distinctRates.length - 1];
+
+  let peakUsageKwh = 0;
+  let offPeakUsageKwh = 0;
+  let peakCostGbp = 0;
+  let offPeakCostGbp = 0;
+  let matched = false;
+
+  for (let i = 1; i < history.length; i++) {
+    const startMs = new Date(history[i - 1].last_changed).getTime();
+    const endMs = new Date(history[i].last_changed).getTime();
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) continue;
+
+    const prev = parseFloat(history[i - 1].state);
+    const next = parseFloat(history[i].state);
+    if (isNaN(prev) || isNaN(next)) continue;
+
+    const deltaKwh = cumulativeValueToKwh(next - prev, unit);
+    if (deltaKwh <= 0) continue;
+
+    const durationMs = endMs - startMs;
+    let peakMs = 0;
+    let offPeakMs = 0;
+
+    for (const rate of rates) {
+      const overlapStart = Math.max(startMs, rate.startMs);
+      const overlapEnd = Math.min(endMs, rate.endMs);
+      if (overlapEnd <= overlapStart) continue;
+
+      const overlapMs = overlapEnd - overlapStart;
+      const rateValue = Number(rate.rateGbpPerKwh.toFixed(6));
+      if (rateValue === peakRate) peakMs += overlapMs;
+      if (rateValue === offPeakRate) offPeakMs += overlapMs;
+    }
+
+    const coveredMs = peakMs + offPeakMs;
+    if (coveredMs <= 0) continue;
+
+    matched = true;
+    const peakPortion = deltaKwh * (peakMs / coveredMs);
+    const offPeakPortion = deltaKwh * (offPeakMs / coveredMs);
+    peakUsageKwh += peakPortion;
+    offPeakUsageKwh += offPeakPortion;
+    peakCostGbp += peakPortion * peakRate;
+    offPeakCostGbp += offPeakPortion * offPeakRate;
+  }
+
+  return matched
+    ? { peakUsageKwh, offPeakUsageKwh, peakCostGbp, offPeakCostGbp }
+    : null;
+}
+
 function fmtHour(date: Date): string {
   return `${date.getHours().toString().padStart(2, "0")}:00`;
 }
@@ -423,6 +497,11 @@ export class HecNodeDetail extends LitElement {
         importUnit,
         effectiveImportRates,
       );
+      const peakOffPeak = peakOffPeakFromHistory(
+        importHistory,
+        importUnit,
+        effectiveImportRates,
+      );
       const intervalExportPayment = intervalCostFromHistory(
         exportHistory,
         exportUnit,
@@ -445,6 +524,7 @@ export class HecNodeDetail extends LitElement {
         importCostToday,
         exportPaymentToday,
         netCost,
+        peakOffPeak,
       };
     } catch (err) {
       console.warn("[hec-node-detail] grid money load failed", err);
@@ -557,13 +637,15 @@ export class HecNodeDetail extends LitElement {
     const importCostToday = this._gridMoney?.importCostToday ?? null;
     const exportPaymentToday = this._gridMoney?.exportPaymentToday ?? null;
     const netCost = this._gridMoney?.netCost ?? null;
+    const peakOffPeak = this._gridMoney?.peakOffPeak ?? null;
 
     if (
       !hasRate &&
       !upcoming.length &&
       importCostToday === null &&
       exportPaymentToday === null &&
-      netCost === null
+      netCost === null &&
+      peakOffPeak === null
     ) return nothing;
 
     return html`
@@ -592,6 +674,8 @@ export class HecNodeDetail extends LitElement {
           <span class="kv-v">${fmtCurrencyGbp(netCost)}</span>
         </div>
 
+        ${this._sectionPeakOffPeak(peakOffPeak)}
+
         ${upcoming.length ? html`
           <div class="s-subtitle">Upcoming slots</div>
           ${upcoming.map((r: any) => {
@@ -608,6 +692,75 @@ export class HecNodeDetail extends LitElement {
             `;
           })}
         ` : nothing}
+      </div>
+    `;
+  }
+
+  private _sectionPeakOffPeak(breakdown: PeakOffPeakBreakdown | null) {
+    if (!breakdown) {
+      return html`
+        <div class="s-subtitle">Peak vs Off Peak</div>
+        <div class="chart-msg">No interval tariff data</div>
+      `;
+    }
+
+    const totalUsage = breakdown.peakUsageKwh + breakdown.offPeakUsageKwh;
+    if (totalUsage <= 0) {
+      return html`
+        <div class="s-subtitle">Peak vs Off Peak</div>
+        <div class="chart-msg">No import data</div>
+      `;
+    }
+
+    const peakPct = breakdown.peakUsageKwh / totalUsage;
+    const peakAngle = peakPct * Math.PI * 2;
+    const peakX = 20 + 18 * Math.sin(peakAngle);
+    const peakY = 20 - 18 * Math.cos(peakAngle);
+    const largeArc = peakPct > 0.5 ? 1 : 0;
+    const peakPath =
+      peakPct >= 0.999
+        ? "M20 2 A18 18 0 1 1 19.99 2 Z"
+        : peakPct <= 0.001
+          ? ""
+          : `M20 20 L20 2 A18 18 0 ${largeArc} 1 ${peakX.toFixed(3)} ${peakY.toFixed(3)} Z`;
+
+    return html`
+      <div class="s-subtitle">Peak vs Off Peak</div>
+      <div class="peak-row">
+        <svg class="peak-pie" viewBox="0 0 40 40" aria-label="Peak vs Off Peak usage split">
+          <circle cx="20" cy="20" r="18" fill="#e8f5e9"></circle>
+          ${peakPath
+            ? svg`<path d="${peakPath}" fill="#ef5350"></path>`
+            : nothing}
+          <circle cx="20" cy="20" r="9" fill="white"></circle>
+        </svg>
+
+        <div class="peak-legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#ef5350;"></span>
+            <span class="legend-label">Peak ${(peakPct * 100).toFixed(0)}%</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#66bb6a;"></span>
+            <span class="legend-label">Off Peak ${((1 - peakPct) * 100).toFixed(0)}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Peak Usage</span>
+        <span class="kv-v">${fmtKwh(breakdown.peakUsageKwh, this.config?.display?.decimal_places ?? 1)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Off Peak Usage</span>
+        <span class="kv-v">${fmtKwh(breakdown.offPeakUsageKwh, this.config?.display?.decimal_places ?? 1)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Peak Cost</span>
+        <span class="kv-v">${fmtCurrencyGbp(breakdown.peakCostGbp)}</span>
+      </div>
+      <div class="kv">
+        <span class="kv-k">Off Peak Cost</span>
+        <span class="kv-v">${fmtCurrencyGbp(breakdown.offPeakCostGbp)}</span>
       </div>
     `;
   }
@@ -835,6 +988,42 @@ export class HecNodeDetail extends LitElement {
     }
     .kv-k { opacity: 0.55; }
     .kv-v { font-weight: 600; }
+
+    .peak-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0 10px;
+    }
+    .peak-pie {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+    }
+    .peak-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .legend-label {
+      font-size: 0.82em;
+      font-weight: 600;
+      color: var(--primary-text-color);
+      white-space: nowrap;
+    }
 
     /* ── Octopus slots ── */
     .slot {
