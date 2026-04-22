@@ -35,6 +35,11 @@ interface LineVisualState {
   reverse: boolean;
 }
 
+interface FlowSample {
+  timestamp: number;
+  magnitude: number | null;
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 @customElement("hec-flow-layout")
@@ -52,6 +57,9 @@ export class HecFlowLayout extends LitElement {
   private _resizeObserver?: ResizeObserver;
   private _measureFrame: number | null = null;
   private _lineVisualState: Record<string, LineVisualState> = {};
+  private _flowSamples: Record<string, FlowSample[]> = {};
+  private _smoothedMagnitudes: Record<string, number | null> = {};
+  private _speedInterval: number | null = null;
 
   static styles = css`
     :host { display: block; }
@@ -111,6 +119,12 @@ export class HecFlowLayout extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._resizeObserver = new ResizeObserver(() => this._scheduleMeasureLineLayout());
+    this._speedInterval = window.setInterval(() => {
+      if (this._refreshSmoothedMagnitudes()) {
+        this._updateLineVisualState();
+        this.requestUpdate();
+      }
+    }, 10_000);
   }
 
   disconnectedCallback() {
@@ -118,6 +132,8 @@ export class HecFlowLayout extends LitElement {
     this._resizeObserver = undefined;
     if (this._measureFrame !== null) cancelAnimationFrame(this._measureFrame);
     this._measureFrame = null;
+    if (this._speedInterval !== null) window.clearInterval(this._speedInterval);
+    this._speedInterval = null;
     super.disconnectedCallback();
   }
 
@@ -128,7 +144,11 @@ export class HecFlowLayout extends LitElement {
   }
 
   protected willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("hass") || changed.has("config")) this._updateLineVisualState();
+    if (changed.has("hass") || changed.has("config")) {
+      this._recordFlowSamples();
+      if (!Object.keys(this._smoothedMagnitudes).length) this._refreshSmoothedMagnitudes();
+      this._updateLineVisualState();
+    }
   }
 
   protected updated(changed: Map<string, unknown>) {
@@ -224,17 +244,72 @@ export class HecFlowLayout extends LitElement {
     ].filter((type) => this._isVisible(type));
   }
 
+  private _sampleTypes(): string[] {
+    return [
+      "solar",
+      "grid",
+      "battery",
+      "ev",
+      ...this._customTypes(),
+    ];
+  }
+
+  private _pruneFlowSamples(type: string, now: number) {
+    const samples = this._flowSamples[type] ?? [];
+    this._flowSamples[type] = samples.filter((sample) => now - sample.timestamp <= 10_000);
+  }
+
+  private _recordFlowSamples() {
+    const now = Date.now();
+
+    for (const type of this._sampleTypes()) {
+      const flow = this._flowInfo(type);
+      const samples = this._flowSamples[type] ?? [];
+      samples.push({
+        timestamp: now,
+        magnitude: flow.magnitude,
+      });
+      this._flowSamples[type] = samples;
+      this._pruneFlowSamples(type, now);
+    }
+  }
+
+  private _refreshSmoothedMagnitudes(): boolean {
+    const now = Date.now();
+    let changed = false;
+
+    for (const type of this._sampleTypes()) {
+      this._pruneFlowSamples(type, now);
+      const samples = this._flowSamples[type] ?? [];
+      const magnitudes = samples
+        .map((sample) => sample.magnitude)
+        .filter((magnitude): magnitude is number => magnitude !== null);
+      const next =
+        magnitudes.length > 0
+          ? magnitudes.reduce((sum, magnitude) => sum + Math.abs(magnitude), 0) / magnitudes.length
+          : null;
+
+      if (this._smoothedMagnitudes[type] !== next) {
+        this._smoothedMagnitudes[type] = next;
+        changed = true;
+      }
+    }
+
+    return changed;
+  }
+
   private _computeLineVisualState(type: string): LineVisualState {
     const dynamic  = this.config?.display?.dynamic_animation_speed ?? false;
     const animated = this.config?.display?.animation !== false;
     const flow = this._flowInfo(type);
+    const smoothedMagnitude = this._smoothedMagnitudes[type] ?? flow.magnitude;
 
     return {
       color:
         LINE_COLOR[type] ??
         this.config?.entity_types?.[type]?.colour ??
         "#9e9e9e",
-      dur: animDuration(flow.magnitude, dynamic && flow.direction !== "idle"),
+      dur: animDuration(smoothedMagnitude, dynamic && flow.direction !== "idle"),
       idle: flow.direction === "idle",
       paused: !animated,
       reverse: flow.direction === "from-home",
