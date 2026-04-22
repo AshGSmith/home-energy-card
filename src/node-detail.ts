@@ -44,6 +44,12 @@ const FLOW_LABEL: Record<string, Partial<Record<string, string>>> = {
 // ── History ───────────────────────────────────────────────────────────────────
 
 type HistoryEntry = { state: string; last_changed: string };
+type RateInterval = { startMs: number; endMs: number; rateGbpPerKwh: number };
+type GridMoneyState = {
+  importCostToday: number | null;
+  exportPaymentToday: number | null;
+  netCost: number | null;
+};
 
 /**
  * Compute time-weighted absolute averages for 24 one-hour buckets.
@@ -140,6 +146,91 @@ function fmtCurrencyGbp(v: number | null): string {
   return `${v < 0 ? "-" : ""}£${Math.abs(v).toFixed(2)}`;
 }
 
+function parseRateValueGbpPerKwh(raw: unknown, unitHint?: string): number | null {
+  const value = typeof raw === "number" ? raw : parseFloat(String(raw));
+  if (isNaN(value)) return null;
+  const unit = String(unitHint ?? "").trim().toLowerCase();
+  if (unit.includes("pence") || unit.startsWith("p/") || unit === "p") return value / 100;
+  if (unit.includes("gbp") || unit.includes("£")) return value;
+  return value;
+}
+
+function parseRateIntervalsFromState(
+  stateObj: HomeAssistant["states"][string] | undefined,
+): RateInterval[] {
+  if (!stateObj) return [];
+  const unitHint = stateObj.attributes.unit_of_measurement as string | undefined;
+  const rawRates: unknown[] =
+    (stateObj.attributes.rates as unknown[]) ??
+    (stateObj.attributes.current_day_rates as unknown[]) ??
+    (stateObj.attributes.today_rates as unknown[]) ??
+    (stateObj.attributes.upcoming_interval_rates as unknown[]) ??
+    [];
+
+  return rawRates
+    .map((raw: any) => {
+      const startMs = new Date(raw.start ?? raw.start_time ?? "").getTime();
+      const endMs = new Date(raw.end ?? raw.end_time ?? "").getTime();
+      const rate = parseRateValueGbpPerKwh(
+        raw.value_inc_vat ?? raw.rate_inc_vat ?? raw.value ?? raw.rate,
+        raw.unit_of_measurement ?? unitHint,
+      );
+      if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || !rate) return null;
+      return { startMs, endMs, rateGbpPerKwh: rate };
+    })
+    .filter((interval): interval is RateInterval => interval !== null)
+    .sort((a, b) => a.startMs - b.startMs);
+}
+
+function cumulativeValueToKwh(value: number, unit?: string): number {
+  return String(unit ?? "").trim().toLowerCase() === "wh" ? value / 1000 : value;
+}
+
+function intervalCostFromHistory(
+  history: HistoryEntry[],
+  unit: string | undefined,
+  rates: RateInterval[],
+): number | null {
+  if (history.length < 2 || !rates.length) return null;
+  let total = 0;
+  let matched = false;
+
+  for (let i = 1; i < history.length; i++) {
+    const startMs = new Date(history[i - 1].last_changed).getTime();
+    const endMs = new Date(history[i].last_changed).getTime();
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) continue;
+
+    const prev = parseFloat(history[i - 1].state);
+    const next = parseFloat(history[i].state);
+    if (isNaN(prev) || isNaN(next)) continue;
+
+    const deltaKwh = cumulativeValueToKwh(next - prev, unit);
+    if (deltaKwh <= 0) continue;
+
+    const durationMs = endMs - startMs;
+    let weightedRate = 0;
+    let coveredMs = 0;
+
+    for (const rate of rates) {
+      const overlapStart = Math.max(startMs, rate.startMs);
+      const overlapEnd = Math.min(endMs, rate.endMs);
+      if (overlapEnd <= overlapStart) continue;
+      const overlapMs = overlapEnd - overlapStart;
+      coveredMs += overlapMs;
+      weightedRate += rate.rateGbpPerKwh * overlapMs;
+    }
+
+    if (coveredMs > 0) {
+      matched = true;
+      total += deltaKwh * (weightedRate / coveredMs);
+    } else if (durationMs > 0) {
+      return null;
+    }
+  }
+
+  return matched ? total : null;
+}
+
 function fmtHour(date: Date): string {
   return `${date.getHours().toString().padStart(2, "0")}:00`;
 }
@@ -173,6 +264,7 @@ export class HecNodeDetail extends LitElement {
 
   @state() private _hourly: (number | null)[] = [];
   @state() private _loading = false;
+  @state() private _gridMoney: GridMoneyState | null = null;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -180,6 +272,11 @@ export class HecNodeDetail extends LitElement {
     super.updated(changed);
     if ((changed.has("open") || changed.has("nodeType")) && this.open && this.nodeType) {
       this._loadHistory();
+      if (this.nodeType === "grid") {
+        this._loadGridMoney();
+      } else {
+        this._gridMoney = null;
+      }
     }
   }
 
@@ -209,6 +306,71 @@ export class HecNodeDetail extends LitElement {
       this._hourly = [];
     } finally {
       this._loading = false;
+    }
+  }
+
+  private async _loadGridMoney() {
+    const gridCfg = this.config?.entity_types?.grid;
+    const oct = gridCfg?.octopus;
+    if (!this.hass || !gridCfg || !oct) {
+      this._gridMoney = null;
+      return;
+    }
+
+    const importRates = parseRateIntervalsFromState(
+      oct.slots_entity ? this.hass.states?.[oct.slots_entity] : undefined,
+    );
+    const exportRates = parseRateIntervalsFromState(
+      gridCfg.export_rate ? this.hass.states?.[gridCfg.export_rate] : undefined,
+    );
+
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+
+    const fetchHistory = async (entityId?: string): Promise<HistoryEntry[]> => {
+      if (!entityId || !this.hass) return [];
+      const path =
+        `history/period/${start.toISOString()}` +
+        `?filter_entity_id=${entityId}` +
+        `&minimal_response=true&no_attributes=true` +
+        `&end_time=${end.toISOString()}`;
+      const raw = await this.hass.callApi<HistoryEntry[][]>("GET", path);
+      return raw?.[0] ?? [];
+    };
+
+    try {
+      const [importHistory, exportHistory] = await Promise.all([
+        fetchHistory(gridCfg.daily_usage),
+        fetchHistory(gridCfg.daily_export),
+      ]);
+
+      const importUnit = gridCfg.daily_usage
+        ? this.hass.states?.[gridCfg.daily_usage]?.attributes.unit_of_measurement as string | undefined
+        : undefined;
+      const exportUnit = gridCfg.daily_export
+        ? this.hass.states?.[gridCfg.daily_export]?.attributes.unit_of_measurement as string | undefined
+        : undefined;
+
+      const intervalImportCost = intervalCostFromHistory(importHistory, importUnit, importRates);
+      const intervalExportPayment = intervalCostFromHistory(exportHistory, exportUnit, exportRates);
+      const fallbackImportCost = readCurrencyGbp(this.hass.states, oct.cost_entity);
+
+      const importCostToday = intervalImportCost ?? fallbackImportCost;
+      const exportPaymentToday = intervalExportPayment;
+      const netCost =
+        importCostToday !== null && exportPaymentToday !== null
+          ? importCostToday - exportPaymentToday
+          : null;
+
+      this._gridMoney = {
+        importCostToday,
+        exportPaymentToday,
+        netCost,
+      };
+    } catch (err) {
+      console.warn("[hec-node-detail] grid money load failed", err);
+      this._gridMoney = null;
     }
   }
 
@@ -294,16 +456,12 @@ export class HecNodeDetail extends LitElement {
 
   private _sectionOctopus(oct: OctopusConfig) {
     const states = this.hass?.states ?? {};
-    const gridCfg = this.config?.entity_types?.grid ?? {};
 
     const rateS = oct.rate_entity  ? states[oct.rate_entity]  : null;
-    const costS = oct.cost_entity  ? states[oct.cost_entity]  : null;
     const slotsS = oct.slots_entity ? states[oct.slots_entity] : null;
 
     const rateVal  = rateS?.state;
     const rateUnit = (rateS?.attributes.unit_of_measurement as string | undefined) ?? "p/kWh";
-    const costVal  = costS?.state;
-    const costUnit = (costS?.attributes.unit_of_measurement as string | undefined) ?? "£";
 
     // Try several attribute names used by different Octopus integration versions
     const rawRates: unknown[] =
@@ -318,27 +476,12 @@ export class HecNodeDetail extends LitElement {
       .slice(0, 6) as any[];
 
     const hasRate  = rateVal && rateVal !== "unavailable" && rateVal !== "unknown";
-    const hasCost  = costVal && costVal !== "unavailable" && costVal !== "unknown";
-    const importKwh = readKwh(states, gridCfg.daily_usage);
-    const exportKwh = readKwh(states, gridCfg.daily_export);
-    const importRateGbp = readRateGbpPerKwh(states, oct.rate_entity);
-    const exportRateGbp = readRateGbpPerKwh(states, gridCfg.export_rate);
-    const importCostToday =
-      importKwh !== null && importRateGbp !== null
-        ? importKwh * importRateGbp
-        : readCurrencyGbp(states, oct.cost_entity);
-    const exportPaymentToday =
-      exportKwh !== null && exportRateGbp !== null
-        ? exportKwh * exportRateGbp
-        : null;
-    const netCost =
-      importCostToday !== null && exportPaymentToday !== null
-        ? importCostToday - exportPaymentToday
-        : null;
+    const importCostToday = this._gridMoney?.importCostToday ?? null;
+    const exportPaymentToday = this._gridMoney?.exportPaymentToday ?? null;
+    const netCost = this._gridMoney?.netCost ?? null;
 
     if (
       !hasRate &&
-      !hasCost &&
       !upcoming.length &&
       importCostToday === null &&
       exportPaymentToday === null &&

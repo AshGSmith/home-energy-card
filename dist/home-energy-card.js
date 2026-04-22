@@ -3,18 +3,18 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const vt = globalThis, Nt = vt.ShadowRoot && (vt.ShadyCSS === void 0 || vt.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Ht = Symbol(), cs = /* @__PURE__ */ new WeakMap();
-let Ps = class {
-  constructor(t, s, o) {
-    if (this._$cssResult$ = !0, o !== Ht) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+const yt = globalThis, Ot = yt.ShadowRoot && (yt.ShadyCSS === void 0 || yt.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Mt = Symbol(), as = /* @__PURE__ */ new WeakMap();
+let Os = class {
+  constructor(t, s, i) {
+    if (this._$cssResult$ = !0, i !== Mt) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = t, this.t = s;
   }
   get styleSheet() {
     let t = this.o;
     const s = this.t;
-    if (Nt && t === void 0) {
-      const o = s !== void 0 && s.length === 1;
-      o && (t = cs.get(s)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), o && cs.set(s, t));
+    if (Ot && t === void 0) {
+      const i = s !== void 0 && s.length === 1;
+      i && (t = as.get(s)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), i && as.set(s, t));
     }
     return t;
   }
@@ -22,22 +22,22 @@ let Ps = class {
     return this.cssText;
   }
 };
-const js = (e) => new Ps(typeof e == "string" ? e : e + "", void 0, Ht), X = (e, ...t) => {
-  const s = e.length === 1 ? e[0] : t.reduce((o, i, n) => o + ((a) => {
-    if (a._$cssResult$ === !0) return a.cssText;
-    if (typeof a == "number") return a;
-    throw Error("Value passed to 'css' function must be a 'css' function result: " + a + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
-  })(i) + e[n + 1], e[0]);
-  return new Ps(s, e, Ht);
-}, Rs = (e, t) => {
-  if (Nt) e.adoptedStyleSheets = t.map((s) => s instanceof CSSStyleSheet ? s : s.styleSheet);
+const js = (e) => new Os(typeof e == "string" ? e : e + "", void 0, Mt), J = (e, ...t) => {
+  const s = e.length === 1 ? e[0] : t.reduce((i, o, n) => i + ((r) => {
+    if (r._$cssResult$ === !0) return r.cssText;
+    if (typeof r == "number") return r;
+    throw Error("Value passed to 'css' function must be a 'css' function result: " + r + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
+  })(o) + e[n + 1], e[0]);
+  return new Os(s, e, Mt);
+}, Bs = (e, t) => {
+  if (Ot) e.adoptedStyleSheets = t.map((s) => s instanceof CSSStyleSheet ? s : s.styleSheet);
   else for (const s of t) {
-    const o = document.createElement("style"), i = vt.litNonce;
-    i !== void 0 && o.setAttribute("nonce", i), o.textContent = s.cssText, e.appendChild(o);
+    const i = document.createElement("style"), o = yt.litNonce;
+    o !== void 0 && i.setAttribute("nonce", o), i.textContent = s.cssText, e.appendChild(i);
   }
-}, ls = Nt ? (e) => e : (e) => e instanceof CSSStyleSheet ? ((t) => {
+}, cs = Ot ? (e) => e : (e) => e instanceof CSSStyleSheet ? ((t) => {
   let s = "";
-  for (const o of t.cssRules) s += o.cssText;
+  for (const i of t.cssRules) s += i.cssText;
   return js(s);
 })(e) : e;
 /**
@@ -45,10 +45,10 @@ const js = (e) => new Ps(typeof e == "string" ? e : e + "", void 0, Ht), X = (e,
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: Bs, defineProperty: Fs, getOwnPropertyDescriptor: Vs, getOwnPropertyNames: Ws, getOwnPropertySymbols: Gs, getPrototypeOf: Ks } = Object, U = globalThis, hs = U.trustedTypes, qs = hs ? hs.emptyScript : "", At = U.reactiveElementPolyfillSupport, nt = (e, t) => e, $t = { toAttribute(e, t) {
+const { is: Fs, defineProperty: Vs, getOwnPropertyDescriptor: Gs, getOwnPropertyNames: Ws, getOwnPropertySymbols: Ks, getPrototypeOf: qs } = Object, H = globalThis, ls = H.trustedTypes, Ys = ls ? ls.emptyScript : "", xt = H.reactiveElementPolyfillSupport, it = (e, t) => e, mt = { toAttribute(e, t) {
   switch (t) {
     case Boolean:
-      e = e ? qs : null;
+      e = e ? Ys : null;
       break;
     case Object:
     case Array:
@@ -73,69 +73,69 @@ const { is: Bs, defineProperty: Fs, getOwnPropertyDescriptor: Vs, getOwnProperty
       }
   }
   return s;
-} }, Ut = (e, t) => !Bs(e, t), ds = { attribute: !0, type: String, converter: $t, reflect: !1, useDefault: !1, hasChanged: Ut };
-Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), U.litPropertyMetadata ?? (U.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
-let q = class extends HTMLElement {
+} }, Lt = (e, t) => !Fs(e, t), hs = { attribute: !0, type: String, converter: mt, reflect: !1, useDefault: !1, hasChanged: Lt };
+Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), H.litPropertyMetadata ?? (H.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
+let K = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ?? (this.l = [])).push(t);
   }
   static get observedAttributes() {
     return this.finalize(), this._$Eh && [...this._$Eh.keys()];
   }
-  static createProperty(t, s = ds) {
+  static createProperty(t, s = hs) {
     if (s.state && (s.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((s = Object.create(s)).wrapped = !0), this.elementProperties.set(t, s), !s.noAccessor) {
-      const o = Symbol(), i = this.getPropertyDescriptor(t, o, s);
-      i !== void 0 && Fs(this.prototype, t, i);
+      const i = Symbol(), o = this.getPropertyDescriptor(t, i, s);
+      o !== void 0 && Vs(this.prototype, t, o);
     }
   }
-  static getPropertyDescriptor(t, s, o) {
-    const { get: i, set: n } = Vs(this.prototype, t) ?? { get() {
+  static getPropertyDescriptor(t, s, i) {
+    const { get: o, set: n } = Gs(this.prototype, t) ?? { get() {
       return this[s];
-    }, set(a) {
-      this[s] = a;
+    }, set(r) {
+      this[s] = r;
     } };
-    return { get: i, set(a) {
-      const c = i == null ? void 0 : i.call(this);
-      n == null || n.call(this, a), this.requestUpdate(t, c, o);
+    return { get: o, set(r) {
+      const c = o == null ? void 0 : o.call(this);
+      n == null || n.call(this, r), this.requestUpdate(t, c, i);
     }, configurable: !0, enumerable: !0 };
   }
   static getPropertyOptions(t) {
-    return this.elementProperties.get(t) ?? ds;
+    return this.elementProperties.get(t) ?? hs;
   }
   static _$Ei() {
-    if (this.hasOwnProperty(nt("elementProperties"))) return;
-    const t = Ks(this);
+    if (this.hasOwnProperty(it("elementProperties"))) return;
+    const t = qs(this);
     t.finalize(), t.l !== void 0 && (this.l = [...t.l]), this.elementProperties = new Map(t.elementProperties);
   }
   static finalize() {
-    if (this.hasOwnProperty(nt("finalized"))) return;
-    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(nt("properties"))) {
-      const s = this.properties, o = [...Ws(s), ...Gs(s)];
-      for (const i of o) this.createProperty(i, s[i]);
+    if (this.hasOwnProperty(it("finalized"))) return;
+    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(it("properties"))) {
+      const s = this.properties, i = [...Ws(s), ...Ks(s)];
+      for (const o of i) this.createProperty(o, s[o]);
     }
     const t = this[Symbol.metadata];
     if (t !== null) {
       const s = litPropertyMetadata.get(t);
-      if (s !== void 0) for (const [o, i] of s) this.elementProperties.set(o, i);
+      if (s !== void 0) for (const [i, o] of s) this.elementProperties.set(i, o);
     }
     this._$Eh = /* @__PURE__ */ new Map();
-    for (const [s, o] of this.elementProperties) {
-      const i = this._$Eu(s, o);
-      i !== void 0 && this._$Eh.set(i, s);
+    for (const [s, i] of this.elementProperties) {
+      const o = this._$Eu(s, i);
+      o !== void 0 && this._$Eh.set(o, s);
     }
     this.elementStyles = this.finalizeStyles(this.styles);
   }
   static finalizeStyles(t) {
     const s = [];
     if (Array.isArray(t)) {
-      const o = new Set(t.flat(1 / 0).reverse());
-      for (const i of o) s.unshift(ls(i));
-    } else t !== void 0 && s.push(ls(t));
+      const i = new Set(t.flat(1 / 0).reverse());
+      for (const o of i) s.unshift(cs(o));
+    } else t !== void 0 && s.push(cs(t));
     return s;
   }
   static _$Eu(t, s) {
-    const o = s.attribute;
-    return o === !1 ? void 0 : typeof o == "string" ? o : typeof t == "string" ? t.toLowerCase() : void 0;
+    const i = s.attribute;
+    return i === !1 ? void 0 : typeof i == "string" ? i : typeof t == "string" ? t.toLowerCase() : void 0;
   }
   constructor() {
     super(), this._$Ep = void 0, this.isUpdatePending = !1, this.hasUpdated = !1, this._$Em = null, this._$Ev();
@@ -154,18 +154,18 @@ let q = class extends HTMLElement {
   }
   _$E_() {
     const t = /* @__PURE__ */ new Map(), s = this.constructor.elementProperties;
-    for (const o of s.keys()) this.hasOwnProperty(o) && (t.set(o, this[o]), delete this[o]);
+    for (const i of s.keys()) this.hasOwnProperty(i) && (t.set(i, this[i]), delete this[i]);
     t.size > 0 && (this._$Ep = t);
   }
   createRenderRoot() {
     const t = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return Rs(t, this.constructor.elementStyles), t;
+    return Bs(t, this.constructor.elementStyles), t;
   }
   connectedCallback() {
     var t;
     this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this.enableUpdating(!0), (t = this._$EO) == null || t.forEach((s) => {
-      var o;
-      return (o = s.hostConnected) == null ? void 0 : o.call(s);
+      var i;
+      return (i = s.hostConnected) == null ? void 0 : i.call(s);
     });
   }
   enableUpdating(t) {
@@ -173,42 +173,42 @@ let q = class extends HTMLElement {
   disconnectedCallback() {
     var t;
     (t = this._$EO) == null || t.forEach((s) => {
-      var o;
-      return (o = s.hostDisconnected) == null ? void 0 : o.call(s);
+      var i;
+      return (i = s.hostDisconnected) == null ? void 0 : i.call(s);
     });
   }
-  attributeChangedCallback(t, s, o) {
-    this._$AK(t, o);
+  attributeChangedCallback(t, s, i) {
+    this._$AK(t, i);
   }
   _$ET(t, s) {
     var n;
-    const o = this.constructor.elementProperties.get(t), i = this.constructor._$Eu(t, o);
-    if (i !== void 0 && o.reflect === !0) {
-      const a = (((n = o.converter) == null ? void 0 : n.toAttribute) !== void 0 ? o.converter : $t).toAttribute(s, o.type);
-      this._$Em = t, a == null ? this.removeAttribute(i) : this.setAttribute(i, a), this._$Em = null;
+    const i = this.constructor.elementProperties.get(t), o = this.constructor._$Eu(t, i);
+    if (o !== void 0 && i.reflect === !0) {
+      const r = (((n = i.converter) == null ? void 0 : n.toAttribute) !== void 0 ? i.converter : mt).toAttribute(s, i.type);
+      this._$Em = t, r == null ? this.removeAttribute(o) : this.setAttribute(o, r), this._$Em = null;
     }
   }
   _$AK(t, s) {
-    var n, a;
-    const o = this.constructor, i = o._$Eh.get(t);
-    if (i !== void 0 && this._$Em !== i) {
-      const c = o.getPropertyOptions(i), l = typeof c.converter == "function" ? { fromAttribute: c.converter } : ((n = c.converter) == null ? void 0 : n.fromAttribute) !== void 0 ? c.converter : $t;
-      this._$Em = i;
+    var n, r;
+    const i = this.constructor, o = i._$Eh.get(t);
+    if (o !== void 0 && this._$Em !== o) {
+      const c = i.getPropertyOptions(o), l = typeof c.converter == "function" ? { fromAttribute: c.converter } : ((n = c.converter) == null ? void 0 : n.fromAttribute) !== void 0 ? c.converter : mt;
+      this._$Em = o;
       const d = l.fromAttribute(s, c.type);
-      this[i] = d ?? ((a = this._$Ej) == null ? void 0 : a.get(i)) ?? d, this._$Em = null;
+      this[o] = d ?? ((r = this._$Ej) == null ? void 0 : r.get(o)) ?? d, this._$Em = null;
     }
   }
-  requestUpdate(t, s, o, i = !1, n) {
-    var a;
+  requestUpdate(t, s, i, o = !1, n) {
+    var r;
     if (t !== void 0) {
       const c = this.constructor;
-      if (i === !1 && (n = this[t]), o ?? (o = c.getPropertyOptions(t)), !((o.hasChanged ?? Ut)(n, s) || o.useDefault && o.reflect && n === ((a = this._$Ej) == null ? void 0 : a.get(t)) && !this.hasAttribute(c._$Eu(t, o)))) return;
-      this.C(t, s, o);
+      if (o === !1 && (n = this[t]), i ?? (i = c.getPropertyOptions(t)), !((i.hasChanged ?? Lt)(n, s) || i.useDefault && i.reflect && n === ((r = this._$Ej) == null ? void 0 : r.get(t)) && !this.hasAttribute(c._$Eu(t, i)))) return;
+      this.C(t, s, i);
     }
     this.isUpdatePending === !1 && (this._$ES = this._$EP());
   }
-  C(t, s, { useDefault: o, reflect: i, wrapped: n }, a) {
-    o && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t) && (this._$Ej.set(t, a ?? s ?? this[t]), n !== !0 || a !== void 0) || (this._$AL.has(t) || (this.hasUpdated || o || (s = void 0), this._$AL.set(t, s)), i === !0 && this._$Em !== t && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t));
+  C(t, s, { useDefault: i, reflect: o, wrapped: n }, r) {
+    i && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t) && (this._$Ej.set(t, r ?? s ?? this[t]), n !== !0 || r !== void 0) || (this._$AL.has(t) || (this.hasUpdated || i || (s = void 0), this._$AL.set(t, s)), o === !0 && this._$Em !== t && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t));
   }
   async _$EP() {
     this.isUpdatePending = !0;
@@ -224,28 +224,28 @@ let q = class extends HTMLElement {
     return this.performUpdate();
   }
   performUpdate() {
-    var o;
+    var i;
     if (!this.isUpdatePending) return;
     if (!this.hasUpdated) {
       if (this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this._$Ep) {
-        for (const [n, a] of this._$Ep) this[n] = a;
+        for (const [n, r] of this._$Ep) this[n] = r;
         this._$Ep = void 0;
       }
-      const i = this.constructor.elementProperties;
-      if (i.size > 0) for (const [n, a] of i) {
-        const { wrapped: c } = a, l = this[n];
-        c !== !0 || this._$AL.has(n) || l === void 0 || this.C(n, void 0, a, l);
+      const o = this.constructor.elementProperties;
+      if (o.size > 0) for (const [n, r] of o) {
+        const { wrapped: c } = r, l = this[n];
+        c !== !0 || this._$AL.has(n) || l === void 0 || this.C(n, void 0, r, l);
       }
     }
     let t = !1;
     const s = this._$AL;
     try {
-      t = this.shouldUpdate(s), t ? (this.willUpdate(s), (o = this._$EO) == null || o.forEach((i) => {
+      t = this.shouldUpdate(s), t ? (this.willUpdate(s), (i = this._$EO) == null || i.forEach((o) => {
         var n;
-        return (n = i.hostUpdate) == null ? void 0 : n.call(i);
+        return (n = o.hostUpdate) == null ? void 0 : n.call(o);
       }), this.update(s)) : this._$EM();
-    } catch (i) {
-      throw t = !1, this._$EM(), i;
+    } catch (o) {
+      throw t = !1, this._$EM(), o;
     }
     t && this._$AE(s);
   }
@@ -253,9 +253,9 @@ let q = class extends HTMLElement {
   }
   _$AE(t) {
     var s;
-    (s = this._$EO) == null || s.forEach((o) => {
-      var i;
-      return (i = o.hostUpdated) == null ? void 0 : i.call(o);
+    (s = this._$EO) == null || s.forEach((i) => {
+      var o;
+      return (o = i.hostUpdated) == null ? void 0 : o.call(i);
     }), this.hasUpdated || (this.hasUpdated = !0, this.firstUpdated(t)), this.updated(t);
   }
   _$EM() {
@@ -278,76 +278,76 @@ let q = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-q.elementStyles = [], q.shadowRootOptions = { mode: "open" }, q[nt("elementProperties")] = /* @__PURE__ */ new Map(), q[nt("finalized")] = /* @__PURE__ */ new Map(), At == null || At({ ReactiveElement: q }), (U.reactiveElementVersions ?? (U.reactiveElementVersions = [])).push("2.1.2");
+K.elementStyles = [], K.shadowRootOptions = { mode: "open" }, K[it("elementProperties")] = /* @__PURE__ */ new Map(), K[it("finalized")] = /* @__PURE__ */ new Map(), xt == null || xt({ ReactiveElement: K }), (H.reactiveElementVersions ?? (H.reactiveElementVersions = [])).push("2.1.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const at = globalThis, ps = (e) => e, wt = at.trustedTypes, us = wt ? wt.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, Os = "$lit$", H = `lit$${Math.random().toFixed(9).slice(2)}$`, Ls = "?" + H, Ys = `<${Ls}>`, V = document, ct = () => V.createComment(""), lt = (e) => e === null || typeof e != "object" && typeof e != "function", It = Array.isArray, Zs = (e) => It(e) || typeof (e == null ? void 0 : e[Symbol.iterator]) == "function", kt = `[ 	
-\f\r]`, it = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, fs = /-->/g, gs = />/g, D = RegExp(`>|${kt}(?:([^\\s"'>=/]+)(${kt}*=${kt}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), ys = /'/g, _s = /"/g, zs = /^(?:script|style|textarea|title)$/i, Ms = (e) => (t, ...s) => ({ _$litType$: e, strings: t, values: s }), m = Ms(1), rt = Ms(2), W = Symbol.for("lit-noChange"), g = Symbol.for("lit-nothing"), ms = /* @__PURE__ */ new WeakMap(), B = V.createTreeWalker(V, 129);
-function Ns(e, t) {
-  if (!It(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
+const ot = globalThis, ds = (e) => e, vt = ot.trustedTypes, us = vt ? vt.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, Ms = "$lit$", N = `lit$${Math.random().toFixed(9).slice(2)}$`, Ls = "?" + N, Zs = `<${Ls}>`, V = document, rt = () => V.createComment(""), at = (e) => e === null || typeof e != "object" && typeof e != "function", zt = Array.isArray, Js = (e) => zt(e) || typeof (e == null ? void 0 : e[Symbol.iterator]) == "function", Et = `[ 	
+\f\r]`, et = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ps = /-->/g, fs = />/g, U = RegExp(`>|${Et}(?:([^\\s"'>=/]+)(${Et}*=${Et}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), gs = /'/g, ys = /"/g, zs = /^(?:script|style|textarea|title)$/i, Ns = (e) => (t, ...s) => ({ _$litType$: e, strings: t, values: s }), b = Ns(1), nt = Ns(2), G = Symbol.for("lit-noChange"), _ = Symbol.for("lit-nothing"), _s = /* @__PURE__ */ new WeakMap(), B = V.createTreeWalker(V, 129);
+function Hs(e, t) {
+  if (!zt(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return us !== void 0 ? us.createHTML(t) : t;
 }
-const Js = (e, t) => {
-  const s = e.length - 1, o = [];
-  let i, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", a = it;
+const Xs = (e, t) => {
+  const s = e.length - 1, i = [];
+  let o, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", r = et;
   for (let c = 0; c < s; c++) {
     const l = e[c];
-    let d, u, p = -1, _ = 0;
-    for (; _ < l.length && (a.lastIndex = _, u = a.exec(l), u !== null); ) _ = a.lastIndex, a === it ? u[1] === "!--" ? a = fs : u[1] !== void 0 ? a = gs : u[2] !== void 0 ? (zs.test(u[2]) && (i = RegExp("</" + u[2], "g")), a = D) : u[3] !== void 0 && (a = D) : a === D ? u[0] === ">" ? (a = i ?? it, p = -1) : u[1] === void 0 ? p = -2 : (p = a.lastIndex - u[2].length, d = u[1], a = u[3] === void 0 ? D : u[3] === '"' ? _s : ys) : a === _s || a === ys ? a = D : a === fs || a === gs ? a = it : (a = D, i = void 0);
-    const y = a === D && e[c + 1].startsWith("/>") ? " " : "";
-    n += a === it ? l + Ys : p >= 0 ? (o.push(d), l.slice(0, p) + Os + l.slice(p) + H + y) : l + H + (p === -2 ? c : y);
+    let d, p, u = -1, y = 0;
+    for (; y < l.length && (r.lastIndex = y, p = r.exec(l), p !== null); ) y = r.lastIndex, r === et ? p[1] === "!--" ? r = ps : p[1] !== void 0 ? r = fs : p[2] !== void 0 ? (zs.test(p[2]) && (o = RegExp("</" + p[2], "g")), r = U) : p[3] !== void 0 && (r = U) : r === U ? p[0] === ">" ? (r = o ?? et, u = -1) : p[1] === void 0 ? u = -2 : (u = r.lastIndex - p[2].length, d = p[1], r = p[3] === void 0 ? U : p[3] === '"' ? ys : gs) : r === ys || r === gs ? r = U : r === ps || r === fs ? r = et : (r = U, o = void 0);
+    const g = r === U && e[c + 1].startsWith("/>") ? " " : "";
+    n += r === et ? l + Zs : u >= 0 ? (i.push(d), l.slice(0, u) + Ms + l.slice(u) + N + g) : l + N + (u === -2 ? c : g);
   }
-  return [Ns(e, n + (e[s] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), o];
+  return [Hs(e, n + (e[s] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
-class ht {
-  constructor({ strings: t, _$litType$: s }, o) {
-    let i;
+class ct {
+  constructor({ strings: t, _$litType$: s }, i) {
+    let o;
     this.parts = [];
-    let n = 0, a = 0;
-    const c = t.length - 1, l = this.parts, [d, u] = Js(t, s);
-    if (this.el = ht.createElement(d, o), B.currentNode = this.el.content, s === 2 || s === 3) {
-      const p = this.el.content.firstChild;
-      p.replaceWith(...p.childNodes);
+    let n = 0, r = 0;
+    const c = t.length - 1, l = this.parts, [d, p] = Xs(t, s);
+    if (this.el = ct.createElement(d, i), B.currentNode = this.el.content, s === 2 || s === 3) {
+      const u = this.el.content.firstChild;
+      u.replaceWith(...u.childNodes);
     }
-    for (; (i = B.nextNode()) !== null && l.length < c; ) {
-      if (i.nodeType === 1) {
-        if (i.hasAttributes()) for (const p of i.getAttributeNames()) if (p.endsWith(Os)) {
-          const _ = u[a++], y = i.getAttribute(p).split(H), f = /([.?@])?(.*)/.exec(_);
-          l.push({ type: 1, index: n, name: f[2], strings: y, ctor: f[1] === "." ? Qs : f[1] === "?" ? ti : f[1] === "@" ? ei : Et }), i.removeAttribute(p);
-        } else p.startsWith(H) && (l.push({ type: 6, index: n }), i.removeAttribute(p));
-        if (zs.test(i.tagName)) {
-          const p = i.textContent.split(H), _ = p.length - 1;
-          if (_ > 0) {
-            i.textContent = wt ? wt.emptyScript : "";
-            for (let y = 0; y < _; y++) i.append(p[y], ct()), B.nextNode(), l.push({ type: 2, index: ++n });
-            i.append(p[_], ct());
+    for (; (o = B.nextNode()) !== null && l.length < c; ) {
+      if (o.nodeType === 1) {
+        if (o.hasAttributes()) for (const u of o.getAttributeNames()) if (u.endsWith(Ms)) {
+          const y = p[r++], g = o.getAttribute(u).split(N), f = /([.?@])?(.*)/.exec(y);
+          l.push({ type: 1, index: n, name: f[2], strings: g, ctor: f[1] === "." ? ti : f[1] === "?" ? ei : f[1] === "@" ? si : $t }), o.removeAttribute(u);
+        } else u.startsWith(N) && (l.push({ type: 6, index: n }), o.removeAttribute(u));
+        if (zs.test(o.tagName)) {
+          const u = o.textContent.split(N), y = u.length - 1;
+          if (y > 0) {
+            o.textContent = vt ? vt.emptyScript : "";
+            for (let g = 0; g < y; g++) o.append(u[g], rt()), B.nextNode(), l.push({ type: 2, index: ++n });
+            o.append(u[y], rt());
           }
         }
-      } else if (i.nodeType === 8) if (i.data === Ls) l.push({ type: 2, index: n });
+      } else if (o.nodeType === 8) if (o.data === Ls) l.push({ type: 2, index: n });
       else {
-        let p = -1;
-        for (; (p = i.data.indexOf(H, p + 1)) !== -1; ) l.push({ type: 7, index: n }), p += H.length - 1;
+        let u = -1;
+        for (; (u = o.data.indexOf(N, u + 1)) !== -1; ) l.push({ type: 7, index: n }), u += N.length - 1;
       }
       n++;
     }
   }
   static createElement(t, s) {
-    const o = V.createElement("template");
-    return o.innerHTML = t, o;
+    const i = V.createElement("template");
+    return i.innerHTML = t, i;
   }
 }
-function Z(e, t, s = e, o) {
-  var a, c;
-  if (t === W) return t;
-  let i = o !== void 0 ? (a = s._$Co) == null ? void 0 : a[o] : s._$Cl;
-  const n = lt(t) ? void 0 : t._$litDirective$;
-  return (i == null ? void 0 : i.constructor) !== n && ((c = i == null ? void 0 : i._$AO) == null || c.call(i, !1), n === void 0 ? i = void 0 : (i = new n(e), i._$AT(e, s, o)), o !== void 0 ? (s._$Co ?? (s._$Co = []))[o] = i : s._$Cl = i), i !== void 0 && (t = Z(e, i._$AS(e, t.values), i, o)), t;
+function Y(e, t, s = e, i) {
+  var r, c;
+  if (t === G) return t;
+  let o = i !== void 0 ? (r = s._$Co) == null ? void 0 : r[i] : s._$Cl;
+  const n = at(t) ? void 0 : t._$litDirective$;
+  return (o == null ? void 0 : o.constructor) !== n && ((c = o == null ? void 0 : o._$AO) == null || c.call(o, !1), n === void 0 ? o = void 0 : (o = new n(e), o._$AT(e, s, i)), i !== void 0 ? (s._$Co ?? (s._$Co = []))[i] = o : s._$Cl = o), o !== void 0 && (t = Y(e, o._$AS(e, t.values), o, i)), t;
 }
-class Xs {
+class Qs {
   constructor(t, s) {
     this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = s;
   }
@@ -358,30 +358,30 @@ class Xs {
     return this._$AM._$AU;
   }
   u(t) {
-    const { el: { content: s }, parts: o } = this._$AD, i = ((t == null ? void 0 : t.creationScope) ?? V).importNode(s, !0);
-    B.currentNode = i;
-    let n = B.nextNode(), a = 0, c = 0, l = o[0];
+    const { el: { content: s }, parts: i } = this._$AD, o = ((t == null ? void 0 : t.creationScope) ?? V).importNode(s, !0);
+    B.currentNode = o;
+    let n = B.nextNode(), r = 0, c = 0, l = i[0];
     for (; l !== void 0; ) {
-      if (a === l.index) {
+      if (r === l.index) {
         let d;
-        l.type === 2 ? d = new Q(n, n.nextSibling, this, t) : l.type === 1 ? d = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (d = new si(n, this, t)), this._$AV.push(d), l = o[++c];
+        l.type === 2 ? d = new X(n, n.nextSibling, this, t) : l.type === 1 ? d = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (d = new ii(n, this, t)), this._$AV.push(d), l = i[++c];
       }
-      a !== (l == null ? void 0 : l.index) && (n = B.nextNode(), a++);
+      r !== (l == null ? void 0 : l.index) && (n = B.nextNode(), r++);
     }
-    return B.currentNode = V, i;
+    return B.currentNode = V, o;
   }
   p(t) {
     let s = 0;
-    for (const o of this._$AV) o !== void 0 && (o.strings !== void 0 ? (o._$AI(t, o, s), s += o.strings.length - 2) : o._$AI(t[s])), s++;
+    for (const i of this._$AV) i !== void 0 && (i.strings !== void 0 ? (i._$AI(t, i, s), s += i.strings.length - 2) : i._$AI(t[s])), s++;
   }
 }
-class Q {
+class X {
   get _$AU() {
     var t;
     return ((t = this._$AM) == null ? void 0 : t._$AU) ?? this._$Cv;
   }
-  constructor(t, s, o, i) {
-    this.type = 2, this._$AH = g, this._$AN = void 0, this._$AA = t, this._$AB = s, this._$AM = o, this.options = i, this._$Cv = (i == null ? void 0 : i.isConnected) ?? !0;
+  constructor(t, s, i, o) {
+    this.type = 2, this._$AH = _, this._$AN = void 0, this._$AA = t, this._$AB = s, this._$AM = i, this.options = o, this._$Cv = (o == null ? void 0 : o.isConnected) ?? !0;
   }
   get parentNode() {
     let t = this._$AA.parentNode;
@@ -395,7 +395,7 @@ class Q {
     return this._$AB;
   }
   _$AI(t, s = this) {
-    t = Z(this, t, s), lt(t) ? t === g || t == null || t === "" ? (this._$AH !== g && this._$AR(), this._$AH = g) : t !== this._$AH && t !== W && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Zs(t) ? this.k(t) : this._(t);
+    t = Y(this, t, s), at(t) ? t === _ || t == null || t === "" ? (this._$AH !== _ && this._$AR(), this._$AH = _) : t !== this._$AH && t !== G && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Js(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -404,33 +404,33 @@ class Q {
     this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
   }
   _(t) {
-    this._$AH !== g && lt(this._$AH) ? this._$AA.nextSibling.data = t : this.T(V.createTextNode(t)), this._$AH = t;
+    this._$AH !== _ && at(this._$AH) ? this._$AA.nextSibling.data = t : this.T(V.createTextNode(t)), this._$AH = t;
   }
   $(t) {
     var n;
-    const { values: s, _$litType$: o } = t, i = typeof o == "number" ? this._$AC(t) : (o.el === void 0 && (o.el = ht.createElement(Ns(o.h, o.h[0]), this.options)), o);
-    if (((n = this._$AH) == null ? void 0 : n._$AD) === i) this._$AH.p(s);
+    const { values: s, _$litType$: i } = t, o = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = ct.createElement(Hs(i.h, i.h[0]), this.options)), i);
+    if (((n = this._$AH) == null ? void 0 : n._$AD) === o) this._$AH.p(s);
     else {
-      const a = new Xs(i, this), c = a.u(this.options);
-      a.p(s), this.T(c), this._$AH = a;
+      const r = new Qs(o, this), c = r.u(this.options);
+      r.p(s), this.T(c), this._$AH = r;
     }
   }
   _$AC(t) {
-    let s = ms.get(t.strings);
-    return s === void 0 && ms.set(t.strings, s = new ht(t)), s;
+    let s = _s.get(t.strings);
+    return s === void 0 && _s.set(t.strings, s = new ct(t)), s;
   }
   k(t) {
-    It(this._$AH) || (this._$AH = [], this._$AR());
+    zt(this._$AH) || (this._$AH = [], this._$AR());
     const s = this._$AH;
-    let o, i = 0;
-    for (const n of t) i === s.length ? s.push(o = new Q(this.O(ct()), this.O(ct()), this, this.options)) : o = s[i], o._$AI(n), i++;
-    i < s.length && (this._$AR(o && o._$AB.nextSibling, i), s.length = i);
+    let i, o = 0;
+    for (const n of t) o === s.length ? s.push(i = new X(this.O(rt()), this.O(rt()), this, this.options)) : i = s[o], i._$AI(n), o++;
+    o < s.length && (this._$AR(i && i._$AB.nextSibling, o), s.length = o);
   }
   _$AR(t = this._$AA.nextSibling, s) {
-    var o;
-    for ((o = this._$AP) == null ? void 0 : o.call(this, !1, !0, s); t !== this._$AB; ) {
-      const i = ps(t).nextSibling;
-      ps(t).remove(), t = i;
+    var i;
+    for ((i = this._$AP) == null ? void 0 : i.call(this, !1, !0, s); t !== this._$AB; ) {
+      const o = ds(t).nextSibling;
+      ds(t).remove(), t = o;
     }
   }
   setConnected(t) {
@@ -438,82 +438,82 @@ class Q {
     this._$AM === void 0 && (this._$Cv = t, (s = this._$AP) == null || s.call(this, t));
   }
 }
-class Et {
+class $t {
   get tagName() {
     return this.element.tagName;
   }
   get _$AU() {
     return this._$AM._$AU;
   }
-  constructor(t, s, o, i, n) {
-    this.type = 1, this._$AH = g, this._$AN = void 0, this.element = t, this.name = s, this._$AM = i, this.options = n, o.length > 2 || o[0] !== "" || o[1] !== "" ? (this._$AH = Array(o.length - 1).fill(new String()), this.strings = o) : this._$AH = g;
+  constructor(t, s, i, o, n) {
+    this.type = 1, this._$AH = _, this._$AN = void 0, this.element = t, this.name = s, this._$AM = o, this.options = n, i.length > 2 || i[0] !== "" || i[1] !== "" ? (this._$AH = Array(i.length - 1).fill(new String()), this.strings = i) : this._$AH = _;
   }
-  _$AI(t, s = this, o, i) {
+  _$AI(t, s = this, i, o) {
     const n = this.strings;
-    let a = !1;
-    if (n === void 0) t = Z(this, t, s, 0), a = !lt(t) || t !== this._$AH && t !== W, a && (this._$AH = t);
+    let r = !1;
+    if (n === void 0) t = Y(this, t, s, 0), r = !at(t) || t !== this._$AH && t !== G, r && (this._$AH = t);
     else {
       const c = t;
       let l, d;
-      for (t = n[0], l = 0; l < n.length - 1; l++) d = Z(this, c[o + l], s, l), d === W && (d = this._$AH[l]), a || (a = !lt(d) || d !== this._$AH[l]), d === g ? t = g : t !== g && (t += (d ?? "") + n[l + 1]), this._$AH[l] = d;
+      for (t = n[0], l = 0; l < n.length - 1; l++) d = Y(this, c[i + l], s, l), d === G && (d = this._$AH[l]), r || (r = !at(d) || d !== this._$AH[l]), d === _ ? t = _ : t !== _ && (t += (d ?? "") + n[l + 1]), this._$AH[l] = d;
     }
-    a && !i && this.j(t);
+    r && !o && this.j(t);
   }
   j(t) {
-    t === g ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
+    t === _ ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
   }
 }
-class Qs extends Et {
+class ti extends $t {
   constructor() {
     super(...arguments), this.type = 3;
   }
   j(t) {
-    this.element[this.name] = t === g ? void 0 : t;
+    this.element[this.name] = t === _ ? void 0 : t;
   }
 }
-class ti extends Et {
+class ei extends $t {
   constructor() {
     super(...arguments), this.type = 4;
   }
   j(t) {
-    this.element.toggleAttribute(this.name, !!t && t !== g);
+    this.element.toggleAttribute(this.name, !!t && t !== _);
   }
 }
-class ei extends Et {
-  constructor(t, s, o, i, n) {
-    super(t, s, o, i, n), this.type = 5;
+class si extends $t {
+  constructor(t, s, i, o, n) {
+    super(t, s, i, o, n), this.type = 5;
   }
   _$AI(t, s = this) {
-    if ((t = Z(this, t, s, 0) ?? g) === W) return;
-    const o = this._$AH, i = t === g && o !== g || t.capture !== o.capture || t.once !== o.once || t.passive !== o.passive, n = t !== g && (o === g || i);
-    i && this.element.removeEventListener(this.name, this, o), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
+    if ((t = Y(this, t, s, 0) ?? _) === G) return;
+    const i = this._$AH, o = t === _ && i !== _ || t.capture !== i.capture || t.once !== i.once || t.passive !== i.passive, n = t !== _ && (i === _ || o);
+    o && this.element.removeEventListener(this.name, this, i), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
   handleEvent(t) {
     var s;
     typeof this._$AH == "function" ? this._$AH.call(((s = this.options) == null ? void 0 : s.host) ?? this.element, t) : this._$AH.handleEvent(t);
   }
 }
-class si {
-  constructor(t, s, o) {
-    this.element = t, this.type = 6, this._$AN = void 0, this._$AM = s, this.options = o;
+class ii {
+  constructor(t, s, i) {
+    this.element = t, this.type = 6, this._$AN = void 0, this._$AM = s, this.options = i;
   }
   get _$AU() {
     return this._$AM._$AU;
   }
   _$AI(t) {
-    Z(this, t);
+    Y(this, t);
   }
 }
-const ii = { I: Q }, Tt = at.litHtmlPolyfillSupport;
-Tt == null || Tt(ht, Q), (at.litHtmlVersions ?? (at.litHtmlVersions = [])).push("3.3.2");
-const oi = (e, t, s) => {
-  const o = (s == null ? void 0 : s.renderBefore) ?? t;
-  let i = o._$litPart$;
-  if (i === void 0) {
+const oi = { I: X }, Ct = ot.litHtmlPolyfillSupport;
+Ct == null || Ct(ct, X), (ot.litHtmlVersions ?? (ot.litHtmlVersions = [])).push("3.3.2");
+const ni = (e, t, s) => {
+  const i = (s == null ? void 0 : s.renderBefore) ?? t;
+  let o = i._$litPart$;
+  if (o === void 0) {
     const n = (s == null ? void 0 : s.renderBefore) ?? null;
-    o._$litPart$ = i = new Q(t.insertBefore(ct(), n), n, void 0, s ?? {});
+    i._$litPart$ = o = new X(t.insertBefore(rt(), n), n, void 0, s ?? {});
   }
-  return i._$AI(e), i;
+  return o._$AI(e), o;
 };
 /**
  * @license
@@ -521,7 +521,7 @@ const oi = (e, t, s) => {
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const F = globalThis;
-let T = class extends q {
+let T = class extends K {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -532,7 +532,7 @@ let T = class extends q {
   }
   update(t) {
     const s = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = oi(s, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = ni(s, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     var t;
@@ -543,20 +543,20 @@ let T = class extends q {
     super.disconnectedCallback(), (t = this._$Do) == null || t.setConnected(!1);
   }
   render() {
-    return W;
+    return G;
   }
 };
-var Ts;
-T._$litElement$ = !0, T.finalized = !0, (Ts = F.litElementHydrateSupport) == null || Ts.call(F, { LitElement: T });
-const Pt = F.litElementPolyfillSupport;
-Pt == null || Pt({ LitElement: T });
+var Ps;
+T._$litElement$ = !0, T.finalized = !0, (Ps = F.litElementHydrateSupport) == null || Ps.call(F, { LitElement: T });
+const St = F.litElementPolyfillSupport;
+St == null || St({ LitElement: T });
 (F.litElementVersions ?? (F.litElementVersions = [])).push("4.2.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const tt = (e) => (t, s) => {
+const Q = (e) => (t, s) => {
   s !== void 0 ? s.addInitializer(() => {
     customElements.define(e, t);
   }) : customElements.define(e, t);
@@ -566,31 +566,31 @@ const tt = (e) => (t, s) => {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const ni = { attribute: !0, type: String, converter: $t, reflect: !1, hasChanged: Ut }, ai = (e = ni, t, s) => {
-  const { kind: o, metadata: i } = s;
-  let n = globalThis.litPropertyMetadata.get(i);
-  if (n === void 0 && globalThis.litPropertyMetadata.set(i, n = /* @__PURE__ */ new Map()), o === "setter" && ((e = Object.create(e)).wrapped = !0), n.set(s.name, e), o === "accessor") {
-    const { name: a } = s;
+const ri = { attribute: !0, type: String, converter: mt, reflect: !1, hasChanged: Lt }, ai = (e = ri, t, s) => {
+  const { kind: i, metadata: o } = s;
+  let n = globalThis.litPropertyMetadata.get(o);
+  if (n === void 0 && globalThis.litPropertyMetadata.set(o, n = /* @__PURE__ */ new Map()), i === "setter" && ((e = Object.create(e)).wrapped = !0), n.set(s.name, e), i === "accessor") {
+    const { name: r } = s;
     return { set(c) {
       const l = t.get.call(this);
-      t.set.call(this, c), this.requestUpdate(a, l, e, !0, c);
+      t.set.call(this, c), this.requestUpdate(r, l, e, !0, c);
     }, init(c) {
-      return c !== void 0 && this.C(a, void 0, e, c), c;
+      return c !== void 0 && this.C(r, void 0, e, c), c;
     } };
   }
-  if (o === "setter") {
-    const { name: a } = s;
+  if (i === "setter") {
+    const { name: r } = s;
     return function(c) {
-      const l = this[a];
-      t.call(this, c), this.requestUpdate(a, l, e, !0, c);
+      const l = this[r];
+      t.call(this, c), this.requestUpdate(r, l, e, !0, c);
     };
   }
-  throw Error("Unsupported decorator location: " + o);
+  throw Error("Unsupported decorator location: " + i);
 };
 function w(e) {
-  return (t, s) => typeof s == "object" ? ai(e, t, s) : ((o, i, n) => {
-    const a = i.hasOwnProperty(n);
-    return i.constructor.createProperty(n, o), a ? Object.getOwnPropertyDescriptor(i, n) : void 0;
+  return (t, s) => typeof s == "object" ? ai(e, t, s) : ((i, o, n) => {
+    const r = o.hasOwnProperty(n);
+    return o.constructor.createProperty(n, i), r ? Object.getOwnPropertyDescriptor(o, n) : void 0;
   })(e, t, s);
 }
 /**
@@ -598,283 +598,283 @@ function w(e) {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function Ct(e) {
+function dt(e) {
   return w({ ...e, state: !0, attribute: !1 });
 }
-const Dt = (e) => e.attributes.device_class ?? "", jt = (e) => e.attributes.unit_of_measurement ?? "", Rt = (e, t) => e.toLowerCase() + " " + (t.attributes.friendly_name ?? "").toLowerCase();
-function R(...e) {
+const Nt = (e) => e.attributes.device_class ?? "", Ht = (e) => e.attributes.unit_of_measurement ?? "", Dt = (e, t) => e.toLowerCase() + " " + (t.attributes.friendly_name ?? "").toLowerCase();
+function j(...e) {
   return (t, s) => {
-    let o = 0;
-    Dt(s) === "power" && (o += 4), ["W", "kW"].includes(jt(s)) && (o += 2);
-    const i = Rt(t, s);
-    for (const n of e) i.includes(n) && (o += 1);
-    return o;
+    let i = 0;
+    Nt(s) === "power" && (i += 4), ["W", "kW"].includes(Ht(s)) && (i += 2);
+    const o = Dt(t, s);
+    for (const n of e) o.includes(n) && (i += 1);
+    return i;
   };
 }
-function Y(...e) {
+function q(...e) {
   return (t, s) => {
-    let o = 0;
-    Dt(s) === "energy" && (o += 4), ["kWh", "Wh", "MWh"].includes(jt(s)) && (o += 2);
-    const i = Rt(t, s);
-    for (const n of e) i.includes(n) && (o += 1);
-    return o;
+    let i = 0;
+    Nt(s) === "energy" && (i += 4), ["kWh", "Wh", "MWh"].includes(Ht(s)) && (i += 2);
+    const o = Dt(t, s);
+    for (const n of e) o.includes(n) && (i += 1);
+    return i;
   };
 }
-function vs(...e) {
+function ms(...e) {
   return (t, s) => {
-    let o = 0;
-    Dt(s) === "battery" && (o += 4), jt(s) === "%" && (o += 2);
-    const i = Rt(t, s);
-    for (const n of e) i.includes(n) && (o += 1);
-    return o;
+    let i = 0;
+    Nt(s) === "battery" && (i += 4), Ht(s) === "%" && (i += 2);
+    const o = Dt(t, s);
+    for (const n of e) o.includes(n) && (i += 1);
+    return i;
   };
 }
-function gt(e, t = []) {
-  return (s, o) => {
-    const i = s.toLowerCase();
-    if (t.some((a) => i.includes(a))) return 0;
+function pt(e, t = []) {
+  return (s, i) => {
+    const o = s.toLowerCase();
+    if (t.some((r) => o.includes(r))) return 0;
     let n = 0;
-    for (const a of e) i.includes(a) && (n += 4);
+    for (const r of e) o.includes(r) && (n += 4);
     return n;
   };
 }
-function E(e, t, s, o) {
-  let i, n = 0;
-  for (const a of e) {
-    if (o.has(a)) continue;
-    const c = t[a];
+function E(e, t, s, i) {
+  let o, n = 0;
+  for (const r of e) {
+    if (i.has(r)) continue;
+    const c = t[r];
     if (!c) continue;
-    const l = s(a, c);
-    l > n && (n = l, i = a);
+    const l = s(r, c);
+    l > n && (n = l, o = r);
   }
-  return i && o.add(i), i;
+  return o && i.add(o), o;
 }
-function ri(e, t, s) {
-  const o = Object.values(t).some(
-    (b) => b.platform === "octopus_energy" && !b.disabled_by
-  ), i = Object.keys(e).filter((b) => b.includes("octopus_energy"));
-  if (!o && i.length === 0) return null;
-  const n = i.filter(
-    (b) => b.includes("octopus_energy_electricity")
-  ), a = ["Octopus Energy"], c = {}, l = {}, d = E(
+function ci(e, t, s) {
+  const i = Object.values(t).some(
+    (v) => v.platform === "octopus_energy" && !v.disabled_by
+  ), o = Object.keys(e).filter((v) => v.includes("octopus_energy"));
+  if (!i && o.length === 0) return null;
+  const n = o.filter(
+    (v) => v.includes("octopus_energy_electricity")
+  ), r = ["Octopus Energy"], c = {}, l = {}, d = E(
     n,
     e,
-    gt(["_current_rate"], ["export", "accumulative"]),
+    pt(["_current_rate"], ["export", "accumulative"]),
     s
   );
-  d && (c.rate_entity = d, a.push("rate"));
-  const u = E(
-    n,
-    e,
-    gt(["_current_accumulative_cost"]),
-    s
-  );
-  u && (c.cost_entity = u, a.push("cost"));
+  d && (c.rate_entity = d, r.push("rate"));
   const p = E(
     n,
     e,
-    gt(["_current_day_rates"]),
+    pt(["_current_accumulative_cost"]),
     s
   );
-  p && (c.slots_entity = p, a.push("slots"));
-  const _ = E(
-    i.filter((b) => b.startsWith("binary_sensor.")),
-    e,
-    gt(["_intelligent_dispatching"]),
-    s
-  );
-  _ && (c.dispatches_entity = _, a.push("dispatching")), Object.keys(c).length && (l.octopus = c);
-  const y = E(
+  p && (c.cost_entity = p, r.push("cost"));
+  const u = E(
     n,
     e,
-    R("import", "demand", "current"),
+    pt(["_current_day_rates"]),
     s
   );
-  y && (l.power_import = y, a.push("import power"));
+  u && (c.slots_entity = u, r.push("slots"));
+  const y = E(
+    o.filter((v) => v.startsWith("binary_sensor.")),
+    e,
+    pt(["_intelligent_dispatching"]),
+    s
+  );
+  y && (c.dispatches_entity = y, r.push("dispatching")), Object.keys(c).length && (l.octopus = c);
+  const g = E(
+    n,
+    e,
+    j("import", "demand", "current"),
+    s
+  );
+  g && (l.power_import = g, r.push("import power"));
   const f = E(
     n,
     e,
-    R("export", "demand", "current"),
+    j("export", "demand", "current"),
     s
   );
-  f && (l.power_export = f, a.push("export power"));
-  const v = E(
+  f && (l.power_export = f, r.push("export power"));
+  const m = E(
     n,
     e,
-    Y("import", "accumulative", "consumption"),
+    q("import", "accumulative", "consumption"),
     s
   );
-  v && (l.daily_usage = v, a.push("daily import"));
+  m && (l.daily_usage = m, r.push("daily import"));
   const $ = E(
     n,
     e,
-    Y("export", "accumulative"),
+    q("export", "accumulative"),
     s
   );
-  return $ && (l.daily_export = $, a.push("daily export")), { integration_type: "octopus", entity_types: { grid: l }, summary: a };
+  return $ && (l.daily_export = $, r.push("daily export")), { integration_type: "octopus", entity_types: { grid: l }, summary: r };
 }
-function ci(e, t, s) {
-  const o = Object.values(t).filter(
+function li(e, t, s) {
+  const i = Object.values(t).filter(
     (f) => f.platform === "tesla_custom" && !f.disabled_by
-  ), i = Object.keys(e).some(
+  ), o = Object.keys(e).some(
     (f) => f.includes("powerwall") || f.includes("tesla")
   );
-  if (o.length === 0 && !i) return null;
-  const n = o.length > 0 ? o.map((f) => f.entity_id) : Object.keys(e).filter((f) => f.includes("powerwall") || f.includes("tesla")), a = n.filter((f) => f.includes("powerwall")), c = n.filter((f) => !f.includes("powerwall")), l = ["Tesla"], d = {};
-  if (a.length > 0) {
-    const f = {}, v = E(
-      a,
+  if (i.length === 0 && !o) return null;
+  const n = i.length > 0 ? i.map((f) => f.entity_id) : Object.keys(e).filter((f) => f.includes("powerwall") || f.includes("tesla")), r = n.filter((f) => f.includes("powerwall")), c = n.filter((f) => !f.includes("powerwall")), l = ["Tesla"], d = {};
+  if (r.length > 0) {
+    const f = {}, m = E(
+      r,
       e,
-      vs("battery", "soc", "charge", "percent"),
+      ms("battery", "soc", "charge", "percent"),
       s
     );
-    v && (f.soc = v);
+    m && (f.soc = m);
     const $ = E(
-      a,
+      r,
       e,
-      R("battery", "power", "charge", "discharge"),
+      j("battery", "power", "charge", "discharge"),
       s
     );
     $ && (f.power_combined = $);
-    const b = E(
-      a,
+    const v = E(
+      r,
       e,
-      Y("battery", "today", "daily", "charged"),
+      q("battery", "today", "daily", "charged"),
       s
     );
-    b && (f.daily_usage = b), Object.keys(f).length && (d.battery = f, l.push("Powerwall"));
-  }
-  const u = E(
-    n,
-    e,
-    R("solar"),
-    s
-  );
-  if (u) {
-    const f = { power_combined: u }, v = E(
-      n,
-      e,
-      Y("solar"),
-      s
-    );
-    v && (f.daily_usage = v), d.solar = f, l.push("solar");
+    v && (f.daily_usage = v), Object.keys(f).length && (d.battery = f, l.push("Powerwall"));
   }
   const p = E(
     n,
     e,
-    R("load", "home", "house"),
+    j("solar"),
     s
   );
   if (p) {
-    const f = { power_combined: p }, v = E(
+    const f = { power_combined: p }, m = E(
       n,
       e,
-      Y("load", "home", "house"),
+      q("solar"),
       s
     );
-    v && (f.daily_usage = v), d.home = f, l.push("home load");
+    m && (f.daily_usage = m), d.solar = f, l.push("solar");
   }
-  const _ = E(
+  const u = E(
     n,
     e,
-    R("grid"),
+    j("load", "home", "house"),
     s
   );
-  _ && (d.grid = { power_combined: _ }, l.push("grid"));
-  const y = E(
-    c,
-    e,
-    vs("battery", "battery_level", "soc", "charge"),
-    s
-  );
-  if (y) {
-    const f = { soc: y }, v = E(
-      c,
+  if (u) {
+    const f = { power_combined: u }, m = E(
+      n,
       e,
-      R("charg", "power"),
+      q("load", "home", "house"),
       s
     );
-    v && (f.power_combined = v);
+    m && (f.daily_usage = m), d.home = f, l.push("home load");
+  }
+  const y = E(
+    n,
+    e,
+    j("grid"),
+    s
+  );
+  y && (d.grid = { power_combined: y }, l.push("grid"));
+  const g = E(
+    c,
+    e,
+    ms("battery", "battery_level", "soc", "charge"),
+    s
+  );
+  if (g) {
+    const f = { soc: g }, m = E(
+      c,
+      e,
+      j("charg", "power"),
+      s
+    );
+    m && (f.power_combined = m);
     const $ = E(
       c,
       e,
-      Y("charg", "energy"),
+      q("charg", "energy"),
       s
     );
     $ && (f.daily_usage = $), d.ev = f, l.push("EV");
   }
   return { integration_type: "tesla", entity_types: d, summary: l };
 }
-function li(e) {
+function hi(e) {
   var l, d;
-  const t = e, s = t.states ?? {}, o = t.entities ?? {}, i = /* @__PURE__ */ new Set(), n = ci(s, o, i), a = ri(s, o, i), c = {
+  const t = e, s = t.states ?? {}, i = t.entities ?? {}, o = /* @__PURE__ */ new Set(), n = li(s, i, o), r = ci(s, i, o), c = {
     integration_type: "manual",
     entity_types: {},
     summary: []
   };
-  if (n && (c.integration_type = "tesla", Object.assign(c.entity_types, n.entity_types), c.summary.push(...n.summary ?? [])), a) {
-    if (c.integration_type !== "tesla" && (c.integration_type = "octopus"), (l = a.entity_types) != null && l.grid) {
-      const u = a.entity_types.grid;
+  if (n && (c.integration_type = "tesla", Object.assign(c.entity_types, n.entity_types), c.summary.push(...n.summary ?? [])), r) {
+    if (c.integration_type !== "tesla" && (c.integration_type = "octopus"), (l = r.entity_types) != null && l.grid) {
+      const p = r.entity_types.grid;
       c.entity_types.grid = {
         ...c.entity_types.grid,
-        ...u,
+        ...p,
         // When octopus found separate import/export, drop any combined tesla grid entry
-        power_combined: u.power_import || (d = c.entity_types.grid) == null ? void 0 : d.power_combined
+        power_combined: p.power_import || (d = c.entity_types.grid) == null ? void 0 : d.power_combined
       };
     }
-    a.tariff_entity && (c.tariff_entity = a.tariff_entity), c.summary.push(...a.summary ?? []);
+    r.tariff_entity && (c.tariff_entity = r.tariff_entity), c.summary.push(...r.summary ?? []);
   }
   return c;
 }
-function hi(e, t, s = !1) {
-  const o = { ...e };
-  t.tariff_entity && (s || !e.tariff_entity) && (o.tariff_entity = t.tariff_entity);
-  const i = e.entity_types ?? {}, n = { ...i };
-  for (const [a, c] of Object.entries(t.entity_types)) {
-    const l = i[a] ?? {}, d = { ...l };
-    for (const [u, p] of Object.entries(c))
-      p !== void 0 && (s || !l[u]) && (d[u] = p);
-    n[a] = d;
+function di(e, t, s = !1) {
+  const i = { ...e };
+  t.tariff_entity && (s || !e.tariff_entity) && (i.tariff_entity = t.tariff_entity);
+  const o = e.entity_types ?? {}, n = { ...o };
+  for (const [r, c] of Object.entries(t.entity_types)) {
+    const l = o[r] ?? {}, d = { ...l };
+    for (const [p, u] of Object.entries(c))
+      u !== void 0 && (s || !l[p]) && (d[p] = u);
+    n[r] = d;
   }
-  return o.entity_types = n, o;
+  return i.entity_types = n, i;
 }
-const xt = ["grid", "solar", "battery", "home", "ev"], di = "custom_";
-function bs(e) {
+const bt = ["grid", "solar", "battery", "home", "ev"], ui = "custom_";
+function vs(e) {
   const t = e.match(/^custom_(\d+)$/);
   return t ? Number(t[1]) : Number.MAX_SAFE_INTEGER;
 }
 function pi(e) {
-  return `${di}${e + 1}`;
+  return `${ui}${e + 1}`;
 }
-function bt(e) {
+function _t(e) {
   const t = e.entity_types ?? {}, s = Object.fromEntries(
     Object.entries(t).filter(
-      ([a]) => xt.includes(a)
+      ([r]) => bt.includes(r)
     )
-  ), o = Object.entries(t).filter(([a]) => !xt.includes(a)).sort(([a], [c]) => bs(a) - bs(c)).map(([, a]) => ({ ...a })), i = Array.isArray(e.custom_types) ? e.custom_types.map((a) => ({ ...a })) : o, n = {
+  ), i = Object.entries(t).filter(([r]) => !bt.includes(r)).sort(([r], [c]) => vs(r) - vs(c)).map(([, r]) => ({ ...r })), o = Array.isArray(e.custom_types) ? e.custom_types.map((r) => ({ ...r })) : i, n = {
     ...s
   };
-  return i.forEach((a, c) => {
-    n[pi(c)] = { ...a };
+  return o.forEach((r, c) => {
+    n[pi(c)] = { ...r };
   }), {
     ...e,
     entity_types: n,
-    custom_types: i
+    custom_types: o
   };
 }
-var ui = Object.defineProperty, fi = Object.getOwnPropertyDescriptor, Bt = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? fi(t, s) : t, n = e.length - 1, a; n >= 0; n--)
-    (a = e[n]) && (i = (o ? a(t, s, i) : a(i)) || i);
-  return o && i && ui(t, s, i), i;
+var fi = Object.defineProperty, gi = Object.getOwnPropertyDescriptor, It = (e, t, s, i) => {
+  for (var o = i > 1 ? void 0 : i ? gi(t, s) : t, n = e.length - 1, r; n >= 0; n--)
+    (r = e[n]) && (o = (i ? r(t, s, o) : r(o)) || o);
+  return i && o && fi(t, s, o), o;
 };
-let dt = class extends T {
+let lt = class extends T {
   setConfig(e) {
-    this.config = bt(e);
+    this.config = _t(e);
   }
   _dispatchConfig(e) {
     this.dispatchEvent(
       new CustomEvent("config-changed", {
-        detail: { config: bt(e) },
+        detail: { config: _t(e) },
         bubbles: !0,
         composed: !0
       })
@@ -897,8 +897,8 @@ let dt = class extends T {
     });
   }
   _setCustomType(e, t) {
-    var o;
-    const s = [...((o = this.config) == null ? void 0 : o.custom_types) ?? []];
+    var i;
+    const s = [...((i = this.config) == null ? void 0 : i.custom_types) ?? []];
     s[e] = {
       ...s[e] ?? {},
       ...t
@@ -908,16 +908,16 @@ let dt = class extends T {
     });
   }
   render() {
-    var e, t, s, o, i, n, a, c, l, d, u, p, _, y, f, v, $, b, A, k, O, z, M, N, C, I, ft, et, st, Vt, Wt, Gt, Kt, qt, Yt, Zt, Jt, Xt, Qt, te, ee, se, ie, oe, ne, ae, re, ce, le, he, de, pe, ue, fe, ge, ye, _e, me, ve, be, $e, we, xe, Ee, Ce, Se, Ae, ke, Te, Pe, Oe, Le, ze, Me, Ne, He, Ue, Ie, De, je, Re, Be, Fe, Ve, We, Ge, Ke, qe, Ye, Ze, Je, Xe, Qe, ts, es, ss, is, os, ns, as;
-    return this.config ? m`
+    var e, t, s, i, o, n, r, c, l, d, p, u, y, g, f, m, $, v, O, M, S, A, L, z, I, tt, Rt, jt, Bt, Ft, Vt, Gt, Wt, Kt, qt, Yt, Zt, Jt, Xt, Qt, te, ee, se, ie, oe, ne, re, ae, ce, le, he, de, ue, pe, fe, ge, ye, _e, me, ve, be, $e, we, xe, Ee, Ce, Se, Ae, Te, ke, Pe, Oe, Me, Le, ze, Ne, He, De, Ie, Ue, Re, je, Be, Fe, Ve, Ge, We, Ke, qe, Ye, Ze, Je, Xe, Qe, ts, es, ss, is, os, ns;
+    return this.config ? b`
       <ha-expansion-panel header="General">
         <div class="section-body">
           <mwc-button
             @click=${() => this.dispatchEvent(
       new CustomEvent("config-changed", {
         detail: {
-          config: bt(
-            hi(this.config, li(this.hass), !1)
+          config: _t(
+            di(this.config, hi(this.hass), !1)
           )
         },
         bubbles: !0,
@@ -974,7 +974,7 @@ let dt = class extends T {
             .selector=${{ entity: {} }}
             .value=${((t = (e = this.config.entity_types) == null ? void 0 : e.grid) == null ? void 0 : t.power_import) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -983,7 +983,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   power_import: h.detail.value || void 0
                 }
               }
@@ -1000,9 +1000,9 @@ let dt = class extends T {
             label="Grid Export Power"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((o = (s = this.config.entity_types) == null ? void 0 : s.grid) == null ? void 0 : o.power_export) ?? ""}
+            .value=${((i = (s = this.config.entity_types) == null ? void 0 : s.grid) == null ? void 0 : i.power_export) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1011,7 +1011,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   power_export: h.detail.value || void 0
                 }
               }
@@ -1028,9 +1028,9 @@ let dt = class extends T {
             label="Grid Combined Power"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((n = (i = this.config.entity_types) == null ? void 0 : i.grid) == null ? void 0 : n.power_combined) ?? ""}
+            .value=${((n = (o = this.config.entity_types) == null ? void 0 : o.grid) == null ? void 0 : n.power_combined) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1039,7 +1039,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   power_combined: h.detail.value || void 0
                 }
               }
@@ -1056,9 +1056,9 @@ let dt = class extends T {
             label="Grid Daily Usage"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((c = (a = this.config.entity_types) == null ? void 0 : a.grid) == null ? void 0 : c.daily_usage) ?? ""}
+            .value=${((c = (r = this.config.entity_types) == null ? void 0 : r.grid) == null ? void 0 : c.daily_usage) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1067,7 +1067,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   daily_usage: h.detail.value || void 0
                 }
               }
@@ -1085,7 +1085,7 @@ let dt = class extends T {
             .selector=${{ entity: {} }}
             .value=${((d = (l = this.config.entity_types) == null ? void 0 : l.grid) == null ? void 0 : d.export_rate) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1094,7 +1094,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   export_rate: h.detail.value || void 0
                 }
               }
@@ -1109,9 +1109,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Grid Show when idle</span>
             <ha-switch
-              .checked=${((p = (u = this.config.entity_types) == null ? void 0 : u.grid) == null ? void 0 : p.show_zero) ?? !0}
+              .checked=${((u = (p = this.config.entity_types) == null ? void 0 : p.grid) == null ? void 0 : u.show_zero) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1120,7 +1120,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   show_zero: h.target.checked
                 }
               }
@@ -1137,9 +1137,9 @@ let dt = class extends T {
             label="Grid Zero Tolerance"
             type="number"
             min="0"
-            .value=${((y = (_ = this.config.entity_types) == null ? void 0 : _.grid) == null ? void 0 : y.zero_tolerance) != null ? String((v = (f = this.config.entity_types) == null ? void 0 : f.grid) == null ? void 0 : v.zero_tolerance) : ""}
+            .value=${((g = (y = this.config.entity_types) == null ? void 0 : y.grid) == null ? void 0 : g.zero_tolerance) != null ? String((m = (f = this.config.entity_types) == null ? void 0 : f.grid) == null ? void 0 : m.zero_tolerance) : ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1148,7 +1148,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   zero_tolerance: h.target.value !== "" ? Number(h.target.value) : void 0
                 }
               }
@@ -1163,9 +1163,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
-              .checked=${((b = ($ = this.config.entity_types) == null ? void 0 : $.grid) == null ? void 0 : b.show_label) ?? !0}
+              .checked=${((v = ($ = this.config.entity_types) == null ? void 0 : $.grid) == null ? void 0 : v.show_label) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1174,7 +1174,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   show_label: h.target.checked
                 }
               }
@@ -1189,9 +1189,9 @@ let dt = class extends T {
           </div>
           <ha-textfield
             label="Grid Label"
-            .value=${((k = (A = this.config.entity_types) == null ? void 0 : A.grid) == null ? void 0 : k.label) ?? ""}
+            .value=${((M = (O = this.config.entity_types) == null ? void 0 : O.grid) == null ? void 0 : M.label) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1200,7 +1200,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   label: h.target.value || void 0
                 }
               }
@@ -1216,9 +1216,9 @@ let dt = class extends T {
             label="Icon"
             .hass=${this.hass}
             .selector=${{ icon: {} }}
-            .value=${((z = (O = this.config.entity_types) == null ? void 0 : O.grid) == null ? void 0 : z.icon) ?? ""}
+            .value=${((A = (S = this.config.entity_types) == null ? void 0 : S.grid) == null ? void 0 : A.icon) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1227,7 +1227,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   icon: h.detail.value || void 0
                 }
               }
@@ -1241,9 +1241,9 @@ let dt = class extends T {
           ></ha-selector>
           <ha-textfield
             label="Grid Colour"
-            .value=${((N = (M = this.config.entity_types) == null ? void 0 : M.grid) == null ? void 0 : N.colour) ?? ""}
+            .value=${((z = (L = this.config.entity_types) == null ? void 0 : L.grid) == null ? void 0 : z.colour) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1252,7 +1252,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 grid: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.grid) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.grid) ?? {},
                   colour: h.target.value || void 0
                 }
               }
@@ -1273,9 +1273,9 @@ let dt = class extends T {
             label="Solar Combined Power"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((I = (C = this.config.entity_types) == null ? void 0 : C.solar) == null ? void 0 : I.power_combined) ?? ""}
+            .value=${((tt = (I = this.config.entity_types) == null ? void 0 : I.solar) == null ? void 0 : tt.power_combined) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1284,7 +1284,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   power_combined: h.detail.value || void 0
                 }
               }
@@ -1301,9 +1301,9 @@ let dt = class extends T {
             label="Solar Daily Usage"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((et = (ft = this.config.entity_types) == null ? void 0 : ft.solar) == null ? void 0 : et.daily_usage) ?? ""}
+            .value=${((jt = (Rt = this.config.entity_types) == null ? void 0 : Rt.solar) == null ? void 0 : jt.daily_usage) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1312,7 +1312,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   daily_usage: h.detail.value || void 0
                 }
               }
@@ -1327,9 +1327,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Solar Show when idle</span>
             <ha-switch
-              .checked=${((Vt = (st = this.config.entity_types) == null ? void 0 : st.solar) == null ? void 0 : Vt.show_zero) ?? !0}
+              .checked=${((Ft = (Bt = this.config.entity_types) == null ? void 0 : Bt.solar) == null ? void 0 : Ft.show_zero) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1338,7 +1338,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   show_zero: h.target.checked
                 }
               }
@@ -1355,9 +1355,9 @@ let dt = class extends T {
             label="Solar Zero Tolerance"
             type="number"
             min="0"
-            .value=${((Gt = (Wt = this.config.entity_types) == null ? void 0 : Wt.solar) == null ? void 0 : Gt.zero_tolerance) != null ? String((qt = (Kt = this.config.entity_types) == null ? void 0 : Kt.solar) == null ? void 0 : qt.zero_tolerance) : ""}
+            .value=${((Gt = (Vt = this.config.entity_types) == null ? void 0 : Vt.solar) == null ? void 0 : Gt.zero_tolerance) != null ? String((Kt = (Wt = this.config.entity_types) == null ? void 0 : Wt.solar) == null ? void 0 : Kt.zero_tolerance) : ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1366,7 +1366,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   zero_tolerance: h.target.value !== "" ? Number(h.target.value) : void 0
                 }
               }
@@ -1381,9 +1381,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
-              .checked=${((Zt = (Yt = this.config.entity_types) == null ? void 0 : Yt.solar) == null ? void 0 : Zt.show_label) ?? !0}
+              .checked=${((Yt = (qt = this.config.entity_types) == null ? void 0 : qt.solar) == null ? void 0 : Yt.show_label) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1392,7 +1392,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   show_label: h.target.checked
                 }
               }
@@ -1407,9 +1407,9 @@ let dt = class extends T {
           </div>
           <ha-textfield
             label="Solar Label"
-            .value=${((Xt = (Jt = this.config.entity_types) == null ? void 0 : Jt.solar) == null ? void 0 : Xt.label) ?? ""}
+            .value=${((Jt = (Zt = this.config.entity_types) == null ? void 0 : Zt.solar) == null ? void 0 : Jt.label) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1418,7 +1418,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   label: h.target.value || void 0
                 }
               }
@@ -1434,9 +1434,9 @@ let dt = class extends T {
             label="Icon"
             .hass=${this.hass}
             .selector=${{ icon: {} }}
-            .value=${((te = (Qt = this.config.entity_types) == null ? void 0 : Qt.solar) == null ? void 0 : te.icon) ?? ""}
+            .value=${((Qt = (Xt = this.config.entity_types) == null ? void 0 : Xt.solar) == null ? void 0 : Qt.icon) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1445,7 +1445,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   icon: h.detail.value || void 0
                 }
               }
@@ -1459,9 +1459,9 @@ let dt = class extends T {
           ></ha-selector>
           <ha-textfield
             label="Solar Colour"
-            .value=${((se = (ee = this.config.entity_types) == null ? void 0 : ee.solar) == null ? void 0 : se.colour) ?? ""}
+            .value=${((ee = (te = this.config.entity_types) == null ? void 0 : te.solar) == null ? void 0 : ee.colour) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1470,7 +1470,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 solar: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.solar) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.solar) ?? {},
                   colour: h.target.value || void 0
                 }
               }
@@ -1491,9 +1491,9 @@ let dt = class extends T {
             label="Battery State of Charge"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((oe = (ie = this.config.entity_types) == null ? void 0 : ie.battery) == null ? void 0 : oe.soc) ?? ""}
+            .value=${((ie = (se = this.config.entity_types) == null ? void 0 : se.battery) == null ? void 0 : ie.soc) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1502,7 +1502,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   soc: h.detail.value || void 0
                 }
               }
@@ -1519,9 +1519,9 @@ let dt = class extends T {
             label="Battery Combined Power"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((ae = (ne = this.config.entity_types) == null ? void 0 : ne.battery) == null ? void 0 : ae.power_combined) ?? ""}
+            .value=${((ne = (oe = this.config.entity_types) == null ? void 0 : oe.battery) == null ? void 0 : ne.power_combined) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1530,7 +1530,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   power_combined: h.detail.value || void 0
                 }
               }
@@ -1547,9 +1547,9 @@ let dt = class extends T {
             label="Battery Daily Usage"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((ce = (re = this.config.entity_types) == null ? void 0 : re.battery) == null ? void 0 : ce.daily_usage) ?? ""}
+            .value=${((ae = (re = this.config.entity_types) == null ? void 0 : re.battery) == null ? void 0 : ae.daily_usage) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1558,7 +1558,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   daily_usage: h.detail.value || void 0
                 }
               }
@@ -1573,9 +1573,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Battery Show when idle</span>
             <ha-switch
-              .checked=${((he = (le = this.config.entity_types) == null ? void 0 : le.battery) == null ? void 0 : he.show_zero) ?? !0}
+              .checked=${((le = (ce = this.config.entity_types) == null ? void 0 : ce.battery) == null ? void 0 : le.show_zero) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1584,7 +1584,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   show_zero: h.target.checked
                 }
               }
@@ -1601,9 +1601,9 @@ let dt = class extends T {
             label="Battery Zero Tolerance"
             type="number"
             min="0"
-            .value=${((pe = (de = this.config.entity_types) == null ? void 0 : de.battery) == null ? void 0 : pe.zero_tolerance) != null ? String((fe = (ue = this.config.entity_types) == null ? void 0 : ue.battery) == null ? void 0 : fe.zero_tolerance) : ""}
+            .value=${((de = (he = this.config.entity_types) == null ? void 0 : he.battery) == null ? void 0 : de.zero_tolerance) != null ? String((pe = (ue = this.config.entity_types) == null ? void 0 : ue.battery) == null ? void 0 : pe.zero_tolerance) : ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1612,7 +1612,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   zero_tolerance: h.target.value !== "" ? Number(h.target.value) : void 0
                 }
               }
@@ -1627,9 +1627,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
-              .checked=${((ye = (ge = this.config.entity_types) == null ? void 0 : ge.battery) == null ? void 0 : ye.show_label) ?? !0}
+              .checked=${((ge = (fe = this.config.entity_types) == null ? void 0 : fe.battery) == null ? void 0 : ge.show_label) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1638,7 +1638,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   show_label: h.target.checked
                 }
               }
@@ -1653,9 +1653,9 @@ let dt = class extends T {
           </div>
           <ha-textfield
             label="Battery Label"
-            .value=${((me = (_e = this.config.entity_types) == null ? void 0 : _e.battery) == null ? void 0 : me.label) ?? ""}
+            .value=${((_e = (ye = this.config.entity_types) == null ? void 0 : ye.battery) == null ? void 0 : _e.label) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1664,7 +1664,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   label: h.target.value || void 0
                 }
               }
@@ -1680,9 +1680,9 @@ let dt = class extends T {
             label="Icon"
             .hass=${this.hass}
             .selector=${{ icon: {} }}
-            .value=${((be = (ve = this.config.entity_types) == null ? void 0 : ve.battery) == null ? void 0 : be.icon) ?? ""}
+            .value=${((ve = (me = this.config.entity_types) == null ? void 0 : me.battery) == null ? void 0 : ve.icon) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1691,7 +1691,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   icon: h.detail.value || void 0
                 }
               }
@@ -1705,9 +1705,9 @@ let dt = class extends T {
           ></ha-selector>
           <ha-textfield
             label="Battery Colour"
-            .value=${((we = ($e = this.config.entity_types) == null ? void 0 : $e.battery) == null ? void 0 : we.colour) ?? ""}
+            .value=${(($e = (be = this.config.entity_types) == null ? void 0 : be.battery) == null ? void 0 : $e.colour) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1716,7 +1716,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 battery: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.battery) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.battery) ?? {},
                   colour: h.target.value || void 0
                 }
               }
@@ -1737,9 +1737,9 @@ let dt = class extends T {
             label="Home Combined Power"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((Ee = (xe = this.config.entity_types) == null ? void 0 : xe.home) == null ? void 0 : Ee.power_combined) ?? ""}
+            .value=${((xe = (we = this.config.entity_types) == null ? void 0 : we.home) == null ? void 0 : xe.power_combined) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1748,7 +1748,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   power_combined: h.detail.value || void 0
                 }
               }
@@ -1765,9 +1765,9 @@ let dt = class extends T {
             label="Home Daily Usage"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((Se = (Ce = this.config.entity_types) == null ? void 0 : Ce.home) == null ? void 0 : Se.daily_usage) ?? ""}
+            .value=${((Ce = (Ee = this.config.entity_types) == null ? void 0 : Ee.home) == null ? void 0 : Ce.daily_usage) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1776,7 +1776,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   daily_usage: h.detail.value || void 0
                 }
               }
@@ -1791,9 +1791,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Home Show when idle</span>
             <ha-switch
-              .checked=${((ke = (Ae = this.config.entity_types) == null ? void 0 : Ae.home) == null ? void 0 : ke.show_zero) ?? !0}
+              .checked=${((Ae = (Se = this.config.entity_types) == null ? void 0 : Se.home) == null ? void 0 : Ae.show_zero) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1802,7 +1802,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   show_zero: h.target.checked
                 }
               }
@@ -1819,9 +1819,9 @@ let dt = class extends T {
             label="Home Zero Tolerance"
             type="number"
             min="0"
-            .value=${((Pe = (Te = this.config.entity_types) == null ? void 0 : Te.home) == null ? void 0 : Pe.zero_tolerance) != null ? String((Le = (Oe = this.config.entity_types) == null ? void 0 : Oe.home) == null ? void 0 : Le.zero_tolerance) : ""}
+            .value=${((ke = (Te = this.config.entity_types) == null ? void 0 : Te.home) == null ? void 0 : ke.zero_tolerance) != null ? String((Oe = (Pe = this.config.entity_types) == null ? void 0 : Pe.home) == null ? void 0 : Oe.zero_tolerance) : ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1830,7 +1830,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   zero_tolerance: h.target.value !== "" ? Number(h.target.value) : void 0
                 }
               }
@@ -1845,9 +1845,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
-              .checked=${((Me = (ze = this.config.entity_types) == null ? void 0 : ze.home) == null ? void 0 : Me.show_label) ?? !0}
+              .checked=${((Le = (Me = this.config.entity_types) == null ? void 0 : Me.home) == null ? void 0 : Le.show_label) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1856,7 +1856,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   show_label: h.target.checked
                 }
               }
@@ -1871,9 +1871,9 @@ let dt = class extends T {
           </div>
           <ha-textfield
             label="Home Label"
-            .value=${((He = (Ne = this.config.entity_types) == null ? void 0 : Ne.home) == null ? void 0 : He.label) ?? ""}
+            .value=${((Ne = (ze = this.config.entity_types) == null ? void 0 : ze.home) == null ? void 0 : Ne.label) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1882,7 +1882,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   label: h.target.value || void 0
                 }
               }
@@ -1898,9 +1898,9 @@ let dt = class extends T {
             label="Icon"
             .hass=${this.hass}
             .selector=${{ icon: {} }}
-            .value=${((Ie = (Ue = this.config.entity_types) == null ? void 0 : Ue.home) == null ? void 0 : Ie.icon) ?? ""}
+            .value=${((De = (He = this.config.entity_types) == null ? void 0 : He.home) == null ? void 0 : De.icon) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1909,7 +1909,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   icon: h.detail.value || void 0
                 }
               }
@@ -1923,9 +1923,9 @@ let dt = class extends T {
           ></ha-selector>
           <ha-textfield
             label="Home Colour"
-            .value=${((je = (De = this.config.entity_types) == null ? void 0 : De.home) == null ? void 0 : je.colour) ?? ""}
+            .value=${((Ue = (Ie = this.config.entity_types) == null ? void 0 : Ie.home) == null ? void 0 : Ue.colour) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1934,7 +1934,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 home: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.home) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.home) ?? {},
                   colour: h.target.value || void 0
                 }
               }
@@ -1954,9 +1954,9 @@ let dt = class extends T {
           <ha-selector
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((Be = (Re = this.config.entity_types) == null ? void 0 : Re.ev) == null ? void 0 : Be.power_combined) ?? ""}
+            .value=${((je = (Re = this.config.entity_types) == null ? void 0 : Re.ev) == null ? void 0 : je.power_combined) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1965,7 +1965,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   power_combined: h.detail.value || void 0
                 }
               }
@@ -1982,9 +1982,9 @@ let dt = class extends T {
             label="EV State of Charge"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((Ve = (Fe = this.config.entity_types) == null ? void 0 : Fe.ev) == null ? void 0 : Ve.soc) ?? ""}
+            .value=${((Fe = (Be = this.config.entity_types) == null ? void 0 : Be.ev) == null ? void 0 : Fe.soc) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -1993,7 +1993,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   soc: h.detail.value || void 0
                 }
               }
@@ -2010,9 +2010,9 @@ let dt = class extends T {
             label="EV Daily Usage"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((Ge = (We = this.config.entity_types) == null ? void 0 : We.ev) == null ? void 0 : Ge.daily_usage) ?? ""}
+            .value=${((Ge = (Ve = this.config.entity_types) == null ? void 0 : Ve.ev) == null ? void 0 : Ge.daily_usage) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2021,7 +2021,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   daily_usage: h.detail.value || void 0
                 }
               }
@@ -2036,9 +2036,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>EV Show when idle</span>
             <ha-switch
-              .checked=${((qe = (Ke = this.config.entity_types) == null ? void 0 : Ke.ev) == null ? void 0 : qe.show_zero) ?? !0}
+              .checked=${((Ke = (We = this.config.entity_types) == null ? void 0 : We.ev) == null ? void 0 : Ke.show_zero) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2047,7 +2047,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   show_zero: h.target.checked
                 }
               }
@@ -2064,9 +2064,9 @@ let dt = class extends T {
             label="EV Zero Tolerance"
             type="number"
             min="0"
-            .value=${((Ze = (Ye = this.config.entity_types) == null ? void 0 : Ye.ev) == null ? void 0 : Ze.zero_tolerance) != null ? String((Xe = (Je = this.config.entity_types) == null ? void 0 : Je.ev) == null ? void 0 : Xe.zero_tolerance) : ""}
+            .value=${((Ye = (qe = this.config.entity_types) == null ? void 0 : qe.ev) == null ? void 0 : Ye.zero_tolerance) != null ? String((Je = (Ze = this.config.entity_types) == null ? void 0 : Ze.ev) == null ? void 0 : Je.zero_tolerance) : ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2075,7 +2075,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   zero_tolerance: h.target.value !== "" ? Number(h.target.value) : void 0
                 }
               }
@@ -2090,9 +2090,9 @@ let dt = class extends T {
           <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
-              .checked=${((ts = (Qe = this.config.entity_types) == null ? void 0 : Qe.ev) == null ? void 0 : ts.show_label) ?? !0}
+              .checked=${((Qe = (Xe = this.config.entity_types) == null ? void 0 : Xe.ev) == null ? void 0 : Qe.show_label) ?? !0}
               @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2101,7 +2101,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   show_label: h.target.checked
                 }
               }
@@ -2116,9 +2116,9 @@ let dt = class extends T {
           </div>
           <ha-textfield
             label="EV Label"
-            .value=${((ss = (es = this.config.entity_types) == null ? void 0 : es.ev) == null ? void 0 : ss.label) ?? ""}
+            .value=${((es = (ts = this.config.entity_types) == null ? void 0 : ts.ev) == null ? void 0 : es.label) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2127,7 +2127,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   label: h.target.value || void 0
                 }
               }
@@ -2143,9 +2143,9 @@ let dt = class extends T {
             label="Icon"
             .hass=${this.hass}
             .selector=${{ icon: {} }}
-            .value=${((os = (is = this.config.entity_types) == null ? void 0 : is.ev) == null ? void 0 : os.icon) ?? ""}
+            .value=${((is = (ss = this.config.entity_types) == null ? void 0 : ss.ev) == null ? void 0 : is.icon) ?? ""}
             @value-changed=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2154,7 +2154,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   icon: h.detail.value || void 0
                 }
               }
@@ -2168,9 +2168,9 @@ let dt = class extends T {
           ></ha-selector>
           <ha-textfield
             label="EV Colour"
-            .value=${((as = (ns = this.config.entity_types) == null ? void 0 : ns.ev) == null ? void 0 : as.colour) ?? ""}
+            .value=${((ns = (os = this.config.entity_types) == null ? void 0 : os.ev) == null ? void 0 : ns.colour) ?? ""}
             @change=${(h) => {
-      var r;
+      var a;
       return this.dispatchEvent(
         new CustomEvent("config-changed", {
           detail: {
@@ -2179,7 +2179,7 @@ let dt = class extends T {
               entity_types: {
                 ...this.config.entity_types ?? {},
                 ev: {
-                  ...((r = this.config.entity_types) == null ? void 0 : r.ev) ?? {},
+                  ...((a = this.config.entity_types) == null ? void 0 : a.ev) ?? {},
                   colour: h.target.value || void 0
                 }
               }
@@ -2199,15 +2199,15 @@ let dt = class extends T {
         Add Custom Type
       </button>
 
-      ${(this.config.custom_types ?? []).map((h, r) => {
+      ${(this.config.custom_types ?? []).map((h, a) => {
       var rs;
-      return m`
-        <ha-expansion-panel header=${((rs = h.label) == null ? void 0 : rs.trim()) || `Custom ${r + 1}`}>
+      return b`
+        <ha-expansion-panel header=${((rs = h.label) == null ? void 0 : rs.trim()) || `Custom ${a + 1}`}>
           <div class="section-body">
             <button
               class="action-button delete-button"
               type="button"
-              @click=${() => this._deleteCustomType(r)}
+              @click=${() => this._deleteCustomType(a)}
             >
               <ha-icon class="action-icon" icon="mdi:delete"></ha-icon>
               Delete Custom Type
@@ -2218,7 +2218,7 @@ let dt = class extends T {
               .hass=${this.hass}
               .selector=${{ entity: {} }}
               .value=${h.power_import ?? ""}
-              @value-changed=${(x) => this._setCustomType(r, { power_import: x.detail.value || void 0 })}
+              @value-changed=${(x) => this._setCustomType(a, { power_import: x.detail.value || void 0 })}
             ></ha-selector>
 
             <ha-selector
@@ -2226,7 +2226,7 @@ let dt = class extends T {
               .hass=${this.hass}
               .selector=${{ entity: {} }}
               .value=${h.power_export ?? ""}
-              @value-changed=${(x) => this._setCustomType(r, { power_export: x.detail.value || void 0 })}
+              @value-changed=${(x) => this._setCustomType(a, { power_export: x.detail.value || void 0 })}
             ></ha-selector>
 
             <ha-selector
@@ -2234,7 +2234,7 @@ let dt = class extends T {
               .hass=${this.hass}
               .selector=${{ entity: {} }}
               .value=${h.power_combined ?? ""}
-              @value-changed=${(x) => this._setCustomType(r, { power_combined: x.detail.value || void 0 })}
+              @value-changed=${(x) => this._setCustomType(a, { power_combined: x.detail.value || void 0 })}
             ></ha-selector>
 
             <ha-selector
@@ -2242,7 +2242,7 @@ let dt = class extends T {
               .hass=${this.hass}
               .selector=${{ entity: {} }}
               .value=${h.daily_usage ?? ""}
-              @value-changed=${(x) => this._setCustomType(r, { daily_usage: x.detail.value || void 0 })}
+              @value-changed=${(x) => this._setCustomType(a, { daily_usage: x.detail.value || void 0 })}
             ></ha-selector>
 
             <ha-selector
@@ -2250,13 +2250,13 @@ let dt = class extends T {
               .hass=${this.hass}
               .selector=${{ entity: {} }}
               .value=${h.soc ?? ""}
-              @value-changed=${(x) => this._setCustomType(r, { soc: x.detail.value || void 0 })}
+              @value-changed=${(x) => this._setCustomType(a, { soc: x.detail.value || void 0 })}
             ></ha-selector>
             <div class="switch-row">
               <span>Custom Show when idle</span>
               <ha-switch
                 .checked=${h.show_zero ?? !0}
-                @change=${(x) => this._setCustomType(r, {
+                @change=${(x) => this._setCustomType(a, {
         show_zero: x.target.checked
       })}
               ></ha-switch>
@@ -2266,7 +2266,7 @@ let dt = class extends T {
               type="number"
               min="0"
               .value=${h.zero_tolerance != null ? String(h.zero_tolerance) : ""}
-              @change=${(x) => this._setCustomType(r, {
+              @change=${(x) => this._setCustomType(a, {
         zero_tolerance: x.target.value !== "" ? Number(x.target.value) : void 0
       })}
             ></ha-textfield>
@@ -2274,7 +2274,7 @@ let dt = class extends T {
               <span>Show Label</span>
               <ha-switch
                 .checked=${h.show_label ?? !0}
-                @change=${(x) => this._setCustomType(r, {
+                @change=${(x) => this._setCustomType(a, {
         show_label: x.target.checked
       })}
               ></ha-switch>
@@ -2282,7 +2282,7 @@ let dt = class extends T {
             <ha-textfield
               label="Custom Label"
               .value=${h.label ?? ""}
-              @change=${(x) => this._setCustomType(r, {
+              @change=${(x) => this._setCustomType(a, {
         label: x.target.value || void 0
       })}
             ></ha-textfield>
@@ -2291,14 +2291,14 @@ let dt = class extends T {
               .hass=${this.hass}
               .selector=${{ icon: {} }}
               .value=${h.icon ?? ""}
-              @value-changed=${(x) => this._setCustomType(r, {
+              @value-changed=${(x) => this._setCustomType(a, {
         icon: x.detail.value || void 0
       })}
             ></ha-selector>
             <ha-textfield
               label="Custom Colour"
               .value=${h.colour ?? ""}
-              @change=${(x) => this._setCustomType(r, {
+              @change=${(x) => this._setCustomType(a, {
         colour: x.target.value || void 0
       })}
             ></ha-textfield>
@@ -2306,10 +2306,10 @@ let dt = class extends T {
         </ha-expansion-panel>
       `;
     })}
-    ` : g;
+    ` : _;
   }
 };
-dt.styles = X`
+lt.styles = J`
     :host {
       display: flex;
       flex-direction: column;
@@ -2385,109 +2385,109 @@ dt.styles = X`
       font-size: 0.95em;
     }
   `;
-Bt([
+It([
   w({ attribute: !1 })
-], dt.prototype, "hass", 2);
-Bt([
+], lt.prototype, "hass", 2);
+It([
   w({ attribute: !1 })
-], dt.prototype, "config", 2);
-dt = Bt([
-  tt("home-energy-card-editor")
-], dt);
-var gi = Object.defineProperty, yi = Object.getOwnPropertyDescriptor, St = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? yi(t, s) : t, n = e.length - 1, a; n >= 0; n--)
-    (a = e[n]) && (i = (o ? a(t, s, i) : a(i)) || i);
-  return o && i && gi(t, s, i), i;
+], lt.prototype, "config", 2);
+lt = It([
+  Q("home-energy-card-editor")
+], lt);
+var yi = Object.defineProperty, _i = Object.getOwnPropertyDescriptor, wt = (e, t, s, i) => {
+  for (var o = i > 1 ? void 0 : i ? _i(t, s) : t, n = e.length - 1, r; n >= 0; n--)
+    (r = e[n]) && (o = (i ? r(t, s, o) : r(o)) || o);
+  return i && o && yi(t, s, o), o;
 };
-function yt(e, t) {
+function ft(e, t) {
   if (!t) return null;
   const s = e[t];
   if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-  const o = parseFloat(s.state);
-  return isNaN(o) ? null : s.attributes.unit_of_measurement === "Wh" ? o / 1e3 : o;
+  const i = parseFloat(s.state);
+  return isNaN(i) ? null : s.attributes.unit_of_measurement === "Wh" ? i / 1e3 : i;
 }
-function _t(e, t) {
+function gt(e, t) {
   return e === null ? "—" : e.toFixed(t);
 }
-function _i(e) {
-  const t = e.toLowerCase().replace(/[\s_-]/g, ""), s = e.replace(/[_-]/g, " ").replace(/\b\w/g, (o) => o.toUpperCase());
-  return ["offpeak", "low", "cheap", "free", "economy"].some((o) => t.includes(o)) ? { label: s, bg: "#e8f5e9", fg: "#2e7d32" } : ["peak", "high", "expensive"].some((o) => t.includes(o)) && !t.includes("off") ? { label: s, bg: "#fce4ec", fg: "#c62828" } : ["shoulder", "mid", "standard"].some((o) => t.includes(o)) ? { label: s, bg: "#fff8e1", fg: "#e65100" } : {
+function mi(e) {
+  const t = e.toLowerCase().replace(/[\s_-]/g, ""), s = e.replace(/[_-]/g, " ").replace(/\b\w/g, (i) => i.toUpperCase());
+  return ["offpeak", "low", "cheap", "free", "economy"].some((i) => t.includes(i)) ? { label: s, bg: "#e8f5e9", fg: "#2e7d32" } : ["peak", "high", "expensive"].some((i) => t.includes(i)) && !t.includes("off") ? { label: s, bg: "#fce4ec", fg: "#c62828" } : ["shoulder", "mid", "standard"].some((i) => t.includes(i)) ? { label: s, bg: "#fff8e1", fg: "#e65100" } : {
     label: s,
     bg: "var(--secondary-background-color, #f5f5f5)",
     fg: "var(--secondary-text-color, #757575)"
   };
 }
-let J = class extends T {
+let Z = class extends T {
   constructor() {
     super(...arguments), this.showTitle = !0;
   }
   render() {
-    var v, $, b, A, k, O, z, M, N, C, I;
-    if (!this.config) return g;
-    const e = ((v = this.hass) == null ? void 0 : v.states) ?? {}, t = this.config.entity_types ?? {}, s = (($ = this.config.display) == null ? void 0 : $.decimal_places) ?? 1, o = this.config.tariff_entity ? (b = e[this.config.tariff_entity]) == null ? void 0 : b.state : null, i = o && o !== "unavailable" && o !== "unknown" ? _i(o) : null, n = yt(e, (A = t.solar) == null ? void 0 : A.daily_usage), a = yt(e, (k = t.home) == null ? void 0 : k.daily_usage), c = yt(e, (O = t.grid) == null ? void 0 : O.daily_usage), l = yt(e, (z = t.grid) == null ? void 0 : z.daily_export), d = !!((M = t.solar) != null && M.daily_usage), u = !!((N = t.home) != null && N.daily_usage), p = !!((C = t.grid) != null && C.daily_usage), _ = !!((I = t.grid) != null && I.daily_export), y = p || _, f = d || u || y;
-    return m`
+    var m, $, v, O, M, S, A, L, z, I, tt;
+    if (!this.config) return _;
+    const e = ((m = this.hass) == null ? void 0 : m.states) ?? {}, t = this.config.entity_types ?? {}, s = (($ = this.config.display) == null ? void 0 : $.decimal_places) ?? 1, i = this.config.tariff_entity ? (v = e[this.config.tariff_entity]) == null ? void 0 : v.state : null, o = i && i !== "unavailable" && i !== "unknown" ? mi(i) : null, n = ft(e, (O = t.solar) == null ? void 0 : O.daily_usage), r = ft(e, (M = t.home) == null ? void 0 : M.daily_usage), c = ft(e, (S = t.grid) == null ? void 0 : S.daily_usage), l = ft(e, (A = t.grid) == null ? void 0 : A.daily_export), d = !!((L = t.solar) != null && L.daily_usage), p = !!((z = t.home) != null && z.daily_usage), u = !!((I = t.grid) != null && I.daily_usage), y = !!((tt = t.grid) != null && tt.daily_export), g = u || y, f = d || p || g;
+    return b`
       <div class="header">
 
-        ${this.showTitle || i ? m`
+        ${this.showTitle || o ? b`
           <div class="title-row">
-            ${this.showTitle ? m`<span class="title">${this.config.title ?? "Home Energy"}</span>` : g}
-            ${i ? m`
+            ${this.showTitle ? b`<span class="title">${this.config.title ?? "Home Energy"}</span>` : _}
+            ${o ? b`
                   <span
                     class="tariff"
-                    style="background:${i.bg};color:${i.fg};"
-                  >${i.label}</span>
-                ` : g}
+                    style="background:${o.bg};color:${o.fg};"
+                  >${o.label}</span>
+                ` : _}
           </div>
-        ` : g}
+        ` : _}
 
-        ${f ? m`
+        ${f ? b`
           <div class="stats-row">
 
-            ${d ? m`
+            ${d ? b`
               <div class="stat">
                 <span class="stat-label" style="color:#f9a825;">☀ Solar</span>
-                <span class="stat-val">${_t(n, s)}</span>
+                <span class="stat-val">${gt(n, s)}</span>
                 <span class="stat-unit">kWh</span>
               </div>
-            ` : g}
+            ` : _}
 
-            ${u ? m`
+            ${p ? b`
               <div class="stat">
                 <span class="stat-label" style="color:#e91e63;">⌂ Home</span>
-                <span class="stat-val">${_t(a, s)}</span>
+                <span class="stat-val">${gt(r, s)}</span>
                 <span class="stat-unit">kWh</span>
               </div>
-            ` : g}
+            ` : _}
 
-            ${y ? m`
+            ${g ? b`
               <div class="stat">
                 <span class="stat-label" style="color:#1e88e5;">⚡ Grid</span>
                 <div class="grid-pair">
-                  ${p ? m`
+                  ${u ? b`
                     <div class="grid-half">
                       <span class="arrow" style="color:#1e88e5;">↓</span>
-                      <span class="stat-val">${_t(c, s)}</span>
+                      <span class="stat-val">${gt(c, s)}</span>
                     </div>
-                  ` : g}
-                  ${_ ? m`
+                  ` : _}
+                  ${y ? b`
                     <div class="grid-half">
                       <span class="arrow" style="color:#42a5f5;">↑</span>
-                      <span class="stat-val">${_t(l, s)}</span>
+                      <span class="stat-val">${gt(l, s)}</span>
                     </div>
-                  ` : g}
+                  ` : _}
                   <span class="stat-unit">kWh</span>
                 </div>
               </div>
-            ` : g}
+            ` : _}
 
           </div>
-        ` : g}
+        ` : _}
 
       </div>
     `;
   }
 };
-J.styles = X`
+Z.styles = J`
     :host { display: block; }
 
     .header {
@@ -2590,32 +2590,32 @@ J.styles = X`
       opacity: 0.7;
     }
   `;
-St([
+wt([
   w({ attribute: !1 })
-], J.prototype, "hass", 2);
-St([
+], Z.prototype, "hass", 2);
+wt([
   w({ attribute: !1 })
-], J.prototype, "config", 2);
-St([
+], Z.prototype, "config", 2);
+wt([
   w({ type: Boolean })
-], J.prototype, "showTitle", 2);
-J = St([
-  tt("hec-card-header")
-], J);
+], Z.prototype, "showTitle", 2);
+Z = wt([
+  Q("hec-card-header")
+], Z);
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const mi = { CHILD: 2 }, vi = (e) => (...t) => ({ _$litDirective$: e, values: t });
-let bi = class {
+const vi = { CHILD: 2 }, bi = (e) => (...t) => ({ _$litDirective$: e, values: t });
+let $i = class {
   constructor(t) {
   }
   get _$AU() {
     return this._$AM._$AU;
   }
-  _$AT(t, s, o) {
-    this._$Ct = t, this._$AM = s, this._$Ci = o;
+  _$AT(t, s, i) {
+    this._$Ct = t, this._$AM = s, this._$Ci = i;
   }
   _$AS(t, s) {
     return this.update(t, s);
@@ -2629,28 +2629,28 @@ let bi = class {
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { I: $i } = ii, $s = (e) => e, ws = () => document.createComment(""), ot = (e, t, s) => {
+const { I: wi } = oi, bs = (e) => e, $s = () => document.createComment(""), st = (e, t, s) => {
   var n;
-  const o = e._$AA.parentNode, i = t === void 0 ? e._$AB : t._$AA;
+  const i = e._$AA.parentNode, o = t === void 0 ? e._$AB : t._$AA;
   if (s === void 0) {
-    const a = o.insertBefore(ws(), i), c = o.insertBefore(ws(), i);
-    s = new $i(a, c, e, e.options);
+    const r = i.insertBefore($s(), o), c = i.insertBefore($s(), o);
+    s = new wi(r, c, e, e.options);
   } else {
-    const a = s._$AB.nextSibling, c = s._$AM, l = c !== e;
+    const r = s._$AB.nextSibling, c = s._$AM, l = c !== e;
     if (l) {
       let d;
       (n = s._$AQ) == null || n.call(s, e), s._$AM = e, s._$AP !== void 0 && (d = e._$AU) !== c._$AU && s._$AP(d);
     }
-    if (a !== i || l) {
+    if (r !== o || l) {
       let d = s._$AA;
-      for (; d !== a; ) {
-        const u = $s(d).nextSibling;
-        $s(o).insertBefore(d, i), d = u;
+      for (; d !== r; ) {
+        const p = bs(d).nextSibling;
+        bs(i).insertBefore(d, o), d = p;
       }
     }
   }
   return s;
-}, j = (e, t, s = e) => (e._$AI(t, s), e), wi = {}, xi = (e, t = wi) => e._$AH = t, Ei = (e) => e._$AH, Ot = (e) => {
+}, R = (e, t, s = e) => (e._$AI(t, s), e), xi = {}, Ei = (e, t = xi) => e._$AH = t, Ci = (e) => e._$AH, At = (e) => {
   e._$AR(), e._$AA.remove();
 };
 /**
@@ -2658,62 +2658,62 @@ const { I: $i } = ii, $s = (e) => e, ws = () => document.createComment(""), ot =
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const xs = (e, t, s) => {
-  const o = /* @__PURE__ */ new Map();
-  for (let i = t; i <= s; i++) o.set(e[i], i);
-  return o;
-}, Es = vi(class extends bi {
+const ws = (e, t, s) => {
+  const i = /* @__PURE__ */ new Map();
+  for (let o = t; o <= s; o++) i.set(e[o], o);
+  return i;
+}, xs = bi(class extends $i {
   constructor(e) {
-    if (super(e), e.type !== mi.CHILD) throw Error("repeat() can only be used in text expressions");
+    if (super(e), e.type !== vi.CHILD) throw Error("repeat() can only be used in text expressions");
   }
   dt(e, t, s) {
-    let o;
-    s === void 0 ? s = t : t !== void 0 && (o = t);
-    const i = [], n = [];
-    let a = 0;
-    for (const c of e) i[a] = o ? o(c, a) : a, n[a] = s(c, a), a++;
-    return { values: n, keys: i };
+    let i;
+    s === void 0 ? s = t : t !== void 0 && (i = t);
+    const o = [], n = [];
+    let r = 0;
+    for (const c of e) o[r] = i ? i(c, r) : r, n[r] = s(c, r), r++;
+    return { values: n, keys: o };
   }
   render(e, t, s) {
     return this.dt(e, t, s).values;
   }
-  update(e, [t, s, o]) {
-    const i = Ei(e), { values: n, keys: a } = this.dt(t, s, o);
-    if (!Array.isArray(i)) return this.ut = a, n;
+  update(e, [t, s, i]) {
+    const o = Ci(e), { values: n, keys: r } = this.dt(t, s, i);
+    if (!Array.isArray(o)) return this.ut = r, n;
     const c = this.ut ?? (this.ut = []), l = [];
-    let d, u, p = 0, _ = i.length - 1, y = 0, f = n.length - 1;
-    for (; p <= _ && y <= f; ) if (i[p] === null) p++;
-    else if (i[_] === null) _--;
-    else if (c[p] === a[y]) l[y] = j(i[p], n[y]), p++, y++;
-    else if (c[_] === a[f]) l[f] = j(i[_], n[f]), _--, f--;
-    else if (c[p] === a[f]) l[f] = j(i[p], n[f]), ot(e, l[f + 1], i[p]), p++, f--;
-    else if (c[_] === a[y]) l[y] = j(i[_], n[y]), ot(e, i[p], i[_]), _--, y++;
-    else if (d === void 0 && (d = xs(a, y, f), u = xs(c, p, _)), d.has(c[p])) if (d.has(c[_])) {
-      const v = u.get(a[y]), $ = v !== void 0 ? i[v] : null;
+    let d, p, u = 0, y = o.length - 1, g = 0, f = n.length - 1;
+    for (; u <= y && g <= f; ) if (o[u] === null) u++;
+    else if (o[y] === null) y--;
+    else if (c[u] === r[g]) l[g] = R(o[u], n[g]), u++, g++;
+    else if (c[y] === r[f]) l[f] = R(o[y], n[f]), y--, f--;
+    else if (c[u] === r[f]) l[f] = R(o[u], n[f]), st(e, l[f + 1], o[u]), u++, f--;
+    else if (c[y] === r[g]) l[g] = R(o[y], n[g]), st(e, o[u], o[y]), y--, g++;
+    else if (d === void 0 && (d = ws(r, g, f), p = ws(c, u, y)), d.has(c[u])) if (d.has(c[y])) {
+      const m = p.get(r[g]), $ = m !== void 0 ? o[m] : null;
       if ($ === null) {
-        const b = ot(e, i[p]);
-        j(b, n[y]), l[y] = b;
-      } else l[y] = j($, n[y]), ot(e, i[p], $), i[v] = null;
-      y++;
-    } else Ot(i[_]), _--;
-    else Ot(i[p]), p++;
-    for (; y <= f; ) {
-      const v = ot(e, l[f + 1]);
-      j(v, n[y]), l[y++] = v;
+        const v = st(e, o[u]);
+        R(v, n[g]), l[g] = v;
+      } else l[g] = R($, n[g]), st(e, o[u], $), o[m] = null;
+      g++;
+    } else At(o[y]), y--;
+    else At(o[u]), u++;
+    for (; g <= f; ) {
+      const m = st(e, l[f + 1]);
+      R(m, n[g]), l[g++] = m;
     }
-    for (; p <= _; ) {
-      const v = i[p++];
-      v !== null && Ot(v);
+    for (; u <= y; ) {
+      const m = o[u++];
+      m !== null && At(m);
     }
-    return this.ut = a, xi(e, l), W;
+    return this.ut = r, Ei(e, l), G;
   }
 });
-var Ci = Object.defineProperty, Si = Object.getOwnPropertyDescriptor, P = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? Si(t, s) : t, n = e.length - 1, a; n >= 0; n--)
-    (a = e[n]) && (i = (o ? a(t, s, i) : a(i)) || i);
-  return o && i && Ci(t, s, i), i;
+var Si = Object.defineProperty, Ai = Object.getOwnPropertyDescriptor, P = (e, t, s, i) => {
+  for (var o = i > 1 ? void 0 : i ? Ai(t, s) : t, n = e.length - 1, r; n >= 0; n--)
+    (r = e[n]) && (o = (i ? r(t, s, o) : r(o)) || o);
+  return i && o && Si(t, s, o), o;
 };
-const Ai = {
+const Ti = {
   solar: { gradStart: "#fff8e1", gradEnd: "#ffe082", accent: "#f9a825", icon: "mdi:solar-power-variant" },
   grid: { gradStart: "#f3e5f5", gradEnd: "#ce93d8", accent: "#8e24aa", icon: "mdi:transmission-tower" },
   battery: { gradStart: "#ffebee", gradEnd: "#ef9a9a", accent: "#e53935", icon: "mdi:home-battery" },
@@ -2724,13 +2724,13 @@ const Ai = {
   gradEnd: "#e0e0e0",
   accent: "#9e9e9e",
   icon: "mdi:lightning-bolt"
-}, Mt = 38, Cs = +(2 * Math.PI * Mt).toFixed(4);
-function Hs(e, t, s) {
+}, Pt = 38, Es = +(2 * Math.PI * Pt).toFixed(4);
+function Ds(e, t, s) {
   if (e === null) return "—";
-  const o = Math.abs(e);
-  return t === "W" || t === "auto" && o < 1e3 ? `${Math.round(e)} W` : `${(e / 1e3).toFixed(s)} kW`;
+  const i = Math.abs(e);
+  return t === "W" || t === "auto" && i < 1e3 ? `${Math.round(e)} W` : `${(e / 1e3).toFixed(s)} kW`;
 }
-let S = class extends T {
+let C = class extends T {
   constructor() {
     super(...arguments), this.type = "home", this.label = "", this.showLabel = !0, this.icon = "", this.colour = "", this.power = null, this.soc = null, this.unit = "auto", this.decimalPlaces = 1;
   }
@@ -2744,21 +2744,21 @@ let S = class extends T {
     );
   }
   render() {
-    const e = Ai[this.type] ?? ki, t = this.colour || e.accent, s = this.icon || e.icon, o = this.soc !== null, i = this.type === "grid" || this.type === "battery", n = i && this.power !== null ? Math.abs(this.power) : this.power, a = i && this.power !== null ? this.type === "grid" ? this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : "", c = o ? Math.max(0, Math.min(100, this.soc)) : 0, l = +(Cs * (1 - c / 100)).toFixed(4);
-    return m`
+    const e = Ti[this.type] ?? ki, t = this.colour || e.accent, s = this.icon || e.icon, i = this.soc !== null, o = this.type === "grid" || this.type === "battery", n = o && this.power !== null ? Math.abs(this.power) : this.power, r = o && this.power !== null ? this.type === "grid" ? this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : this.power > 0 ? "mdi:arrow-right-bold-circle" : this.power < 0 ? "mdi:arrow-left-bold-circle" : "" : "", c = i ? Math.max(0, Math.min(100, this.soc)) : 0, l = +(Es * (1 - c / 100)).toFixed(4);
+    return b`
       <div class="node-wrap">
 
         <!-- SOC ring — always in DOM, invisible without SOC data -->
         <svg
-          class="soc-ring${o ? " has-soc" : ""}"
+          class="soc-ring${i ? " has-soc" : ""}"
           viewBox="0 0 84 84"
           aria-hidden="true"
         >
-          <circle class="ring-track"    cx="42" cy="42" r="${Mt}"/>
+          <circle class="ring-track"    cx="42" cy="42" r="${Pt}"/>
           <circle
             class="ring-progress"
-            cx="42" cy="42" r="${Mt}"
-            style="stroke-dasharray:${Cs};stroke-dashoffset:${l};"
+            cx="42" cy="42" r="${Pt}"
+            style="stroke-dasharray:${Es};stroke-dashoffset:${l};"
           />
         </svg>
 
@@ -2769,16 +2769,16 @@ let S = class extends T {
           @click=${this._handleClick}
         >
           <ha-icon .icon=${s}></ha-icon>
-          ${this.showLabel ? m`<span class="label" style="color:${t};">${this.label || this.type}</span>` : g}
-          <span class="power">${Hs(n, this.unit, this.decimalPlaces)}</span>
-          ${a ? m`<ha-icon class="direction-icon" .icon=${a}></ha-icon>` : g}
+          ${this.showLabel ? b`<span class="label" style="color:${t};">${this.label || this.type}</span>` : _}
+          <span class="power">${Ds(n, this.unit, this.decimalPlaces)}</span>
+          ${r ? b`<ha-icon class="direction-icon" .icon=${r}></ha-icon>` : _}
         </div>
 
       </div>
     `;
   }
 };
-S.styles = X`
+C.styles = J`
     :host {
       display: flex;
       align-items: center;
@@ -2873,63 +2873,63 @@ S.styles = X`
   `;
 P([
   w()
-], S.prototype, "type", 2);
+], C.prototype, "type", 2);
 P([
   w()
-], S.prototype, "label", 2);
+], C.prototype, "label", 2);
 P([
   w({ type: Boolean })
-], S.prototype, "showLabel", 2);
+], C.prototype, "showLabel", 2);
 P([
   w()
-], S.prototype, "icon", 2);
+], C.prototype, "icon", 2);
 P([
   w()
-], S.prototype, "colour", 2);
+], C.prototype, "colour", 2);
 P([
   w({ type: Number })
-], S.prototype, "power", 2);
+], C.prototype, "power", 2);
 P([
   w({ type: Number })
-], S.prototype, "soc", 2);
+], C.prototype, "soc", 2);
 P([
   w()
-], S.prototype, "unit", 2);
+], C.prototype, "unit", 2);
 P([
   w({ type: Number })
-], S.prototype, "decimalPlaces", 2);
-S = P([
-  tt("hec-energy-node")
-], S);
-function Us(e, t) {
+], C.prototype, "decimalPlaces", 2);
+C = P([
+  Q("hec-energy-node")
+], C);
+function Is(e, t) {
   return (t == null ? void 0 : t.trim().toLowerCase()) === "kw" ? e * 1e3 : e;
 }
-function Lt(e, t) {
-  var i;
+function Tt(e, t) {
+  var o;
   if (!t) return null;
   const s = e[t];
   if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-  const o = parseFloat(s.state);
-  return isNaN(o) ? null : Us(
-    o,
-    (i = s.attributes) == null ? void 0 : i.unit_of_measurement
+  const i = parseFloat(s.state);
+  return isNaN(i) ? null : Is(
+    i,
+    (o = s.attributes) == null ? void 0 : o.unit_of_measurement
   );
 }
-function Is(e, t, s) {
-  const o = t.zero_tolerance ?? 0, i = { power: null, magnitude: null, direction: "idle" };
+function Us(e, t, s) {
+  const i = t.zero_tolerance ?? 0, o = { power: null, magnitude: null, direction: "idle" };
   let n;
   if (t.power_combined)
-    n = Lt(s, t.power_combined);
+    n = Tt(s, t.power_combined);
   else {
     const l = !!t.power_import, d = !!t.power_export;
-    if (!l && !d) return i;
-    const u = l ? Lt(s, t.power_import) : null, p = d ? Lt(s, t.power_export) : null;
-    if ((!l || u === null) && (!d || p === null)) return i;
-    n = (u ?? 0) - (p ?? 0);
+    if (!l && !d) return o;
+    const p = l ? Tt(s, t.power_import) : null, u = d ? Tt(s, t.power_export) : null;
+    if ((!l || p === null) && (!d || u === null)) return o;
+    n = (p ?? 0) - (u ?? 0);
   }
-  if (n === null) return i;
-  if (Math.abs(n) <= o) return { power: n, magnitude: null, direction: "idle" };
-  const a = Math.abs(n);
+  if (n === null) return o;
+  if (Math.abs(n) <= i) return { power: n, magnitude: null, direction: "idle" };
+  const r = Math.abs(n);
   let c;
   switch (e) {
     case "solar":
@@ -2945,14 +2945,14 @@ function Is(e, t, s) {
     default:
       c = n > 0 ? "from-home" : "to-home";
   }
-  return { power: n, magnitude: a, direction: c };
+  return { power: n, magnitude: r, direction: c };
 }
-var Ti = Object.defineProperty, Pi = Object.getOwnPropertyDescriptor, K = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? Pi(t, s) : t, n = e.length - 1, a; n >= 0; n--)
-    (a = e[n]) && (i = (o ? a(t, s, i) : a(i)) || i);
-  return o && i && Ti(t, s, i), i;
+var Pi = Object.defineProperty, Oi = Object.getOwnPropertyDescriptor, D = (e, t, s, i) => {
+  for (var o = i > 1 ? void 0 : i ? Oi(t, s) : t, n = e.length - 1, r; n >= 0; n--)
+    (r = e[n]) && (o = (i ? r(t, s, o) : r(o)) || o);
+  return i && o && Pi(t, s, o), o;
 };
-const Oi = {
+const Mi = {
   solar: "mdi:solar-power-variant",
   grid: "mdi:transmission-tower",
   battery: "mdi:home-battery",
@@ -2971,94 +2971,162 @@ const Oi = {
   home: { "to-home": "consuming" },
   ev: { "to-home": "discharging (V2H)", "from-home": "charging" }
 };
-function Mi(e, t) {
-  const s = Date.now(), o = s - 864e5, i = Array(24).fill(null);
-  if (!e.length) return i;
+function Ni(e, t) {
+  const s = Date.now(), i = s - 864e5, o = Array(24).fill(null);
+  if (!e.length) return o;
   for (let n = 0; n < 24; n++) {
-    const a = o + n * 36e5, c = a + 36e5;
+    const r = i + n * 36e5, c = r + 36e5;
     let l = 0, d = 0;
-    for (let u = 0; u < e.length; u++) {
-      const p = new Date(e[u].last_changed).getTime(), _ = u + 1 < e.length ? new Date(e[u + 1].last_changed).getTime() : s, y = Math.max(p, a), f = Math.min(_, c);
-      if (f <= y) continue;
-      const v = parseFloat(e[u].state);
-      if (isNaN(v)) continue;
-      const $ = Us(v, t), b = f - y;
-      l += Math.abs($) * b, d += b;
+    for (let p = 0; p < e.length; p++) {
+      const u = new Date(e[p].last_changed).getTime(), y = p + 1 < e.length ? new Date(e[p + 1].last_changed).getTime() : s, g = Math.max(u, r), f = Math.min(y, c);
+      if (f <= g) continue;
+      const m = parseFloat(e[p].state);
+      if (isNaN(m)) continue;
+      const $ = Is(m, t), v = f - g;
+      l += Math.abs($) * v, d += v;
     }
-    d > 0 && (i[n] = l / d);
+    d > 0 && (o[n] = l / d);
   }
-  return i;
+  return o;
 }
-function Ds(e, t) {
+function Rs(e, t) {
   if (!t) return null;
   const s = e[t];
   if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-  const o = parseFloat(s.state);
-  return isNaN(o) ? null : o;
+  const i = parseFloat(s.state);
+  return isNaN(i) ? null : i;
 }
-function mt(e, t) {
-  var i;
-  const s = Ds(e, t);
-  return s === null ? null : ((i = e[t]) == null ? void 0 : i.attributes.unit_of_measurement) === "Wh" ? s / 1e3 : s;
+function Cs(e, t) {
+  var o;
+  const s = Rs(e, t);
+  return s === null ? null : ((o = e[t]) == null ? void 0 : o.attributes.unit_of_measurement) === "Wh" ? s / 1e3 : s;
 }
 function Ss(e, t) {
   return e === null ? "—" : `${e.toFixed(t)} kWh`;
 }
-function Ni(e, t) {
+function Hi(e, t) {
   if (!t) return null;
   const s = e[t];
   if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-  const o = parseFloat(s.state);
-  if (isNaN(o)) return null;
-  const i = String(s.attributes.unit_of_measurement ?? "").trim().toLowerCase();
-  return i.includes("pence") || i.startsWith("p/") || i === "p" ? o / 100 : o;
+  const i = parseFloat(s.state);
+  if (isNaN(i)) return null;
+  const o = String(s.attributes.unit_of_measurement ?? "").trim().toLowerCase();
+  return o.includes("pence") || o.startsWith("p/") || o === "p" ? i / 100 : i;
 }
-function As(e, t) {
-  if (!t) return null;
-  const s = e[t];
-  if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-  const o = parseFloat(s.state);
-  if (isNaN(o)) return null;
-  const i = String(s.attributes.unit_of_measurement ?? "").trim().toLowerCase();
-  return i.includes("pence") || i.startsWith("p/") || i === "p" ? o / 100 : (i.includes("gbp") || i.includes("£"), o);
-}
-function zt(e) {
+function kt(e) {
   return e === null ? "—" : `${e < 0 ? "-" : ""}£${Math.abs(e).toFixed(2)}`;
 }
-function Hi(e) {
+function Di(e, t) {
+  const s = typeof e == "number" ? e : parseFloat(String(e));
+  if (isNaN(s)) return null;
+  const i = String(t ?? "").trim().toLowerCase();
+  return i.includes("pence") || i.startsWith("p/") || i === "p" ? s / 100 : (i.includes("gbp") || i.includes("£"), s);
+}
+function As(e) {
+  if (!e) return [];
+  const t = e.attributes.unit_of_measurement;
+  return (e.attributes.rates ?? e.attributes.current_day_rates ?? e.attributes.today_rates ?? e.attributes.upcoming_interval_rates ?? []).map((i) => {
+    const o = new Date(i.start ?? i.start_time ?? "").getTime(), n = new Date(i.end ?? i.end_time ?? "").getTime(), r = Di(
+      i.value_inc_vat ?? i.rate_inc_vat ?? i.value ?? i.rate,
+      i.unit_of_measurement ?? t
+    );
+    return !Number.isFinite(o) || !Number.isFinite(n) || !r ? null : { startMs: o, endMs: n, rateGbpPerKwh: r };
+  }).filter((i) => i !== null).sort((i, o) => i.startMs - o.startMs);
+}
+function Ii(e, t) {
+  return String(t ?? "").trim().toLowerCase() === "wh" ? e / 1e3 : e;
+}
+function Ts(e, t, s) {
+  if (e.length < 2 || !s.length) return null;
+  let i = 0, o = !1;
+  for (let n = 1; n < e.length; n++) {
+    const r = new Date(e[n - 1].last_changed).getTime(), c = new Date(e[n].last_changed).getTime();
+    if (!Number.isFinite(r) || !Number.isFinite(c) || c <= r) continue;
+    const l = parseFloat(e[n - 1].state), d = parseFloat(e[n].state);
+    if (isNaN(l) || isNaN(d)) continue;
+    const p = Ii(d - l, t);
+    if (p <= 0) continue;
+    const u = c - r;
+    let y = 0, g = 0;
+    for (const f of s) {
+      const m = Math.max(r, f.startMs), $ = Math.min(c, f.endMs);
+      if ($ <= m) continue;
+      const v = $ - m;
+      g += v, y += f.rateGbpPerKwh * v;
+    }
+    if (g > 0)
+      o = !0, i += p * (y / g);
+    else if (u > 0)
+      return null;
+  }
+  return o ? i : null;
+}
+function Ui(e) {
   return `${e.getHours().toString().padStart(2, "0")}:00`;
 }
 function ks(e) {
   const t = new Date(e);
   return `${t.getHours().toString().padStart(2, "0")}:${t.getMinutes().toString().padStart(2, "0")}`;
 }
-function Ui(e) {
+function Ri(e) {
   return e < 0 ? "#43a047" : e < 8 ? "#66bb6a" : e < 20 ? "#ffa726" : "#ef5350";
 }
-function Ii(e) {
+function ji(e) {
   return e < 20 ? "#ef5350" : e < 50 ? "#ffa726" : "#66bb6a";
 }
-let L = class extends T {
+let k = class extends T {
   constructor() {
-    super(...arguments), this.nodeType = "", this.open = !1, this._hourly = [], this._loading = !1;
+    super(...arguments), this.nodeType = "", this.open = !1, this._hourly = [], this._loading = !1, this._gridMoney = null;
   }
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   updated(e) {
-    super.updated(e), (e.has("open") || e.has("nodeType")) && this.open && this.nodeType && this._loadHistory();
+    super.updated(e), (e.has("open") || e.has("nodeType")) && this.open && this.nodeType && (this._loadHistory(), this.nodeType === "grid" ? this._loadGridMoney() : this._gridMoney = null);
   }
   async _loadHistory() {
-    var o, i, n, a;
-    const e = (i = (o = this.config) == null ? void 0 : o.entity_types) == null ? void 0 : i[this.nodeType], t = (e == null ? void 0 : e.power_combined) ?? (e == null ? void 0 : e.power_import) ?? (e == null ? void 0 : e.power_export);
+    var i, o, n, r;
+    const e = (o = (i = this.config) == null ? void 0 : i.entity_types) == null ? void 0 : o[this.nodeType], t = (e == null ? void 0 : e.power_combined) ?? (e == null ? void 0 : e.power_import) ?? (e == null ? void 0 : e.power_export);
     if (!t || !this.hass) return;
-    const s = (a = (n = this.hass.states) == null ? void 0 : n[t]) == null ? void 0 : a.attributes.unit_of_measurement;
+    const s = (r = (n = this.hass.states) == null ? void 0 : n[t]) == null ? void 0 : r.attributes.unit_of_measurement;
     this._loading = !0, this._hourly = [];
     try {
-      const c = /* @__PURE__ */ new Date(), d = `history/period/${new Date(c.getTime() - 864e5).toISOString()}?filter_entity_id=${t}&minimal_response=true&no_attributes=true&end_time=${c.toISOString()}`, u = await this.hass.callApi("GET", d);
-      this._hourly = Mi((u == null ? void 0 : u[0]) ?? [], s);
+      const c = /* @__PURE__ */ new Date(), d = `history/period/${new Date(c.getTime() - 864e5).toISOString()}?filter_entity_id=${t}&minimal_response=true&no_attributes=true&end_time=${c.toISOString()}`, p = await this.hass.callApi("GET", d);
+      this._hourly = Ni((p == null ? void 0 : p[0]) ?? [], s);
     } catch (c) {
       console.warn("[hec-node-detail] history fetch failed", c), this._hourly = [];
     } finally {
       this._loading = !1;
+    }
+  }
+  async _loadGridMoney() {
+    var c, l, d, p, u, y, g, f;
+    const e = (l = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : l.grid, t = e == null ? void 0 : e.octopus;
+    if (!this.hass || !e || !t) {
+      this._gridMoney = null;
+      return;
+    }
+    const s = As(
+      t.slots_entity ? (d = this.hass.states) == null ? void 0 : d[t.slots_entity] : void 0
+    ), i = As(
+      e.export_rate ? (p = this.hass.states) == null ? void 0 : p[e.export_rate] : void 0
+    ), o = /* @__PURE__ */ new Date();
+    o.setHours(0, 0, 0, 0);
+    const n = /* @__PURE__ */ new Date(), r = async (m) => {
+      if (!m || !this.hass) return [];
+      const $ = `history/period/${o.toISOString()}?filter_entity_id=${m}&minimal_response=true&no_attributes=true&end_time=${n.toISOString()}`, v = await this.hass.callApi("GET", $);
+      return (v == null ? void 0 : v[0]) ?? [];
+    };
+    try {
+      const [m, $] = await Promise.all([
+        r(e.daily_usage),
+        r(e.daily_export)
+      ]), v = e.daily_usage ? (y = (u = this.hass.states) == null ? void 0 : u[e.daily_usage]) == null ? void 0 : y.attributes.unit_of_measurement : void 0, O = e.daily_export ? (f = (g = this.hass.states) == null ? void 0 : g[e.daily_export]) == null ? void 0 : f.attributes.unit_of_measurement : void 0, M = Ts(m, v, s), S = Ts($, O, i), A = Hi(this.hass.states, t.cost_entity), L = M ?? A, z = S, I = L !== null && z !== null ? L - z : null;
+      this._gridMoney = {
+        importCostToday: L,
+        exportPaymentToday: z,
+        netCost: I
+      };
+    } catch (m) {
+      console.warn("[hec-node-detail] grid money load failed", m), this._gridMoney = null;
     }
   }
   _close() {
@@ -3066,7 +3134,7 @@ let L = class extends T {
   }
   // ── Section renderers ─────────────────────────────────────────────────────
   _header(e, t, s) {
-    return m`
+    return b`
       <div class="d-header">
         <ha-icon .icon=${t} style="color:${e};--mdc-icon-size:22px;"></ha-icon>
         <span class="d-title">${s}</span>
@@ -3077,20 +3145,20 @@ let L = class extends T {
     `;
   }
   _sectionPower(e) {
-    var i, n, a, c, l;
-    const t = ((n = (i = this.config) == null ? void 0 : i.display) == null ? void 0 : n.decimal_places) ?? 1, s = ((c = (a = this.config) == null ? void 0 : a.display) == null ? void 0 : c.unit) ?? "auto", o = ((l = zi[this.nodeType]) == null ? void 0 : l[e.direction]) ?? "";
-    return m`
+    var o, n, r, c, l;
+    const t = ((n = (o = this.config) == null ? void 0 : o.display) == null ? void 0 : n.decimal_places) ?? 1, s = ((c = (r = this.config) == null ? void 0 : r.display) == null ? void 0 : c.unit) ?? "auto", i = ((l = zi[this.nodeType]) == null ? void 0 : l[e.direction]) ?? "";
+    return b`
       <div class="section">
         <div class="s-title">Current power</div>
-        <div class="power-big">${Hs(e.power, s, t)}</div>
-        ${o ? m`<div class="power-sub">${o}</div>` : g}
+        <div class="power-big">${Ds(e.power, s, t)}</div>
+        ${i ? b`<div class="power-sub">${i}</div>` : _}
       </div>
     `;
   }
   _sectionSoc(e) {
-    if (e === null) return g;
-    const t = Ii(e);
-    return m`
+    if (e === null) return _;
+    const t = ji(e);
+    return b`
       <div class="section">
         <div class="s-title">State of charge</div>
         <div class="soc-row">
@@ -3103,92 +3171,90 @@ let L = class extends T {
     `;
   }
   _sectionDaily(e) {
-    var a, c, l;
-    const t = ((a = this.hass) == null ? void 0 : a.states) ?? {}, s = ((l = (c = this.config) == null ? void 0 : c.display) == null ? void 0 : l.decimal_places) ?? 1, o = this.nodeType === "solar" ? "Production" : this.nodeType === "grid" ? "Import" : this.nodeType === "battery" || this.nodeType === "ev" ? "Charged" : "Usage", i = this.nodeType === "battery" ? "Discharged" : this.nodeType === "ev" ? "Discharged (V2H)" : "Export", n = [];
-    return e.daily_usage && n.push([o, Ss(mt(t, e.daily_usage), s)]), e.daily_export && n.push([i, Ss(mt(t, e.daily_export), s)]), n.length ? m`
+    var r, c, l;
+    const t = ((r = this.hass) == null ? void 0 : r.states) ?? {}, s = ((l = (c = this.config) == null ? void 0 : c.display) == null ? void 0 : l.decimal_places) ?? 1, i = this.nodeType === "solar" ? "Production" : this.nodeType === "grid" ? "Import" : this.nodeType === "battery" || this.nodeType === "ev" ? "Charged" : "Usage", o = this.nodeType === "battery" ? "Discharged" : this.nodeType === "ev" ? "Discharged (V2H)" : "Export", n = [];
+    return e.daily_usage && n.push([i, Ss(Cs(t, e.daily_usage), s)]), e.daily_export && n.push([o, Ss(Cs(t, e.daily_export), s)]), n.length ? b`
       <div class="section">
         <div class="s-title">Today</div>
-        ${n.map(([d, u]) => m`
+        ${n.map(([d, p]) => b`
           <div class="kv">
             <span class="kv-k">${d}</span>
-            <span class="kv-v">${u}</span>
+            <span class="kv-v">${p}</span>
           </div>
         `)}
       </div>
-    ` : g;
+    ` : _;
   }
   _sectionOctopus(e) {
-    var z, M, N;
-    const t = ((z = this.hass) == null ? void 0 : z.states) ?? {}, s = ((N = (M = this.config) == null ? void 0 : M.entity_types) == null ? void 0 : N.grid) ?? {}, o = e.rate_entity ? t[e.rate_entity] : null, i = e.cost_entity ? t[e.cost_entity] : null, n = e.slots_entity ? t[e.slots_entity] : null, a = o == null ? void 0 : o.state, c = (o == null ? void 0 : o.attributes.unit_of_measurement) ?? "p/kWh", l = i == null ? void 0 : i.state;
-    i == null || i.attributes.unit_of_measurement;
-    const d = (n == null ? void 0 : n.attributes.rates) ?? (n == null ? void 0 : n.attributes.upcoming_interval_rates) ?? (n == null ? void 0 : n.attributes.today_rates) ?? [], u = Date.now(), p = d.filter((C) => new Date(C.end ?? C.end_time ?? 0).getTime() > u).slice(0, 6), _ = a && a !== "unavailable" && a !== "unknown", y = l && l !== "unavailable" && l !== "unknown", f = mt(t, s.daily_usage), v = mt(t, s.daily_export), $ = As(t, e.rate_entity), b = As(t, s.export_rate), A = f !== null && $ !== null ? f * $ : Ni(t, e.cost_entity), k = v !== null && b !== null ? v * b : null, O = A !== null && k !== null ? A - k : null;
-    return !_ && !y && !p.length && A === null && k === null && O === null ? g : m`
+    var g, f, m, $;
+    const t = ((g = this.hass) == null ? void 0 : g.states) ?? {}, s = e.rate_entity ? t[e.rate_entity] : null, i = e.slots_entity ? t[e.slots_entity] : null, o = s == null ? void 0 : s.state, n = (s == null ? void 0 : s.attributes.unit_of_measurement) ?? "p/kWh", r = (i == null ? void 0 : i.attributes.rates) ?? (i == null ? void 0 : i.attributes.upcoming_interval_rates) ?? (i == null ? void 0 : i.attributes.today_rates) ?? [], c = Date.now(), l = r.filter((v) => new Date(v.end ?? v.end_time ?? 0).getTime() > c).slice(0, 6), d = o && o !== "unavailable" && o !== "unknown", p = ((f = this._gridMoney) == null ? void 0 : f.importCostToday) ?? null, u = ((m = this._gridMoney) == null ? void 0 : m.exportPaymentToday) ?? null, y = (($ = this._gridMoney) == null ? void 0 : $.netCost) ?? null;
+    return !d && !l.length && p === null && u === null && y === null ? _ : b`
       <div class="section">
         <div class="s-title">Octopus</div>
 
-        ${_ ? m`
+        ${d ? b`
           <div class="kv">
             <span class="kv-k">Rate</span>
-            <span class="kv-v">${parseFloat(a).toFixed(2)} ${c}</span>
+            <span class="kv-v">${parseFloat(o).toFixed(2)} ${n}</span>
           </div>
-        ` : g}
+        ` : _}
 
-        ${A !== null ? m`
+        ${p !== null ? b`
           <div class="kv">
             <span class="kv-k">Import Cost Today</span>
-            <span class="kv-v">${zt(A)}</span>
+            <span class="kv-v">${kt(p)}</span>
           </div>
-        ` : g}
+        ` : _}
 
-        ${k !== null ? m`
+        ${u !== null ? b`
           <div class="kv">
             <span class="kv-k">Export Payment Today</span>
-            <span class="kv-v">${zt(k)}</span>
+            <span class="kv-v">${kt(u)}</span>
           </div>
-        ` : g}
+        ` : _}
 
-        ${O !== null ? m`
+        ${y !== null ? b`
           <div class="kv">
             <span class="kv-k">Net Cost</span>
-            <span class="kv-v">${zt(O)}</span>
+            <span class="kv-v">${kt(y)}</span>
           </div>
-        ` : g}
+        ` : _}
 
-        ${p.length ? m`
+        ${l.length ? b`
           <div class="s-subtitle">Upcoming slots</div>
-          ${p.map((C) => {
-      const I = C.start ?? C.start_time ?? "", ft = C.end ?? C.end_time ?? "", et = C.value_inc_vat ?? C.rate_inc_vat ?? C.value ?? 0, st = Ui(et);
-      return m`
+          ${l.map((v) => {
+      const O = v.start ?? v.start_time ?? "", M = v.end ?? v.end_time ?? "", S = v.value_inc_vat ?? v.rate_inc_vat ?? v.value ?? 0, A = Ri(S);
+      return b`
               <div class="slot">
-                <span class="slot-dot" style="background:${st};"></span>
-                <span class="slot-time">${ks(I)}–${ks(ft)}</span>
-                <span class="slot-rate" style="color:${st};">${(+et).toFixed(2)}p</span>
+                <span class="slot-dot" style="background:${A};"></span>
+                <span class="slot-time">${ks(O)}–${ks(M)}</span>
+                <span class="slot-rate" style="color:${A};">${(+S).toFixed(2)}p</span>
               </div>
             `;
     })}
-        ` : g}
+        ` : _}
       </div>
     `;
   }
   _sectionChart(e) {
-    const t = this._hourly.filter((n) => n !== null), s = t.length ? Math.max(...t) : 0, o = /* @__PURE__ */ new Date(), i = (n) => Hi(new Date(o.getTime() - n * 36e5));
-    return this._loading ? m`
+    const t = this._hourly.filter((n) => n !== null), s = t.length ? Math.max(...t) : 0, i = /* @__PURE__ */ new Date(), o = (n) => Ui(new Date(i.getTime() - n * 36e5));
+    return this._loading ? b`
       <div class="section">
         <div class="s-title">Last 24 hours</div>
         <div class="chart-msg">Loading…</div>
       </div>
-    ` : m`
+    ` : b`
       <div class="section">
         <div class="s-title">Last 24 hours</div>
-        ${s === 0 ? m`<div class="chart-msg">No data</div>` : m`
-              ${rt`
+        ${s === 0 ? b`<div class="chart-msg">No data</div>` : b`
+              ${nt`
                 <svg class="chart-svg" viewBox="0 0 240 52" preserveAspectRatio="none">
-                  ${this._hourly.map((n, a) => {
-      if (n === null || n <= 0) return rt``;
+                  ${this._hourly.map((n, r) => {
+      if (n === null || n <= 0) return nt``;
       const c = Math.max(2, n / s * 48);
-      return rt`
+      return nt`
                       <rect
-                        x="${a * 10 + 0.5}" y="${52 - c}"
+                        x="${r * 10 + 0.5}" y="${52 - c}"
                         width="9" height="${c}" rx="2"
                         fill="${e}" opacity="0.82"
                       />
@@ -3197,10 +3263,10 @@ let L = class extends T {
                 </svg>
               `}
               <div class="chart-labels">
-                <span>${i(24)}</span>
-                <span>${i(18)}</span>
-                <span>${i(12)}</span>
-                <span>${i(6)}</span>
+                <span>${o(24)}</span>
+                <span>${o(18)}</span>
+                <span>${o(12)}</span>
+                <span>${o(6)}</span>
                 <span>Now</span>
               </div>
             `}
@@ -3209,27 +3275,27 @@ let L = class extends T {
   }
   // ── Main render ───────────────────────────────────────────────────────────
   render() {
-    var l, d, u;
-    if (!this.open || !this.nodeType) return g;
-    const e = ((d = (l = this.config) == null ? void 0 : l.entity_types) == null ? void 0 : d[this.nodeType]) ?? {}, t = ((u = this.hass) == null ? void 0 : u.states) ?? {}, s = e.colour || (Li[this.nodeType] ?? "#9e9e9e"), o = e.icon || Oi[this.nodeType] || "mdi:lightning-bolt", i = e.label || this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1), n = Is(this.nodeType, e, t), a = !!e.soc && (["battery", "ev"].includes(this.nodeType) || !xt.includes(this.nodeType)), c = a ? Ds(t, e.soc) : null;
-    return m`
+    var l, d, p;
+    if (!this.open || !this.nodeType) return _;
+    const e = ((d = (l = this.config) == null ? void 0 : l.entity_types) == null ? void 0 : d[this.nodeType]) ?? {}, t = ((p = this.hass) == null ? void 0 : p.states) ?? {}, s = e.colour || (Li[this.nodeType] ?? "#9e9e9e"), i = e.icon || Mi[this.nodeType] || "mdi:lightning-bolt", o = e.label || this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1), n = Us(this.nodeType, e, t), r = !!e.soc && (["battery", "ev"].includes(this.nodeType) || !bt.includes(this.nodeType)), c = r ? Rs(t, e.soc) : null;
+    return b`
       <div
         class="overlay"
-        @click=${(p) => p.target === p.currentTarget && this._close()}
+        @click=${(u) => u.target === u.currentTarget && this._close()}
       >
         <div class="panel" role="dialog" aria-modal="true">
-          ${this._header(s, o, i)}
+          ${this._header(s, i, o)}
           ${this._sectionPower(n)}
-          ${a ? this._sectionSoc(c) : g}
+          ${r ? this._sectionSoc(c) : _}
           ${this._sectionDaily(e)}
-          ${this.nodeType === "grid" && e.octopus ? this._sectionOctopus(e.octopus) : g}
+          ${this.nodeType === "grid" && e.octopus ? this._sectionOctopus(e.octopus) : _}
           ${this._sectionChart(s)}
         </div>
       </div>
     `;
   }
 };
-L.styles = X`
+k.styles = J`
     :host { display: contents; }
 
     /* ── Overlay ── */
@@ -3403,44 +3469,47 @@ L.styles = X`
       padding: 10px 0;
     }
   `;
-K([
+D([
   w({ attribute: !1 })
-], L.prototype, "hass", 2);
-K([
+], k.prototype, "hass", 2);
+D([
   w({ attribute: !1 })
-], L.prototype, "config", 2);
-K([
+], k.prototype, "config", 2);
+D([
   w()
-], L.prototype, "nodeType", 2);
-K([
+], k.prototype, "nodeType", 2);
+D([
   w({ type: Boolean })
-], L.prototype, "open", 2);
-K([
-  Ct()
-], L.prototype, "_hourly", 2);
-K([
-  Ct()
-], L.prototype, "_loading", 2);
-L = K([
-  tt("hec-node-detail")
-], L);
-var Di = Object.defineProperty, ji = Object.getOwnPropertyDescriptor, ut = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? ji(t, s) : t, n = e.length - 1, a; n >= 0; n--)
-    (a = e[n]) && (i = (o ? a(t, s, i) : a(i)) || i);
-  return o && i && Di(t, s, i), i;
+], k.prototype, "open", 2);
+D([
+  dt()
+], k.prototype, "_hourly", 2);
+D([
+  dt()
+], k.prototype, "_loading", 2);
+D([
+  dt()
+], k.prototype, "_gridMoney", 2);
+k = D([
+  Q("hec-node-detail")
+], k);
+var Bi = Object.defineProperty, Fi = Object.getOwnPropertyDescriptor, ut = (e, t, s, i) => {
+  for (var o = i > 1 ? void 0 : i ? Fi(t, s) : t, n = e.length - 1, r; n >= 0; n--)
+    (r = e[n]) && (o = (i ? r(t, s, o) : r(o)) || o);
+  return i && o && Bi(t, s, o), o;
 };
-function Ri(e, t) {
+function Vi(e, t) {
   if (!t || !e) return "0.7s";
   const s = Math.min(e / 5e3, 1);
   return `${(Math.round((2 - s * 1.7) * 10) / 10).toFixed(1)}s`;
 }
-const Bi = {
+const Gi = {
   solar: "#ffc107",
   grid: "#8e24aa",
   battery: "#e53935",
   ev: "#42a5f5"
 };
-let G = class extends T {
+let W = class extends T {
   constructor() {
     super(...arguments), this._dialogType = null, this._lineLayout = {
       width: 0,
@@ -3473,9 +3542,9 @@ let G = class extends T {
     return e in (((t = this.config) == null ? void 0 : t.entity_types) ?? {});
   }
   _flowInfo(e) {
-    var s, o, i;
-    const t = ((o = (s = this.config) == null ? void 0 : s.entity_types) == null ? void 0 : o[e]) ?? {};
-    return Is(e, t, ((i = this.hass) == null ? void 0 : i.states) ?? {});
+    var s, i, o;
+    const t = ((i = (s = this.config) == null ? void 0 : s.entity_types) == null ? void 0 : i[e]) ?? {};
+    return Us(e, t, ((o = this.hass) == null ? void 0 : o.states) ?? {});
   }
   /**
    * A node (and its flow line) is visible when:
@@ -3483,17 +3552,17 @@ let G = class extends T {
    *   - either show_zero is not false, OR the flow is not idle
    */
   _isVisible(e) {
-    var s, o;
-    return !(!this._configured(e) || (((o = (s = this.config) == null ? void 0 : s.entity_types) == null ? void 0 : o[e]) ?? {}).show_zero === !1 && this._flowInfo(e).direction === "idle");
+    var s, i;
+    return !(!this._configured(e) || (((i = (s = this.config) == null ? void 0 : s.entity_types) == null ? void 0 : i[e]) ?? {}).show_zero === !1 && this._flowInfo(e).direction === "idle");
   }
   _soc(e) {
-    var i, n, a, c;
-    const t = (a = (n = (i = this.config) == null ? void 0 : i.entity_types) == null ? void 0 : n[e]) == null ? void 0 : a.soc;
+    var o, n, r, c;
+    const t = (r = (n = (o = this.config) == null ? void 0 : o.entity_types) == null ? void 0 : n[e]) == null ? void 0 : r.soc;
     if (!t || !this.hass) return null;
     const s = (c = this.hass.states[t]) == null ? void 0 : c.state;
     if (!s || s === "unavailable" || s === "unknown") return null;
-    const o = parseFloat(s);
-    return isNaN(o) ? null : o;
+    const i = parseFloat(s);
+    return isNaN(i) ? null : i;
   }
   // ── SVG lines ─────────────────────────────────────────────────────────────
   _scheduleMeasureLineLayout() {
@@ -3506,25 +3575,25 @@ let G = class extends T {
     if (!e) return;
     const t = e.getBoundingClientRect();
     if (!t.width || !t.height) return;
-    const s = {}, o = Array.from(
+    const s = {}, i = Array.from(
       this.renderRoot.querySelectorAll("hec-energy-node[data-node-type]")
     );
-    for (const a of o) {
-      if (a.classList.contains("hidden")) continue;
-      const c = a.dataset.nodeType;
+    for (const r of i) {
+      if (r.classList.contains("hidden")) continue;
+      const c = r.dataset.nodeType;
       if (!c) continue;
-      const l = a.getBoundingClientRect();
+      const l = r.getBoundingClientRect();
       s[c] = {
         x: l.left - t.left + l.width / 2,
         y: l.top - t.top + l.height / 2
       };
     }
-    const i = {
+    const o = {
       width: t.width,
       height: t.height,
       centers: s
     };
-    this._lineLayout.width === i.width && this._lineLayout.height === i.height && JSON.stringify(this._lineLayout.centers) === JSON.stringify(i.centers) || (this._lineLayout = i);
+    this._lineLayout.width === o.width && this._lineLayout.height === o.height && JSON.stringify(this._lineLayout.centers) === JSON.stringify(o.centers) || (this._lineLayout = o);
   }
   _lineTypes() {
     return [
@@ -3546,16 +3615,16 @@ let G = class extends T {
   }
   _pruneFlowSamples(e, t) {
     const s = this._flowSamples[e] ?? [];
-    this._flowSamples[e] = s.filter((o) => t - o.timestamp <= 1e4);
+    this._flowSamples[e] = s.filter((i) => t - i.timestamp <= 1e4);
   }
   _recordFlowSamples() {
     const e = Date.now();
     for (const t of this._sampleTypes()) {
-      const s = this._flowInfo(t), o = this._flowSamples[t] ?? [];
-      o.push({
+      const s = this._flowInfo(t), i = this._flowSamples[t] ?? [];
+      i.push({
         timestamp: e,
         magnitude: s.magnitude
-      }), this._flowSamples[t] = o, this._pruneFlowSamples(t, e);
+      }), this._flowSamples[t] = i, this._pruneFlowSamples(t, e);
     }
   }
   _refreshSmoothedMagnitudes() {
@@ -3563,20 +3632,20 @@ let G = class extends T {
     let t = !1;
     for (const s of this._sampleTypes()) {
       this._pruneFlowSamples(s, e);
-      const i = (this._flowSamples[s] ?? []).map((a) => a.magnitude).filter((a) => a !== null), n = i.length > 0 ? i.reduce((a, c) => a + Math.abs(c), 0) / i.length : null;
+      const o = (this._flowSamples[s] ?? []).map((r) => r.magnitude).filter((r) => r !== null), n = o.length > 0 ? o.reduce((r, c) => r + Math.abs(c), 0) / o.length : null;
       this._smoothedMagnitudes[s] !== n && (this._smoothedMagnitudes[s] = n, t = !0);
     }
     return t;
   }
   _computeLineVisualState(e) {
-    var n, a, c, l, d, u, p;
-    const t = ((a = (n = this.config) == null ? void 0 : n.display) == null ? void 0 : a.dynamic_animation_speed) ?? !1, s = ((l = (c = this.config) == null ? void 0 : c.display) == null ? void 0 : l.animation) !== !1, o = this._flowInfo(e), i = this._smoothedMagnitudes[e] ?? o.magnitude;
+    var n, r, c, l, d, p, u;
+    const t = ((r = (n = this.config) == null ? void 0 : n.display) == null ? void 0 : r.dynamic_animation_speed) ?? !1, s = ((l = (c = this.config) == null ? void 0 : c.display) == null ? void 0 : l.animation) !== !1, i = this._flowInfo(e), o = this._smoothedMagnitudes[e] ?? i.magnitude;
     return {
-      color: Bi[e] ?? ((p = (u = (d = this.config) == null ? void 0 : d.entity_types) == null ? void 0 : u[e]) == null ? void 0 : p.colour) ?? "#9e9e9e",
-      dur: Ri(i, t && o.direction !== "idle"),
-      idle: o.direction === "idle",
+      color: Gi[e] ?? ((u = (p = (d = this.config) == null ? void 0 : d.entity_types) == null ? void 0 : p[e]) == null ? void 0 : u.colour) ?? "#9e9e9e",
+      dur: Vi(o, t && i.direction !== "idle"),
+      idle: i.direction === "idle",
       paused: !s,
-      reverse: o.direction === "from-home"
+      reverse: i.direction === "from-home"
     };
   }
   _sameLineVisualState(e, t) {
@@ -3591,32 +3660,32 @@ let G = class extends T {
       "ev",
       ...this._customTypes()
     ]) {
-      const s = this._computeLineVisualState(t), o = this._lineVisualState[t];
-      e[t] = this._sameLineVisualState(o, s) ? o : s;
+      const s = this._computeLineVisualState(t), i = this._lineVisualState[t];
+      e[t] = this._sameLineVisualState(i, s) ? i : s;
     }
     this._lineVisualState = e;
   }
   _svgLines() {
     const e = this._lineLayout.centers.home;
-    return !e || !this._lineLayout.width || !this._lineLayout.height ? g : rt`
-      ${Es(
+    return !e || !this._lineLayout.width || !this._lineLayout.height ? _ : nt`
+      ${xs(
       this._lineTypes(),
       (t) => t,
       (t) => {
         const s = this._lineLayout.centers[t];
-        if (!s) return g;
-        const o = this._lineVisualState[t] ?? this._computeLineVisualState(t), i = [
+        if (!s) return _;
+        const i = this._lineVisualState[t] ?? this._computeLineVisualState(t), o = [
           "flow-line",
-          o.reverse ? "reverse" : "",
-          o.idle ? "idle" : "",
-          o.paused ? "paused" : ""
+          i.reverse ? "reverse" : "",
+          i.idle ? "idle" : "",
+          i.paused ? "paused" : ""
         ].filter(Boolean).join(" ");
-        return rt`
+        return nt`
             <line
               x1="${s.x}" y1="${s.y}" x2="${e.x}" y2="${e.y}"
-              stroke="${o.color}"
-              class="${i}"
-              style="--flow-dur:${o.dur}"
+              stroke="${i.color}"
+              class="${o}"
+              style="--flow-dur:${i.dur}"
               pathLength="100"
             />
           `;
@@ -3627,17 +3696,17 @@ let G = class extends T {
   // ── Node render ───────────────────────────────────────────────────────────
   _node(e, t, s = !1) {
     var c, l, d;
-    const o = e === "home" ? !0 : this._isVisible(e), i = ((l = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : l[e]) ?? {}, n = ((d = this.config) == null ? void 0 : d.display) ?? {}, a = this._flowInfo(e);
-    return m`
+    const i = e === "home" ? !0 : this._isVisible(e), o = ((l = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : l[e]) ?? {}, n = ((d = this.config) == null ? void 0 : d.display) ?? {}, r = this._flowInfo(e);
+    return b`
       <hec-energy-node
         data-node-type=${e}
-        class="${t}${o ? "" : " hidden"}"
+        class="${t}${i ? "" : " hidden"}"
         .type=${e}
-        .label=${i.label ?? e}
-        .showLabel=${i.show_label ?? !0}
-        .icon=${i.icon ?? ""}
-        .colour=${i.colour ?? ""}
-        .power=${a.power}
+        .label=${o.label ?? e}
+        .showLabel=${o.show_label ?? !0}
+        .icon=${o.icon ?? ""}
+        .colour=${o.colour ?? ""}
+        .power=${r.power}
         .soc=${s ? this._soc(e) : null}
         .unit=${n.unit ?? "auto"}
         .decimalPlaces=${n.decimal_places ?? 1}
@@ -3649,7 +3718,7 @@ let G = class extends T {
   _customTypes() {
     var e;
     return Object.keys(((e = this.config) == null ? void 0 : e.entity_types) ?? {}).filter(
-      (t) => !xt.includes(t)
+      (t) => !bt.includes(t)
     );
   }
   /**
@@ -3664,19 +3733,19 @@ let G = class extends T {
   /** Render a custom node with inline grid placement. */
   _customNode(e, t, s) {
     var c, l, d;
-    const o = this._isVisible(e), i = ((l = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : l[e]) ?? {}, n = ((d = this.config) == null ? void 0 : d.display) ?? {}, a = this._flowInfo(e);
-    return m`
+    const i = this._isVisible(e), o = ((l = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : l[e]) ?? {}, n = ((d = this.config) == null ? void 0 : d.display) ?? {}, r = this._flowInfo(e);
+    return b`
       <hec-energy-node
         data-node-type=${e}
         style="grid-column:${t}; grid-row:${s}"
-        class="${o ? "" : "hidden"}"
+        class="${i ? "" : "hidden"}"
         .type=${e}
-        .label=${i.label ?? e}
-        .showLabel=${i.show_label ?? !0}
-        .icon=${i.icon ?? ""}
-        .colour=${i.colour ?? ""}
-        .power=${a.power}
-        .soc=${i.soc ? this._soc(e) : null}
+        .label=${o.label ?? e}
+        .showLabel=${o.show_label ?? !0}
+        .icon=${o.icon ?? ""}
+        .colour=${o.colour ?? ""}
+        .power=${r.power}
+        .soc=${o.soc ? this._soc(e) : null}
         .unit=${n.unit ?? "auto"}
         .decimalPlaces=${n.decimal_places ?? 1}
       ></hec-energy-node>
@@ -3689,9 +3758,9 @@ let G = class extends T {
   }
   // ── Main render ───────────────────────────────────────────────────────────
   render() {
-    if (!this.config) return g;
+    if (!this.config) return _;
     const e = this._customTypes();
-    return 2 + Math.ceil(e.length / 3), m`
+    return 2 + Math.ceil(e.length / 3), b`
       <div class="grid" @hec-node-click=${this._onNodeClick}>
         <svg
           class="svg-overlay"
@@ -3702,8 +3771,8 @@ let G = class extends T {
         </svg>
 
         <!-- Row 1: B1=Solar, C1=EV (omitted entirely if neither configured) -->
-        ${this._configured("solar") ? this._node("solar", "slot-solar") : g}
-        ${this._configured("ev") ? this._node("ev", "slot-ev", !0) : g}
+        ${this._configured("solar") ? this._node("solar", "slot-solar") : _}
+        ${this._configured("ev") ? this._node("ev", "slot-ev", !0) : _}
 
         <!-- Row 2: A2=Grid, B2=Home, C2=Battery -->
         ${this._node("grid", "slot-grid")}
@@ -3711,9 +3780,9 @@ let G = class extends T {
         ${this._node("battery", "slot-battery", !0)}
 
         <!-- Rows 3+: custom types (B→A→C per row) -->
-        ${Es(e, (t) => t, (t, s) => {
-      const [o, i] = this._customSlot(s);
-      return this._customNode(t, o, i);
+        ${xs(e, (t) => t, (t, s) => {
+      const [i, o] = this._customSlot(s);
+      return this._customNode(t, i, o);
     })}
       </div>
 
@@ -3729,7 +3798,7 @@ let G = class extends T {
     `;
   }
 };
-G.styles = X`
+W.styles = J`
     :host { display: block; }
 
     .grid {
@@ -3785,27 +3854,27 @@ G.styles = X`
   `;
 ut([
   w({ attribute: !1 })
-], G.prototype, "hass", 2);
+], W.prototype, "hass", 2);
 ut([
   w({ attribute: !1 })
-], G.prototype, "config", 2);
+], W.prototype, "config", 2);
 ut([
-  Ct()
-], G.prototype, "_dialogType", 2);
+  dt()
+], W.prototype, "_dialogType", 2);
 ut([
-  Ct()
-], G.prototype, "_lineLayout", 2);
-G = ut([
-  tt("hec-flow-layout")
-], G);
-var Fi = Object.defineProperty, Vi = Object.getOwnPropertyDescriptor, Ft = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? Vi(t, s) : t, n = e.length - 1, a; n >= 0; n--)
-    (a = e[n]) && (i = (o ? a(t, s, i) : a(i)) || i);
-  return o && i && Fi(t, s, i), i;
+  dt()
+], W.prototype, "_lineLayout", 2);
+W = ut([
+  Q("hec-flow-layout")
+], W);
+var Wi = Object.defineProperty, Ki = Object.getOwnPropertyDescriptor, Ut = (e, t, s, i) => {
+  for (var o = i > 1 ? void 0 : i ? Ki(t, s) : t, n = e.length - 1, r; n >= 0; n--)
+    (r = e[n]) && (o = (i ? r(t, s, o) : r(o)) || o);
+  return i && o && Wi(t, s, o), o;
 };
-let pt = class extends T {
+let ht = class extends T {
   setConfig(e) {
-    this.config = bt(e);
+    this.config = _t(e);
   }
   static getConfigElement() {
     return document.createElement("home-energy-card-editor");
@@ -3814,7 +3883,7 @@ let pt = class extends T {
     return { type: "custom:home-energy-card", show_header: !0 };
   }
   render() {
-    return this.config ? m`
+    return this.config ? b`
       <ha-card>
         <hec-card-header
           .hass=${this.hass}
@@ -3828,25 +3897,25 @@ let pt = class extends T {
           ></hec-flow-layout>
         </div>
       </ha-card>
-    ` : g;
+    ` : _;
   }
 };
-pt.styles = X`
+ht.styles = J`
     :host { display: block; }
 
     ha-card { overflow: hidden; }
 
     .card-body { padding: 10px 12px 14px; }
   `;
-Ft([
+Ut([
   w({ attribute: !1 })
-], pt.prototype, "hass", 2);
-Ft([
+], ht.prototype, "hass", 2);
+Ut([
   w({ attribute: !1 })
-], pt.prototype, "config", 2);
-pt = Ft([
-  tt("home-energy-card")
-], pt);
+], ht.prototype, "config", 2);
+ht = Ut([
+  Q("home-energy-card")
+], ht);
 window.customCards = window.customCards ?? [];
 window.customCards.push({
   type: "home-energy-card",
@@ -3856,5 +3925,5 @@ window.customCards.push({
   documentationURL: "https://github.com/AshGSmith/home-energy-card"
 });
 export {
-  pt as HomeEnergyCard
+  ht as HomeEnergyCard
 };
