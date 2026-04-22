@@ -210,6 +210,24 @@ function parseRateIntervalsFromHistory(
   return intervals;
 }
 
+function constantRateForWindow(
+  history: HistoryEntry[],
+  stateObj: HomeAssistant["states"][string] | undefined,
+): number | null {
+  const unitHint = stateObj?.attributes.unit_of_measurement as string | undefined;
+  const values = history
+    .map((entry) => parseRateValueGbpPerKwh(entry.state, unitHint))
+    .filter((value): value is number => value !== null);
+
+  if (values.length > 0) {
+    const first = values[0];
+    if (values.every((value) => Math.abs(value - first) < 1e-9)) return first;
+    return null;
+  }
+
+  return stateObj ? parseRateValueGbpPerKwh(stateObj.state, unitHint) : null;
+}
+
 function cumulativeValueToKwh(value: number, unit?: string): number {
   return String(unit ?? "").trim().toLowerCase() === "wh" ? value / 1000 : value;
 }
@@ -348,8 +366,9 @@ export class HecNodeDetail extends LitElement {
     const importRatesFromState = parseRateIntervalsFromState(
       oct.slots_entity ? this.hass.states?.[oct.slots_entity] : undefined,
     );
+    const exportRateState = gridCfg.export_rate ? this.hass.states?.[gridCfg.export_rate] : undefined;
     const exportRatesFromState = parseRateIntervalsFromState(
-      gridCfg.export_rate ? this.hass.states?.[gridCfg.export_rate] : undefined,
+      exportRateState,
     );
 
     const start = new Date();
@@ -395,6 +414,9 @@ export class HecNodeDetail extends LitElement {
         exportRatesFromState.length
           ? exportRatesFromState
           : parseRateIntervalsFromHistory(exportRateHistory, exportRateUnit, end.getTime());
+      const importTotalKwh = readKwh(this.hass.states, gridCfg.daily_usage);
+      const exportTotalKwh = readKwh(this.hass.states, gridCfg.daily_export);
+      const constantExportRate = constantRateForWindow(exportRateHistory, exportRateState);
 
       const intervalImportCost = intervalCostFromHistory(
         importHistory,
@@ -409,7 +431,11 @@ export class HecNodeDetail extends LitElement {
       const fallbackImportCost = readCurrencyGbp(this.hass.states, oct.cost_entity);
 
       const importCostToday = intervalImportCost ?? fallbackImportCost;
-      const exportPaymentToday = intervalExportPayment;
+      const exportPaymentToday =
+        intervalExportPayment ??
+        (exportTotalKwh !== null && constantExportRate !== null
+          ? exportTotalKwh * constantExportRate
+          : null);
       const netCost =
         importCostToday !== null && exportPaymentToday !== null
           ? importCostToday - exportPaymentToday
