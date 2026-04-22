@@ -3699,11 +3699,11 @@ j.styles = G`
     hec-energy-node { position: relative; z-index: 1; }
 
     @keyframes flow-fwd {
-      from { stroke-dashoffset: 10; }
+      from { stroke-dashoffset: 9; }
       to   { stroke-dashoffset:  0; }
     }
     @keyframes flow-rev {
-      from { stroke-dashoffset: -10; }
+      from { stroke-dashoffset: -9; }
       to   { stroke-dashoffset:   0; }
     }
 
