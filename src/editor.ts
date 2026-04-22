@@ -29,22 +29,48 @@ export class HomeEnergyCardEditor extends LitElement {
       width: 100%;
     }
 
-    mwc-button {
-      --mdc-theme-primary: var(--primary-color);
-      align-self: flex-start;
-    }
-
     .action-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.1s ease;
+      box-sizing: border-box;
     }
 
-    .delete-button {
-      --mdc-theme-primary: var(--error-color);
+    .action-button:hover {
+      filter: brightness(0.97);
+    }
+
+    .action-button:active {
+      transform: translateY(1px);
+    }
+
+    .action-button.primary {
+      color: var(--text-primary-color, #fff);
+      background: var(--primary-color);
+      box-shadow: var(
+        --ha-card-box-shadow,
+        0 2px 6px rgba(0, 0, 0, 0.16)
+      );
+    }
+
+    .action-button.delete-button {
+      color: var(--error-color);
+      background: var(--card-background-color, #fff);
+      border-color: color-mix(in srgb, var(--error-color) 40%, transparent);
     }
 
     .action-icon {
       --mdc-icon-size: 18px;
-      margin-right: 4px;
     }
 
     .section-body {
@@ -1157,22 +1183,22 @@ export class HomeEnergyCardEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <mwc-button class="action-button" raised @click=${() => this._addCustomType()}>
-        <ha-icon class="action-icon" slot="icon" icon="mdi:plus"></ha-icon>
+      <button class="action-button primary" type="button" @click=${() => this._addCustomType()}>
+        <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
         Add Custom Type
-      </mwc-button>
+      </button>
 
       ${(this.config.custom_types ?? []).map((customType, index) => html`
-        <ha-expansion-panel header="Custom ${index + 1}">
+        <ha-expansion-panel header=${customType.label?.trim() || `Custom ${index + 1}`}>
           <div class="section-body">
-            <mwc-button
+            <button
               class="action-button delete-button"
-              outlined
+              type="button"
               @click=${() => this._deleteCustomType(index)}
             >
-              <ha-icon class="action-icon" slot="icon" icon="mdi:delete"></ha-icon>
+              <ha-icon class="action-icon" icon="mdi:delete"></ha-icon>
               Delete Custom Type
-            </mwc-button>
+            </button>
 
             <ha-selector
               label="Custom Import Power"
