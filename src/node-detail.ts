@@ -182,6 +182,34 @@ function parseRateIntervalsFromState(
     .sort((a, b) => a.startMs - b.startMs);
 }
 
+function parseRateIntervalsFromHistory(
+  history: HistoryEntry[],
+  unitHint: string | undefined,
+  endMs: number,
+): RateInterval[] {
+  if (!history.length) return [];
+
+  const intervals: RateInterval[] = [];
+
+  for (let i = 0; i < history.length; i++) {
+    const startMs = new Date(history[i].last_changed).getTime();
+    const nextStartMs =
+      i + 1 < history.length
+        ? new Date(history[i + 1].last_changed).getTime()
+        : endMs;
+    const rate = parseRateValueGbpPerKwh(history[i].state, unitHint);
+
+    if (!Number.isFinite(startMs) || !Number.isFinite(nextStartMs) || nextStartMs <= startMs) {
+      continue;
+    }
+    if (rate === null) continue;
+
+    intervals.push({ startMs, endMs: nextStartMs, rateGbpPerKwh: rate });
+  }
+
+  return intervals;
+}
+
 function cumulativeValueToKwh(value: number, unit?: string): number {
   return String(unit ?? "").trim().toLowerCase() === "wh" ? value / 1000 : value;
 }
@@ -317,10 +345,10 @@ export class HecNodeDetail extends LitElement {
       return;
     }
 
-    const importRates = parseRateIntervalsFromState(
+    const importRatesFromState = parseRateIntervalsFromState(
       oct.slots_entity ? this.hass.states?.[oct.slots_entity] : undefined,
     );
-    const exportRates = parseRateIntervalsFromState(
+    const exportRatesFromState = parseRateIntervalsFromState(
       gridCfg.export_rate ? this.hass.states?.[gridCfg.export_rate] : undefined,
     );
 
@@ -340,9 +368,11 @@ export class HecNodeDetail extends LitElement {
     };
 
     try {
-      const [importHistory, exportHistory] = await Promise.all([
+      const [importHistory, exportHistory, importRateHistory, exportRateHistory] = await Promise.all([
         fetchHistory(gridCfg.daily_usage),
         fetchHistory(gridCfg.daily_export),
+        fetchHistory(oct.rate_entity),
+        fetchHistory(gridCfg.export_rate),
       ]);
 
       const importUnit = gridCfg.daily_usage
@@ -351,9 +381,31 @@ export class HecNodeDetail extends LitElement {
       const exportUnit = gridCfg.daily_export
         ? this.hass.states?.[gridCfg.daily_export]?.attributes.unit_of_measurement as string | undefined
         : undefined;
+      const importRateUnit = oct.rate_entity
+        ? this.hass.states?.[oct.rate_entity]?.attributes.unit_of_measurement as string | undefined
+        : undefined;
+      const exportRateUnit = gridCfg.export_rate
+        ? this.hass.states?.[gridCfg.export_rate]?.attributes.unit_of_measurement as string | undefined
+        : undefined;
+      const effectiveImportRates =
+        importRatesFromState.length
+          ? importRatesFromState
+          : parseRateIntervalsFromHistory(importRateHistory, importRateUnit, end.getTime());
+      const effectiveExportRates =
+        exportRatesFromState.length
+          ? exportRatesFromState
+          : parseRateIntervalsFromHistory(exportRateHistory, exportRateUnit, end.getTime());
 
-      const intervalImportCost = intervalCostFromHistory(importHistory, importUnit, importRates);
-      const intervalExportPayment = intervalCostFromHistory(exportHistory, exportUnit, exportRates);
+      const intervalImportCost = intervalCostFromHistory(
+        importHistory,
+        importUnit,
+        effectiveImportRates,
+      );
+      const intervalExportPayment = intervalCostFromHistory(
+        exportHistory,
+        exportUnit,
+        effectiveExportRates,
+      );
       const fallbackImportCost = readCurrencyGbp(this.hass.states, oct.cost_entity);
 
       const importCostToday = intervalImportCost ?? fallbackImportCost;
