@@ -292,11 +292,10 @@ function peakOffPeakFromHistory(
   if (history.length < 2 || !rates.length) return null;
 
   const distinctRates = Array.from(
-    new Set(rates.map((rate) => Number(rate.rateGbpPerKwh.toFixed(6)))),
+    new Set(rates.map((rate) => Number(rate.rateGbpPerKwh.toFixed(4)))),
   ).sort((a, b) => a - b);
 
-  if (distinctRates.length < 2) return null;
-  if (distinctRates.length > 2) return null;
+  if (distinctRates.length < 1) return null;
 
   const offPeakRate = distinctRates[0];
   const peakRate = distinctRates[distinctRates.length - 1];
@@ -329,9 +328,14 @@ function peakOffPeakFromHistory(
       if (overlapEnd <= overlapStart) continue;
 
       const overlapMs = overlapEnd - overlapStart;
-      const rateValue = Number(rate.rateGbpPerKwh.toFixed(6));
-      if (rateValue === peakRate) peakMs += overlapMs;
-      if (rateValue === offPeakRate) offPeakMs += overlapMs;
+      const rateValue = Number(rate.rateGbpPerKwh.toFixed(4));
+      const peakDistance = Math.abs(rateValue - peakRate);
+      const offPeakDistance = Math.abs(rateValue - offPeakRate);
+      if (peakDistance < offPeakDistance) {
+        peakMs += overlapMs;
+      } else {
+        offPeakMs += overlapMs;
+      }
     }
 
     const coveredMs = peakMs + offPeakMs;
