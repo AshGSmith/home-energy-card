@@ -63,6 +63,7 @@ type PeakOffPeakBreakdown = {
   peakCostGbp: number;
   offPeakCostGbp: number;
 };
+const PEAK_RATE_THRESHOLD_GBP_PER_KWH = 0.1;
 type GridMoneyState = {
   importCostToday: number | null;
   exportPaymentToday: number | null;
@@ -331,24 +332,12 @@ function peakOffPeakFromMatchedEnergyIntervals(
   if (!resolvedIntervals?.intervals.length) return null;
   const matchedIntervals = resolvedIntervals.intervals;
 
-  const distinctRates = Array.from(
-    new Set(matchedIntervals.map((interval) => Number(interval.tariffGbpPerKwh.toFixed(4)))),
-  ).sort((a, b) => a - b);
-
-  if (distinctRates.length < 1) return null;
-
-  const offPeakRate = distinctRates[0];
-  const peakRate = distinctRates[distinctRates.length - 1];
-
   let peakUsageKwh = 0;
   let offPeakUsageKwh = 0;
   let peakCostGbp = 0;
   let offPeakCostGbp = 0;
   for (const interval of matchedIntervals) {
-    const rateValue = Number(interval.tariffGbpPerKwh.toFixed(4));
-    const peakDistance = Math.abs(rateValue - peakRate);
-    const offPeakDistance = Math.abs(rateValue - offPeakRate);
-    if (peakDistance < offPeakDistance) {
+    if (interval.tariffGbpPerKwh > PEAK_RATE_THRESHOLD_GBP_PER_KWH) {
       peakUsageKwh += interval.energyKwh;
       peakCostGbp += interval.costGbp;
     } else {
@@ -378,19 +367,13 @@ function peakOffPeakStatsFromResolvedIntervals(
       totalUsageKwh: 0,
     };
   }
-
-  const offPeakRate = distinctRates[0];
-  const peakRate = distinctRates[distinctRates.length - 1];
   let peakIntervalCount = 0;
   let offPeakIntervalCount = 0;
   let totalUsageKwh = 0;
 
   for (const interval of intervals) {
     totalUsageKwh += interval.energyKwh;
-    const rateValue = Number(interval.tariffGbpPerKwh.toFixed(4));
-    const peakDistance = Math.abs(rateValue - peakRate);
-    const offPeakDistance = Math.abs(rateValue - offPeakRate);
-    if (peakDistance < offPeakDistance) {
+    if (interval.tariffGbpPerKwh > PEAK_RATE_THRESHOLD_GBP_PER_KWH) {
       peakIntervalCount += 1;
     } else {
       offPeakIntervalCount += 1;
