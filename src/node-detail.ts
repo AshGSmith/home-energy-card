@@ -382,7 +382,7 @@ export class HecNodeDetail extends LitElement {
     const cfg    = this.config?.entity_types?.[this.nodeType] ?? {};
     const states = this.hass?.states ?? {};
     const accent = cfg.colour || (TYPE_ACCENT[this.nodeType] ?? "#9e9e9e");
-    const icon   = TYPE_ICON[this.nodeType] ?? "mdi:lightning-bolt";
+    const icon   = cfg.icon || TYPE_ICON[this.nodeType] || "mdi:lightning-bolt";
     const label  = cfg.label
       || this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1);
 

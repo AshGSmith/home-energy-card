@@ -254,6 +254,7 @@ export class HecFlowLayout extends LitElement {
         .type=${type}
         .label=${cfg.label ?? type}
         .showLabel=${cfg.show_label ?? true}
+        .icon=${cfg.icon ?? ""}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
         .soc=${showSoc ? this._soc(type) : null}
@@ -296,6 +297,7 @@ export class HecFlowLayout extends LitElement {
         .type=${type}
         .label=${cfg.label ?? type}
         .showLabel=${cfg.show_label ?? true}
+        .icon=${cfg.icon ?? ""}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
         .soc=${cfg.soc ? this._soc(type) : null}

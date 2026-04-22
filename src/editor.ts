@@ -398,6 +398,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <ha-selector
+            label="Icon"
+            .hass=${this.hass}
+            .selector=${{ icon: {} }}
+            .value=${this.config.entity_types?.grid?.icon ?? ""}
+            @value-changed=${(e: CustomEvent) =>
+              this.dispatchEvent(
+                new CustomEvent("config-changed", {
+                  detail: {
+                    config: {
+                      ...this.config!,
+                      entity_types: {
+                        ...(this.config!.entity_types ?? {}),
+                        grid: {
+                          ...(this.config!.entity_types?.grid ?? {}),
+                          icon: e.detail.value || undefined,
+                        },
+                      },
+                    },
+                  },
+                  bubbles: true,
+                  composed: true,
+                })
+              )}
+          ></ha-selector>
           <ha-textfield
             label="Grid Colour"
             .value=${this.config.entity_types?.grid?.colour ?? ""}
@@ -575,6 +600,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <ha-selector
+            label="Icon"
+            .hass=${this.hass}
+            .selector=${{ icon: {} }}
+            .value=${this.config.entity_types?.solar?.icon ?? ""}
+            @value-changed=${(e: CustomEvent) =>
+              this.dispatchEvent(
+                new CustomEvent("config-changed", {
+                  detail: {
+                    config: {
+                      ...this.config!,
+                      entity_types: {
+                        ...(this.config!.entity_types ?? {}),
+                        solar: {
+                          ...(this.config!.entity_types?.solar ?? {}),
+                          icon: e.detail.value || undefined,
+                        },
+                      },
+                    },
+                  },
+                  bubbles: true,
+                  composed: true,
+                })
+              )}
+          ></ha-selector>
           <ha-textfield
             label="Solar Colour"
             .value=${this.config.entity_types?.solar?.colour ?? ""}
@@ -778,6 +828,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <ha-selector
+            label="Icon"
+            .hass=${this.hass}
+            .selector=${{ icon: {} }}
+            .value=${this.config.entity_types?.battery?.icon ?? ""}
+            @value-changed=${(e: CustomEvent) =>
+              this.dispatchEvent(
+                new CustomEvent("config-changed", {
+                  detail: {
+                    config: {
+                      ...this.config!,
+                      entity_types: {
+                        ...(this.config!.entity_types ?? {}),
+                        battery: {
+                          ...(this.config!.entity_types?.battery ?? {}),
+                          icon: e.detail.value || undefined,
+                        },
+                      },
+                    },
+                  },
+                  bubbles: true,
+                  composed: true,
+                })
+              )}
+          ></ha-selector>
           <ha-textfield
             label="Battery Colour"
             .value=${this.config.entity_types?.battery?.colour ?? ""}
@@ -955,6 +1030,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <ha-selector
+            label="Icon"
+            .hass=${this.hass}
+            .selector=${{ icon: {} }}
+            .value=${this.config.entity_types?.home?.icon ?? ""}
+            @value-changed=${(e: CustomEvent) =>
+              this.dispatchEvent(
+                new CustomEvent("config-changed", {
+                  detail: {
+                    config: {
+                      ...this.config!,
+                      entity_types: {
+                        ...(this.config!.entity_types ?? {}),
+                        home: {
+                          ...(this.config!.entity_types?.home ?? {}),
+                          icon: e.detail.value || undefined,
+                        },
+                      },
+                    },
+                  },
+                  bubbles: true,
+                  composed: true,
+                })
+              )}
+          ></ha-selector>
           <ha-textfield
             label="Home Colour"
             .value=${this.config.entity_types?.home?.colour ?? ""}
@@ -1157,6 +1257,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <ha-selector
+            label="Icon"
+            .hass=${this.hass}
+            .selector=${{ icon: {} }}
+            .value=${this.config.entity_types?.ev?.icon ?? ""}
+            @value-changed=${(e: CustomEvent) =>
+              this.dispatchEvent(
+                new CustomEvent("config-changed", {
+                  detail: {
+                    config: {
+                      ...this.config!,
+                      entity_types: {
+                        ...(this.config!.entity_types ?? {}),
+                        ev: {
+                          ...(this.config!.entity_types?.ev ?? {}),
+                          icon: e.detail.value || undefined,
+                        },
+                      },
+                    },
+                  },
+                  bubbles: true,
+                  composed: true,
+                })
+              )}
+          ></ha-selector>
           <ha-textfield
             label="EV Colour"
             .value=${this.config.entity_types?.ev?.colour ?? ""}
@@ -1285,6 +1410,16 @@ export class HomeEnergyCardEditor extends LitElement {
                   label: (e.target as HTMLInputElement).value || undefined,
                 })}
             ></ha-textfield>
+            <ha-selector
+              label="Icon"
+              .hass=${this.hass}
+              .selector=${{ icon: {} }}
+              .value=${customType.icon ?? ""}
+              @value-changed=${(e: CustomEvent) =>
+                this._setCustomType(index, {
+                  icon: e.detail.value || undefined,
+                })}
+            ></ha-selector>
             <ha-textfield
               label="Custom Colour"
               .value=${customType.colour ?? ""}

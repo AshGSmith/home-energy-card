@@ -17,6 +17,7 @@ export interface EntityTypeConfig {
   daily_usage?: string;
   daily_export?: string;
   soc?: string;
+  icon?: string;
   label?: string;
   show_label?: boolean;
   colour?: string;

@@ -48,6 +48,7 @@ export class HecEnergyNode extends LitElement {
   @property() type = "home";
   @property() label = "";
   @property({ type: Boolean }) showLabel = true;
+  @property() icon = "";
   @property() colour = "";
   @property({ type: Number }) power: number | null = null;
   @property({ type: Number }) soc: number | null = null;
@@ -152,6 +153,7 @@ export class HecEnergyNode extends LitElement {
   render() {
     const s      = TYPE_STYLES[this.type] ?? FALLBACK_STYLES;
     const accent = this.colour || s.accent;
+    const icon   = this.icon || s.icon;
     const hasSoc = this.soc !== null;
     const pct    = hasSoc ? Math.max(0, Math.min(100, this.soc!)) : 0;
     // dashoffset 0 = full ring; dashoffset = RING_C = empty
@@ -180,7 +182,7 @@ export class HecEnergyNode extends LitElement {
           style="background:linear-gradient(150deg,${s.gradStart} 0%,${s.gradEnd} 100%);color:${accent};"
           @click=${this._handleClick}
         >
-          <ha-icon .icon=${s.icon}></ha-icon>
+          <ha-icon .icon=${icon}></ha-icon>
           ${this.showLabel
             ? html`<span class="label" style="color:${accent};">${this.label || this.type}</span>`
             : nothing}
