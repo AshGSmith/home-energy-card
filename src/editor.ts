@@ -297,25 +297,25 @@ export class HomeEnergyCardEditor extends LitElement {
           <div class="type-body">
             <div class="subsection-label">Entities</div>
             <ha-entity-picker
-              label="Import Power"
+              label="Import power"
               .hass=${this.hass}
               .value=${cfg.power_import ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "power_import", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Export Power"
+              label="Export power"
               .hass=${this.hass}
               .value=${cfg.power_export ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "power_export", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Combined Power"
+              label="Combined power"
               .hass=${this.hass}
               .value=${cfg.power_combined ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "power_combined", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Daily Usage"
+              label="Daily usage"
               .hass=${this.hass}
               .value=${cfg.daily_usage ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "daily_usage", e.detail.value)}
@@ -388,13 +388,13 @@ export class HomeEnergyCardEditor extends LitElement {
           <div class="type-body">
             <div class="subsection-label">Entities</div>
             <ha-entity-picker
-              label="Combined Power"
+              label="Combined power"
               .hass=${this.hass}
               .value=${cfg.power_combined ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("solar", "power_combined", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Daily Usage"
+              label="Daily usage"
               .hass=${this.hass}
               .value=${cfg.daily_usage ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("solar", "daily_usage", e.detail.value)}
@@ -448,19 +448,19 @@ export class HomeEnergyCardEditor extends LitElement {
           <div class="type-body">
             <div class="subsection-label">Entities</div>
             <ha-entity-picker
-              label="State of Charge"
+              label="State of charge (%)"
               .hass=${this.hass}
               .value=${cfg.soc ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("battery", "soc", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Combined Power"
+              label="Combined power"
               .hass=${this.hass}
               .value=${cfg.power_combined ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("battery", "power_combined", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Daily Usage"
+              label="Daily usage"
               .hass=${this.hass}
               .value=${cfg.daily_usage ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("battery", "daily_usage", e.detail.value)}
@@ -514,13 +514,13 @@ export class HomeEnergyCardEditor extends LitElement {
           <div class="type-body">
             <div class="subsection-label">Entities</div>
             <ha-entity-picker
-              label="Combined Power"
+              label="Combined power"
               .hass=${this.hass}
               .value=${cfg.power_combined ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("home", "power_combined", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Daily Usage"
+              label="Daily usage"
               .hass=${this.hass}
               .value=${cfg.daily_usage ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("home", "daily_usage", e.detail.value)}
@@ -574,19 +574,19 @@ export class HomeEnergyCardEditor extends LitElement {
           <div class="type-body">
             <div class="subsection-label">Entities</div>
             <ha-entity-picker
-              label="State of Charge"
+              label="State of charge (%)"
               .hass=${this.hass}
               .value=${cfg.soc ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("ev", "soc", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Combined Power"
+              label="Combined power"
               .hass=${this.hass}
               .value=${cfg.power_combined ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("ev", "power_combined", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Daily Usage"
+              label="Daily usage"
               .hass=${this.hass}
               .value=${cfg.daily_usage ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType("ev", "daily_usage", e.detail.value)}
@@ -640,31 +640,31 @@ export class HomeEnergyCardEditor extends LitElement {
           <div class="type-body">
             <div class="subsection-label">Entities</div>
             <ha-entity-picker
-              label="Import Power"
+              label="Import power"
               .hass=${this.hass}
               .value=${cfg.power_import ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_import", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Export Power"
+              label="Export power"
               .hass=${this.hass}
               .value=${cfg.power_export ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_export", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Combined Power"
+              label="Combined power"
               .hass=${this.hass}
               .value=${cfg.power_combined ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="Daily Usage"
+              label="Daily usage"
               .hass=${this.hass}
               .value=${cfg.daily_usage ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage", e.detail.value)}
             ></ha-entity-picker>
             <ha-entity-picker
-              label="State of Charge"
+              label="State of charge (%)"
               .hass=${this.hass}
               .value=${cfg.soc ?? ""}
               @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc", e.detail.value)}
