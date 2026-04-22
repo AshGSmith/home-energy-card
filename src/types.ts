@@ -48,6 +48,7 @@ export interface CardConfig {
   type: string;
   title?: string;
   show_header?: boolean;
+  show_header_values?: boolean;
   tariff_entity?: string;
   entity_types?: Record<string, EntityTypeConfig>;
   custom_types?: EntityTypeConfig[];

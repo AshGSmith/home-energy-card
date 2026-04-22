@@ -52,6 +52,7 @@ export class HecCardHeader extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
   @property({ attribute: false }) config?: CardConfig;
   @property({ type: Boolean }) showTitle = true;
+  @property({ type: Boolean }) showValues = true;
 
   static styles = css`
     :host { display: block; }
@@ -183,11 +184,15 @@ export class HecCardHeader extends LitElement {
     const hasGridExp = Boolean(et.grid?.daily_export);
     const hasGrid  = hasGridImp || hasGridExp;
     const hasStats = hasSolar || hasUsage || hasGrid;
+    const showStats = this.showValues && hasStats;
+    const showTitleRow = this.showTitle || tariff;
+
+    if (!showTitleRow && !showStats) return nothing;
 
     return html`
       <div class="header">
 
-        ${this.showTitle || tariff ? html`
+        ${showTitleRow ? html`
           <div class="title-row">
             ${this.showTitle
               ? html`<span class="title">${this.config.title ?? "Home Energy"}</span>`
@@ -203,7 +208,7 @@ export class HecCardHeader extends LitElement {
           </div>
         ` : nothing}
 
-        ${hasStats ? html`
+        ${showStats ? html`
           <div class="stats-row">
 
             ${hasSolar ? html`

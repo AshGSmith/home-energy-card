@@ -43,12 +43,17 @@ export function formatPower(
   return `${(watts / 1000).toFixed(decimals)} kW`;
 }
 
+export function formatEnergyKwh(kwh: number | null, decimals: number): string {
+  return kwh === null ? "—" : `${kwh.toFixed(decimals)} kWh`;
+}
+
 @customElement("hec-energy-node")
 export class HecEnergyNode extends LitElement {
   @property() type = "home";
   @property() label = "";
   @property({ type: Boolean }) showLabel = true;
   @property() icon = "";
+  @property() bottomText = "";
   @property() colour = "";
   @property({ type: Number }) power: number | null = null;
   @property({ type: Number }) soc: number | null = null;
@@ -146,6 +151,16 @@ export class HecEnergyNode extends LitElement {
       margin-bottom: 0;
     }
 
+    .bottom-text {
+      font-size: 0.52em;
+      line-height: 1;
+      font-weight: 600;
+      color: #1a1a2e;
+      opacity: 0.72;
+      margin-top: -1px;
+      white-space: nowrap;
+    }
+
     /* ── SOC text (only rendered when SOC is present) ── */
   `;
 
@@ -215,7 +230,9 @@ export class HecEnergyNode extends LitElement {
           <span class="power">${formatPower(displayPower, this.unit, this.decimalPlaces)}</span>
           ${directionIcon
             ? html`<ha-icon class="direction-icon" .icon=${directionIcon}></ha-icon>`
-            : nothing}
+            : this.bottomText
+              ? html`<span class="bottom-text">${this.bottomText}</span>`
+              : nothing}
         </div>
 
       </div>

@@ -6,6 +6,7 @@ import "./node-detail.js";
 import type { CardConfig, EntityTypeConfig } from "./types.js";
 import { DEFAULT_ENTITY_TYPES } from "./types.js";
 import { HomeAssistant, FlowInfo, computeFlowInfo } from "./flow.js";
+import { formatEnergyKwh } from "./energy-node.js";
 
 export type { HomeAssistant, FlowInfo };
 export { computeFlowInfo };
@@ -185,6 +186,17 @@ export class HecFlowLayout extends LitElement {
     if (!s || s === "unavailable" || s === "unknown") return null;
     const v = parseFloat(s);
     return isNaN(v) ? null : v;
+  }
+
+  private _dailyKwh(type: string): number | null {
+    const id = this.config?.entity_types?.[type]?.daily_usage;
+    if (!id || !this.hass) return null;
+    const s = this.hass.states[id];
+    if (!s || s.state === "unavailable" || s.state === "unknown") return null;
+    const v = parseFloat(s.state);
+    if (isNaN(v)) return null;
+    const unit = s.attributes.unit_of_measurement as string | undefined;
+    return unit === "Wh" ? v / 1000 : v;
   }
 
   // ── SVG lines ─────────────────────────────────────────────────────────────
@@ -387,6 +399,10 @@ export class HecFlowLayout extends LitElement {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     const display = this.config?.display ?? {};
     const flow = this._flowInfo(type);
+    const bottomText =
+      type === "solar"
+        ? formatEnergyKwh(this._dailyKwh(type), display.decimal_places ?? 1)
+        : "";
 
     return html`
       <hec-energy-node
@@ -396,6 +412,7 @@ export class HecFlowLayout extends LitElement {
         .label=${cfg.label ?? type}
         .showLabel=${cfg.show_label ?? true}
         .icon=${cfg.icon ?? ""}
+        .bottomText=${bottomText}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
         .soc=${showSoc ? this._soc(type) : null}
@@ -430,6 +447,10 @@ export class HecFlowLayout extends LitElement {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     const display = this.config?.display ?? {};
     const flow = this._flowInfo(type);
+    const bottomText =
+      type === "solar"
+        ? formatEnergyKwh(this._dailyKwh(type), display.decimal_places ?? 1)
+        : "";
     return html`
       <hec-energy-node
         data-node-type=${type}
@@ -439,6 +460,7 @@ export class HecFlowLayout extends LitElement {
         .label=${cfg.label ?? type}
         .showLabel=${cfg.show_label ?? true}
         .icon=${cfg.icon ?? ""}
+        .bottomText=${bottomText}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
         .soc=${cfg.soc ? this._soc(type) : null}

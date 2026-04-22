@@ -40,6 +40,7 @@ export class HomeEnergyCard extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .showTitle=${this.config.show_header !== false}
+          .showValues=${this.config.show_header_values !== false}
         ></hec-card-header>
         <div class="card-body">
           <hec-flow-layout

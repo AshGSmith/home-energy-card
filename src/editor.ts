@@ -192,6 +192,26 @@ export class HomeEnergyCardEditor extends LitElement {
                 )}
             ></ha-switch>
           </div>
+
+          <div class="switch-row">
+            <span>Show Header Values</span>
+            <ha-switch
+              .checked=${this.config.show_header_values ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        show_header_values: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
         </div>
       </ha-expansion-panel>
 
