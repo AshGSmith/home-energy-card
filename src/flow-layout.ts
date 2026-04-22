@@ -179,6 +179,7 @@ export class HecFlowLayout extends LitElement {
         class="${slotClass}${!visible ? " hidden" : ""}"
         .type=${type}
         .label=${cfg.label ?? type}
+        .showLabel=${cfg.show_label ?? true}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
         .soc=${showSoc ? this._soc(type) : null}
@@ -217,6 +218,7 @@ export class HecFlowLayout extends LitElement {
         class="${!visible ? "hidden" : ""}"
         .type=${type}
         .label=${cfg.label ?? type}
+        .showLabel=${cfg.show_label ?? true}
         .colour=${cfg.colour ?? ""}
         .power=${flow.power}
         .soc=${null}

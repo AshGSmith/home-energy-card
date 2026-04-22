@@ -47,6 +47,7 @@ export function formatPower(
 export class HecEnergyNode extends LitElement {
   @property() type = "home";
   @property() label = "";
+  @property({ type: Boolean }) showLabel = true;
   @property() colour = "";
   @property({ type: Number }) power: number | null = null;
   @property({ type: Number }) soc: number | null = null;
@@ -191,7 +192,9 @@ export class HecEnergyNode extends LitElement {
           @click=${this._handleClick}
         >
           <ha-icon .icon=${s.icon}></ha-icon>
-          <span class="label" style="color:${accent};">${this.label || this.type}</span>
+          ${this.showLabel
+            ? html`<span class="label" style="color:${accent};">${this.label || this.type}</span>`
+            : nothing}
           <span class="power">${formatPower(this.power, this.unit, this.decimalPlaces)}</span>
           ${hasSoc ? html`
             <span class="soc-pct">

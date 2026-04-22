@@ -17,6 +17,7 @@ export interface EntityTypeConfig {
   daily_export?: string;
   soc?: string;
   label?: string;
+  show_label?: boolean;
   colour?: string;
   show_zero?: boolean;
   zero_tolerance?: number;

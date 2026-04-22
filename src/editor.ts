@@ -261,6 +261,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <div class="switch-row">
+            <span>Show Label</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.grid?.show_label ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          grid: {
+                            ...(this.config!.entity_types?.grid ?? {}),
+                            show_label: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
           <ha-textfield
             label="Grid Label"
             .value=${this.config.entity_types?.grid?.label ?? ""}
@@ -413,6 +438,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <div class="switch-row">
+            <span>Show Label</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.solar?.show_label ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          solar: {
+                            ...(this.config!.entity_types?.solar ?? {}),
+                            show_label: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
           <ha-textfield
             label="Solar Label"
             .value=${this.config.entity_types?.solar?.label ?? ""}
@@ -591,6 +641,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <div class="switch-row">
+            <span>Show Label</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.battery?.show_label ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          battery: {
+                            ...(this.config!.entity_types?.battery ?? {}),
+                            show_label: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
           <ha-textfield
             label="Battery Label"
             .value=${this.config.entity_types?.battery?.label ?? ""}
@@ -743,6 +818,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <div class="switch-row">
+            <span>Show Label</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.home?.show_label ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          home: {
+                            ...(this.config!.entity_types?.home ?? {}),
+                            show_label: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
           <ha-textfield
             label="Home Label"
             .value=${this.config.entity_types?.home?.label ?? ""}
@@ -920,6 +1020,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <div class="switch-row">
+            <span>Show Label</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.ev?.show_label ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          ev: {
+                            ...(this.config!.entity_types?.ev ?? {}),
+                            show_label: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
           <ha-textfield
             label="EV Label"
             .value=${this.config.entity_types?.ev?.label ?? ""}
@@ -1150,6 +1275,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-textfield>
+          <div class="switch-row">
+            <span>Show Label</span>
+            <ha-switch
+              .checked=${this.config.entity_types?.custom_1?.show_label ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        entity_types: {
+                          ...(this.config!.entity_types ?? {}),
+                          custom_1: {
+                            ...(this.config!.entity_types?.custom_1 ?? {}),
+                            show_label: (e.target as HTMLInputElement).checked,
+                          },
+                        },
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
           <ha-textfield
             label="Custom Label"
             .value=${this.config.entity_types?.custom_1?.label ?? ""}
