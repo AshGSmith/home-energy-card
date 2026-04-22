@@ -250,119 +250,107 @@ export class HomeEnergyCardEditor extends LitElement {
     this._set("entity_types", entityTypes);
   }
 
-  // ── Per-type entity picker blocks ────────────────────────────────────────
-  // Each method is hardcoded for its type — no conditional template logic.
-
-  private _pickersGrid(cfg: EntityTypeConfig, type: string) {
-    return html`
-      <ha-entity-picker label="Import power"    .hass=${this.hass} .value=${cfg.power_import ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_import",  e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Export power"    .hass=${this.hass} .value=${cfg.power_export ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_export",  e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Combined power"  .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Daily usage"     .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
-      <div class="subsection-label">Octopus Energy</div>
-      <ha-entity-picker label="Rate entity"         .hass=${this.hass} .value=${cfg.octopus?.rate_entity  ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus(type, "rate_entity",  e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Cost today entity"   .hass=${this.hass} .value=${cfg.octopus?.cost_entity  ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus(type, "cost_entity",  e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Slots / rates entity" .hass=${this.hass} .value=${cfg.octopus?.slots_entity ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus(type, "slots_entity", e.detail.value)}></ha-entity-picker>
-    `;
-  }
-
-  private _pickersSolar(cfg: EntityTypeConfig, type: string) {
-    return html`
-      <ha-entity-picker label="Combined power" .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Daily usage"    .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
-    `;
-  }
-
-  private _pickersBattery(cfg: EntityTypeConfig, type: string) {
-    return html`
-      <ha-entity-picker label="State of charge (%)" .hass=${this.hass} .value=${cfg.soc ?? ""}            @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
-    `;
-  }
-
-  private _pickersHome(cfg: EntityTypeConfig, type: string) {
-    return html`
-      <ha-entity-picker label="Combined power" .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Daily usage"    .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
-    `;
-  }
-
-  private _pickersEv(cfg: EntityTypeConfig, type: string) {
-    return html`
-      <ha-entity-picker label="State of charge (%)" .hass=${this.hass} .value=${cfg.soc ?? ""}            @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage ?? ""}   @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
-    `;
-  }
-
-  private _pickersCustom(cfg: EntityTypeConfig, type: string) {
-    return html`
-      <ha-entity-picker label="Import power"         .hass=${this.hass} .value=${cfg.power_import  ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_import",  e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Export power"         .hass=${this.hass} .value=${cfg.power_export  ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_export",  e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage   ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
-      <ha-entity-picker label="State of charge (%)"  .hass=${this.hass} .value=${cfg.soc           ?? ""}  @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
-    `;
-  }
-
-  // ── Combined field renderer ───────────────────────────────────────────────
-
   private _renderEntityTypeFields(type: string) {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
 
-    // Dispatch to the correct hardcoded picker block — no conditional template logic
-    const pickerMap: Record<string, () => unknown> = {
-      grid:    () => this._pickersGrid(cfg, type),
-      solar:   () => this._pickersSolar(cfg, type),
-      battery: () => this._pickersBattery(cfg, type),
-      home:    () => this._pickersHome(cfg, type),
-      ev:      () => this._pickersEv(cfg, type),
-    };
-    const renderPickers = pickerMap[type] ?? (() => this._pickersCustom(cfg, type));
+    // Display controls — identical for every type.
+    // Defined as local variables so they're plain values, not function calls.
+    const showZeroChecked   = cfg.show_zero !== false;
+    const zeroTolValue      = cfg.zero_tolerance != null ? String(cfg.zero_tolerance) : "";
+    const labelValue        = cfg.label   ?? "";
+    const colourValue       = cfg.colour  ?? "";
 
+    // ── Grid ─────────────────────────────────────────────────────────────────
+    if (type === "grid") {
+      return html`
+        <div class="subsection-label">Entities</div>
+        <ha-entity-picker label="Import power"         .hass=${this.hass} .value=${cfg.power_import  ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "power_import",  e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Export power"         .hass=${this.hass} .value=${cfg.power_export  ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "power_export",  e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "power_combined", e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage   ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("grid", "daily_usage",    e.detail.value)}></ha-entity-picker>
+        <div class="subsection-label">Octopus Energy</div>
+        <ha-entity-picker label="Rate entity"          .hass=${this.hass} .value=${cfg.octopus?.rate_entity  ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus("grid", "rate_entity",  e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Cost today entity"    .hass=${this.hass} .value=${cfg.octopus?.cost_entity  ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus("grid", "cost_entity",  e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Slots / rates entity" .hass=${this.hass} .value=${cfg.octopus?.slots_entity ?? ""} @value-changed=${(e: CustomEvent) => this._setOctopus("grid", "slots_entity", e.detail.value)}></ha-entity-picker>
+        <div class="subsection-label">Display</div>
+        <div class="switch-row"><span>Show when idle</span><ha-switch .checked=${showZeroChecked} @change=${(e: Event) => this._setEntityType("grid", "show_zero", (e.target as HTMLInputElement).checked)}></ha-switch></div>
+        <ha-textfield label="Zero tolerance (W)" type="number" min="0" .value=${zeroTolValue}  @change=${(e: Event) => { const v = (e.target as HTMLInputElement).value; this._setEntityType("grid", "zero_tolerance", v !== "" ? Number(v) : undefined); }}></ha-textfield>
+        <ha-textfield label="Label"  .value=${labelValue}  @change=${(e: Event) => this._setEntityType("grid", "label",  (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+        <ha-textfield label="Colour" .value=${colourValue} placeholder="#e91e63" @change=${(e: Event) => this._setEntityType("grid", "colour", (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+      `;
+    }
+
+    // ── Solar ─────────────────────────────────────────────────────────────────
+    if (type === "solar") {
+      return html`
+        <div class="subsection-label">Entities</div>
+        <ha-entity-picker label="Combined power" .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("solar", "power_combined", e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Daily usage"    .hass=${this.hass} .value=${cfg.daily_usage   ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("solar", "daily_usage",    e.detail.value)}></ha-entity-picker>
+        <div class="subsection-label">Display</div>
+        <div class="switch-row"><span>Show when idle</span><ha-switch .checked=${showZeroChecked} @change=${(e: Event) => this._setEntityType("solar", "show_zero", (e.target as HTMLInputElement).checked)}></ha-switch></div>
+        <ha-textfield label="Zero tolerance (W)" type="number" min="0" .value=${zeroTolValue}  @change=${(e: Event) => { const v = (e.target as HTMLInputElement).value; this._setEntityType("solar", "zero_tolerance", v !== "" ? Number(v) : undefined); }}></ha-textfield>
+        <ha-textfield label="Label"  .value=${labelValue}  @change=${(e: Event) => this._setEntityType("solar", "label",  (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+        <ha-textfield label="Colour" .value=${colourValue} placeholder="#e91e63" @change=${(e: Event) => this._setEntityType("solar", "colour", (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+      `;
+    }
+
+    // ── Battery ───────────────────────────────────────────────────────────────
+    if (type === "battery") {
+      return html`
+        <div class="subsection-label">Entities</div>
+        <ha-entity-picker label="State of charge (%)" .hass=${this.hass} .value=${cfg.soc           ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("battery", "soc",           e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Combined power"      .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("battery", "power_combined", e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Daily usage"         .hass=${this.hass} .value=${cfg.daily_usage   ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("battery", "daily_usage",    e.detail.value)}></ha-entity-picker>
+        <div class="subsection-label">Display</div>
+        <div class="switch-row"><span>Show when idle</span><ha-switch .checked=${showZeroChecked} @change=${(e: Event) => this._setEntityType("battery", "show_zero", (e.target as HTMLInputElement).checked)}></ha-switch></div>
+        <ha-textfield label="Zero tolerance (W)" type="number" min="0" .value=${zeroTolValue}  @change=${(e: Event) => { const v = (e.target as HTMLInputElement).value; this._setEntityType("battery", "zero_tolerance", v !== "" ? Number(v) : undefined); }}></ha-textfield>
+        <ha-textfield label="Label"  .value=${labelValue}  @change=${(e: Event) => this._setEntityType("battery", "label",  (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+        <ha-textfield label="Colour" .value=${colourValue} placeholder="#e91e63" @change=${(e: Event) => this._setEntityType("battery", "colour", (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+      `;
+    }
+
+    // ── Home ──────────────────────────────────────────────────────────────────
+    if (type === "home") {
+      return html`
+        <div class="subsection-label">Entities</div>
+        <ha-entity-picker label="Combined power" .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("home", "power_combined", e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Daily usage"    .hass=${this.hass} .value=${cfg.daily_usage   ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("home", "daily_usage",    e.detail.value)}></ha-entity-picker>
+        <div class="subsection-label">Display</div>
+        <div class="switch-row"><span>Show when idle</span><ha-switch .checked=${showZeroChecked} @change=${(e: Event) => this._setEntityType("home", "show_zero", (e.target as HTMLInputElement).checked)}></ha-switch></div>
+        <ha-textfield label="Zero tolerance (W)" type="number" min="0" .value=${zeroTolValue}  @change=${(e: Event) => { const v = (e.target as HTMLInputElement).value; this._setEntityType("home", "zero_tolerance", v !== "" ? Number(v) : undefined); }}></ha-textfield>
+        <ha-textfield label="Label"  .value=${labelValue}  @change=${(e: Event) => this._setEntityType("home", "label",  (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+        <ha-textfield label="Colour" .value=${colourValue} placeholder="#e91e63" @change=${(e: Event) => this._setEntityType("home", "colour", (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+      `;
+    }
+
+    // ── EV ────────────────────────────────────────────────────────────────────
+    if (type === "ev") {
+      return html`
+        <div class="subsection-label">Entities</div>
+        <ha-entity-picker label="State of charge (%)" .hass=${this.hass} .value=${cfg.soc           ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("ev", "soc",           e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Combined power"      .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("ev", "power_combined", e.detail.value)}></ha-entity-picker>
+        <ha-entity-picker label="Daily usage"         .hass=${this.hass} .value=${cfg.daily_usage   ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType("ev", "daily_usage",    e.detail.value)}></ha-entity-picker>
+        <div class="subsection-label">Display</div>
+        <div class="switch-row"><span>Show when idle</span><ha-switch .checked=${showZeroChecked} @change=${(e: Event) => this._setEntityType("ev", "show_zero", (e.target as HTMLInputElement).checked)}></ha-switch></div>
+        <ha-textfield label="Zero tolerance (W)" type="number" min="0" .value=${zeroTolValue}  @change=${(e: Event) => { const v = (e.target as HTMLInputElement).value; this._setEntityType("ev", "zero_tolerance", v !== "" ? Number(v) : undefined); }}></ha-textfield>
+        <ha-textfield label="Label"  .value=${labelValue}  @change=${(e: Event) => this._setEntityType("ev", "label",  (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+        <ha-textfield label="Colour" .value=${colourValue} placeholder="#e91e63" @change=${(e: Event) => this._setEntityType("ev", "colour", (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+      `;
+    }
+
+    // ── Custom (fallback for any non-standard type) ───────────────────────────
     return html`
-
       <div class="subsection-label">Entities</div>
-      ${renderPickers()}
-
+      <ha-entity-picker label="Import power"         .hass=${this.hass} .value=${cfg.power_import  ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_import",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Export power"         .hass=${this.hass} .value=${cfg.power_export  ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_export",  e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Combined power"       .hass=${this.hass} .value=${cfg.power_combined ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "power_combined", e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="Daily usage"          .hass=${this.hass} .value=${cfg.daily_usage   ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "daily_usage",    e.detail.value)}></ha-entity-picker>
+      <ha-entity-picker label="State of charge (%)"  .hass=${this.hass} .value=${cfg.soc           ?? ""} @value-changed=${(e: CustomEvent) => this._setEntityType(type, "soc",           e.detail.value)}></ha-entity-picker>
       <div class="subsection-label">Display</div>
-
-      <div class="switch-row">
-        <span>Show when idle</span>
-        <ha-switch
-          .checked=${cfg.show_zero !== false}
-          @change=${(e: Event) =>
-            this._setEntityType(type, "show_zero", (e.target as HTMLInputElement).checked)}
-        ></ha-switch>
-      </div>
-
-      <ha-textfield
-        label="Zero tolerance (W)"
-        type="number"
-        min="0"
-        .value=${cfg.zero_tolerance != null ? String(cfg.zero_tolerance) : ""}
-        @change=${(e: Event) => {
-          const v = (e.target as HTMLInputElement).value;
-          this._setEntityType(type, "zero_tolerance", v !== "" ? Number(v) : undefined);
-        }}
-      ></ha-textfield>
-
-      <ha-textfield
-        label="Label"
-        .value=${cfg.label ?? ""}
-        @change=${(e: Event) =>
-          this._setEntityType(type, "label", (e.target as HTMLInputElement).value || undefined)}
-      ></ha-textfield>
-
-      <ha-textfield
-        label="Colour"
-        .value=${cfg.colour ?? ""}
-        placeholder="#e91e63"
-        @change=${(e: Event) =>
-          this._setEntityType(type, "colour", (e.target as HTMLInputElement).value || undefined)}
-      ></ha-textfield>
-
+      <div class="switch-row"><span>Show when idle</span><ha-switch .checked=${showZeroChecked} @change=${(e: Event) => this._setEntityType(type, "show_zero", (e.target as HTMLInputElement).checked)}></ha-switch></div>
+      <ha-textfield label="Zero tolerance (W)" type="number" min="0" .value=${zeroTolValue}  @change=${(e: Event) => { const v = (e.target as HTMLInputElement).value; this._setEntityType(type, "zero_tolerance", v !== "" ? Number(v) : undefined); }}></ha-textfield>
+      <ha-textfield label="Label"  .value=${labelValue}  @change=${(e: Event) => this._setEntityType(type, "label",  (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
+      <ha-textfield label="Colour" .value=${colourValue} placeholder="#e91e63" @change=${(e: Event) => this._setEntityType(type, "colour", (e.target as HTMLInputElement).value || undefined)}></ha-textfield>
     `;
   }
 
