@@ -254,17 +254,18 @@ export class HomeEnergyCardEditor extends LitElement {
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     const isCustom = !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(type);
 
-    // Which entity-picker fields apply per type
     const hasImportExport = type === "grid" || isCustom;
     const hasSoc          = type === "battery" || type === "ev" || isCustom;
 
-    // Helpers — keep event handlers terse
     const pick = (key: keyof EntityTypeConfig) => (e: CustomEvent) =>
       this._setEntityType(type, key, e.detail.value);
     const text = (key: keyof EntityTypeConfig) => (e: Event) =>
       this._setEntityType(type, key, (e.target as HTMLInputElement).value || undefined);
 
     return html`
+
+      <!-- ── Group 1: Entities ── -->
+      <div class="subsection-label">Entities</div>
 
       ${hasImportExport ? html`
         <ha-entity-picker
@@ -273,7 +274,6 @@ export class HomeEnergyCardEditor extends LitElement {
           .value=${cfg.power_import ?? ""}
           @value-changed=${pick("power_import")}
         ></ha-entity-picker>
-
         <ha-entity-picker
           label="Export power"
           .hass=${this.hass}
@@ -304,6 +304,34 @@ export class HomeEnergyCardEditor extends LitElement {
           @value-changed=${pick("soc")}
         ></ha-entity-picker>
       ` : nothing}
+
+      ${type === "grid" ? html`
+        <div class="subsection-label">Octopus Energy</div>
+        <ha-entity-picker
+          label="Rate entity"
+          .hass=${this.hass}
+          .value=${cfg.octopus?.rate_entity ?? ""}
+          @value-changed=${(e: CustomEvent) =>
+            this._setOctopus(type, "rate_entity", e.detail.value)}
+        ></ha-entity-picker>
+        <ha-entity-picker
+          label="Cost today entity"
+          .hass=${this.hass}
+          .value=${cfg.octopus?.cost_entity ?? ""}
+          @value-changed=${(e: CustomEvent) =>
+            this._setOctopus(type, "cost_entity", e.detail.value)}
+        ></ha-entity-picker>
+        <ha-entity-picker
+          label="Slots / rates entity"
+          .hass=${this.hass}
+          .value=${cfg.octopus?.slots_entity ?? ""}
+          @value-changed=${(e: CustomEvent) =>
+            this._setOctopus(type, "slots_entity", e.detail.value)}
+        ></ha-entity-picker>
+      ` : nothing}
+
+      <!-- ── Group 2: Display ── -->
+      <div class="subsection-label">Display</div>
 
       <div class="switch-row">
         <span>Show when idle</span>
@@ -337,31 +365,6 @@ export class HomeEnergyCardEditor extends LitElement {
         placeholder="#e91e63"
         @change=${text("colour")}
       ></ha-textfield>
-
-      ${type === "grid" ? html`
-        <div class="subsection-label">Octopus Energy</div>
-        <ha-entity-picker
-          label="Rate entity"
-          .hass=${this.hass}
-          .value=${cfg.octopus?.rate_entity ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setOctopus(type, "rate_entity", e.detail.value)}
-        ></ha-entity-picker>
-        <ha-entity-picker
-          label="Cost today entity"
-          .hass=${this.hass}
-          .value=${cfg.octopus?.cost_entity ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setOctopus(type, "cost_entity", e.detail.value)}
-        ></ha-entity-picker>
-        <ha-entity-picker
-          label="Slots / rates entity"
-          .hass=${this.hass}
-          .value=${cfg.octopus?.slots_entity ?? ""}
-          @value-changed=${(e: CustomEvent) =>
-            this._setOctopus(type, "slots_entity", e.detail.value)}
-        ></ha-entity-picker>
-      ` : nothing}
 
     `;
   }
@@ -409,16 +412,18 @@ export class HomeEnergyCardEditor extends LitElement {
             <span>${this._capitalize(type)}</span>
             <ha-icon icon="mdi:chevron-${open ? "up" : "down"}"></ha-icon>
           </button>
-          <div class="type-body" ?hidden=${!open}>
-            ${this._renderEntityTypeFields(type)}
-            ${isCustom ? html`
-              <div class="remove-row">
-                <button class="text-btn" @click=${() => this._removeCustomType(type)}>
-                  Remove type
-                </button>
-              </div>
-            ` : nothing}
-          </div>
+          ${open ? html`
+            <div class="type-body">
+              ${this._renderEntityTypeFields(type)}
+              ${isCustom ? html`
+                <div class="remove-row">
+                  <button class="text-btn" @click=${() => this._removeCustomType(type)}>
+                    Remove type
+                  </button>
+                </div>
+              ` : nothing}
+            </div>
+          ` : nothing}
         </div>
       `;
     };
