@@ -137,17 +137,6 @@ export class HecEnergyNode extends LitElement {
     }
 
     /* ── SOC text (only rendered when SOC is present) ── */
-    .soc-pct {
-      display: flex;
-      align-items: center;
-      gap: 1px;
-      font-size: 0.55em;
-      font-weight: 600;
-      opacity: 0.72;
-      white-space: nowrap;
-    }
-
-    .soc-icon { --mdc-icon-size: 11px; }
   `;
 
   private _handleClick() {
@@ -196,12 +185,6 @@ export class HecEnergyNode extends LitElement {
             ? html`<span class="label" style="color:${accent};">${this.label || this.type}</span>`
             : nothing}
           <span class="power">${formatPower(this.power, this.unit, this.decimalPlaces)}</span>
-          ${hasSoc ? html`
-            <span class="soc-pct">
-              <ha-icon class="soc-icon" icon="mdi:battery"></ha-icon>
-              ${this.soc!.toFixed(0)}%
-            </span>
-          ` : nothing}
         </div>
 
       </div>
