@@ -2439,7 +2439,7 @@ var Zs = Object.defineProperty, Js = Object.getOwnPropertyDescriptor, T = (s, t,
 const Xs = {
   solar: { gradStart: "#fff8e1", gradEnd: "#ffe082", accent: "#f9a825", icon: "mdi:solar-power-variant" },
   grid: { gradStart: "#f3e5f5", gradEnd: "#ce93d8", accent: "#8e24aa", icon: "mdi:transmission-tower" },
-  battery: { gradStart: "#ffebee", gradEnd: "#ef9a9a", accent: "#e53935", icon: "mdi:battery" },
+  battery: { gradStart: "#ffebee", gradEnd: "#ef9a9a", accent: "#e53935", icon: "mdi:home-battery" },
   home: { gradStart: "#f1f8e9", gradEnd: "#c5e1a5", accent: "#388e3c", icon: "mdi:home-lightning-bolt" },
   ev: { gradStart: "#e3f2fd", gradEnd: "#90caf9", accent: "#1e88e5", icon: "mdi:car-electric" }
 }, Qs = {
@@ -2665,7 +2665,7 @@ var ti = Object.defineProperty, ei = Object.getOwnPropertyDescriptor, j = (s, t,
 const si = {
   solar: "mdi:solar-power-variant",
   grid: "mdi:transmission-tower",
-  battery: "mdi:battery",
+  battery: "mdi:home-battery",
   home: "mdi:home-lightning-bolt",
   ev: "mdi:car-electric"
 }, ii = {

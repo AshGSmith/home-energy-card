@@ -19,7 +19,7 @@ import { formatPower } from "./energy-node.js";
 const TYPE_ICON: Record<string, string> = {
   solar:   "mdi:solar-power-variant",
   grid:    "mdi:transmission-tower",
-  battery: "mdi:battery",
+  battery: "mdi:home-battery",
   home:    "mdi:home-lightning-bolt",
   ev:      "mdi:car-electric",
 };
