@@ -200,10 +200,12 @@ export class HecFlowLayout extends LitElement {
 
   /**
    * Map custom-type index (0-based) to CSS grid [column, row].
-   * Fill order: B3→A3→C3→B4→A4→C4…  (col order: 2,1,3 per row)
+   * Fill order: A1→B3→A3→C3→B4→A4→C4…
    */
   private _customSlot(i: number): [col: number, row: number] {
-    return [[2, 1, 3][i % 3], 3 + Math.floor(i / 3)];
+    if (i === 0) return [1, 1];
+    const offset = i - 1;
+    return [[2, 1, 3][offset % 3], 3 + Math.floor(offset / 3)];
   }
 
   /** Render a custom node with inline grid placement. */

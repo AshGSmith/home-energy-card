@@ -3204,10 +3204,12 @@ let W = class extends S {
   }
   /**
    * Map custom-type index (0-based) to CSS grid [column, row].
-   * Fill order: B3→A3→C3→B4→A4→C4…  (col order: 2,1,3 per row)
+   * Fill order: A1→B3→A3→C3→B4→A4→C4…
    */
   _customSlot(s) {
-    return [[2, 1, 3][s % 3], 3 + Math.floor(s / 3)];
+    if (s === 0) return [1, 1];
+    const t = s - 1;
+    return [[2, 1, 3][t % 3], 3 + Math.floor(t / 3)];
   }
   /** Render a custom node with inline grid placement. */
   _customNode(s, t, e) {
