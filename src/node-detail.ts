@@ -46,6 +46,10 @@ const FLOW_LABEL: Record<string, Partial<Record<string, string>>> = {
 type HistoryEntry = { state: string; last_changed: string };
 type RateInterval = { startMs: number; endMs: number; rateGbpPerKwh: number };
 type MatchedEnergyInterval = { energyKwh: number; rateGbpPerKwh: number };
+type ResolvedEnergyIntervals = {
+  intervals: MatchedEnergyInterval[];
+  hasCoverageGap: boolean;
+};
 type PeakOffPeakBreakdown = {
   peakUsageKwh: number;
   offPeakUsageKwh: number;
@@ -244,10 +248,10 @@ function matchedEnergyIntervalsFromHistory(
   history: HistoryEntry[],
   unit: string | undefined,
   rates: RateInterval[],
-): MatchedEnergyInterval[] | null {
+): ResolvedEnergyIntervals | null {
   if (history.length < 2 || !rates.length) return null;
   const matchedIntervals: MatchedEnergyInterval[] = [];
-  let matched = false;
+  let hasCoverageGap = false;
 
   for (let i = 1; i < history.length; i++) {
     const startMs = new Date(history[i - 1].last_changed).getTime();
@@ -277,29 +281,31 @@ function matchedEnergyIntervalsFromHistory(
     }
 
     if (coveredMs > 0) {
-      matched = true;
     } else if (durationMs > 0) {
-      return null;
+      hasCoverageGap = true;
     }
   }
 
-  return matched ? matchedIntervals : null;
+  return matchedIntervals.length
+    ? { intervals: matchedIntervals, hasCoverageGap }
+    : null;
 }
 
 function costFromMatchedEnergyIntervals(
-  matchedIntervals: MatchedEnergyInterval[] | null,
+  resolvedIntervals: ResolvedEnergyIntervals | null,
 ): number | null {
-  if (!matchedIntervals?.length) return null;
-  return matchedIntervals.reduce(
+  if (!resolvedIntervals?.intervals.length || resolvedIntervals.hasCoverageGap) return null;
+  return resolvedIntervals.intervals.reduce(
     (total, interval) => total + interval.energyKwh * interval.rateGbpPerKwh,
     0,
   );
 }
 
 function peakOffPeakFromMatchedEnergyIntervals(
-  matchedIntervals: MatchedEnergyInterval[] | null,
+  resolvedIntervals: ResolvedEnergyIntervals | null,
 ): PeakOffPeakBreakdown | null {
-  if (!matchedIntervals?.length) return null;
+  if (!resolvedIntervals?.intervals.length) return null;
+  const matchedIntervals = resolvedIntervals.intervals;
 
   const distinctRates = Array.from(
     new Set(matchedIntervals.map((interval) => Number(interval.rateGbpPerKwh.toFixed(4)))),
