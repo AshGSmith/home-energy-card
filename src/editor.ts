@@ -300,6 +300,31 @@ export class HomeEnergyCardEditor extends LitElement {
                 })
               )}
           ></ha-selector>
+          <ha-selector
+            label="Export Current Rate"
+            .hass=${this.hass}
+            .selector=${{ entity: {} }}
+            .value=${this.config.entity_types?.grid?.export_rate ?? ""}
+            @value-changed=${(e: CustomEvent) =>
+              this.dispatchEvent(
+                new CustomEvent("config-changed", {
+                  detail: {
+                    config: {
+                      ...this.config!,
+                      entity_types: {
+                        ...(this.config!.entity_types ?? {}),
+                        grid: {
+                          ...(this.config!.entity_types?.grid ?? {}),
+                          export_rate: e.detail.value || undefined,
+                        },
+                      },
+                    },
+                  },
+                  bubbles: true,
+                  composed: true,
+                })
+              )}
+          ></ha-selector>
           <div class="switch-row">
             <span>Grid Show when idle</span>
             <ha-switch

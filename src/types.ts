@@ -16,6 +16,7 @@ export interface EntityTypeConfig {
   power_combined?: string;
   daily_usage?: string;
   daily_export?: string;
+  export_rate?: string;
   soc?: string;
   icon?: string;
   label?: string;

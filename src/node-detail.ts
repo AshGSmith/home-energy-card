@@ -110,6 +110,36 @@ function fmtKwh(v: number | null, d: number): string {
   return v === null ? "—" : `${v.toFixed(d)} kWh`;
 }
 
+function readCurrencyGbp(states: HomeAssistant["states"], id?: string): number | null {
+  if (!id) return null;
+  const s = states[id];
+  if (!s || s.state === "unavailable" || s.state === "unknown") return null;
+  const v = parseFloat(s.state);
+  if (isNaN(v)) return null;
+
+  const unit = String(s.attributes.unit_of_measurement ?? "").trim().toLowerCase();
+  if (unit.includes("pence") || unit.startsWith("p/") || unit === "p") return v / 100;
+  return v;
+}
+
+function readRateGbpPerKwh(states: HomeAssistant["states"], id?: string): number | null {
+  if (!id) return null;
+  const s = states[id];
+  if (!s || s.state === "unavailable" || s.state === "unknown") return null;
+  const v = parseFloat(s.state);
+  if (isNaN(v)) return null;
+
+  const unit = String(s.attributes.unit_of_measurement ?? "").trim().toLowerCase();
+  if (unit.includes("pence") || unit.startsWith("p/") || unit === "p") return v / 100;
+  if (unit.includes("gbp") || unit.includes("£")) return v;
+  return v;
+}
+
+function fmtCurrencyGbp(v: number | null): string {
+  if (v === null) return "—";
+  return `${v < 0 ? "-" : ""}£${Math.abs(v).toFixed(2)}`;
+}
+
 function fmtHour(date: Date): string {
   return `${date.getHours().toString().padStart(2, "0")}:00`;
 }
@@ -264,6 +294,7 @@ export class HecNodeDetail extends LitElement {
 
   private _sectionOctopus(oct: OctopusConfig) {
     const states = this.hass?.states ?? {};
+    const gridCfg = this.config?.entity_types?.grid ?? {};
 
     const rateS = oct.rate_entity  ? states[oct.rate_entity]  : null;
     const costS = oct.cost_entity  ? states[oct.cost_entity]  : null;
@@ -288,7 +319,31 @@ export class HecNodeDetail extends LitElement {
 
     const hasRate  = rateVal && rateVal !== "unavailable" && rateVal !== "unknown";
     const hasCost  = costVal && costVal !== "unavailable" && costVal !== "unknown";
-    if (!hasRate && !hasCost && !upcoming.length) return nothing;
+    const importKwh = readKwh(states, gridCfg.daily_usage);
+    const exportKwh = readKwh(states, gridCfg.daily_export);
+    const importRateGbp = readRateGbpPerKwh(states, oct.rate_entity);
+    const exportRateGbp = readRateGbpPerKwh(states, gridCfg.export_rate);
+    const importCostToday =
+      importKwh !== null && importRateGbp !== null
+        ? importKwh * importRateGbp
+        : readCurrencyGbp(states, oct.cost_entity);
+    const exportPaymentToday =
+      exportKwh !== null && exportRateGbp !== null
+        ? exportKwh * exportRateGbp
+        : null;
+    const netCost =
+      importCostToday !== null && exportPaymentToday !== null
+        ? importCostToday - exportPaymentToday
+        : null;
+
+    if (
+      !hasRate &&
+      !hasCost &&
+      !upcoming.length &&
+      importCostToday === null &&
+      exportPaymentToday === null &&
+      netCost === null
+    ) return nothing;
 
     return html`
       <div class="section">
@@ -301,10 +356,24 @@ export class HecNodeDetail extends LitElement {
           </div>
         ` : nothing}
 
-        ${hasCost ? html`
+        ${importCostToday !== null ? html`
           <div class="kv">
-            <span class="kv-k">Cost today</span>
-            <span class="kv-v">${costUnit}${parseFloat(costVal!).toFixed(2)}</span>
+            <span class="kv-k">Import Cost Today</span>
+            <span class="kv-v">${fmtCurrencyGbp(importCostToday)}</span>
+          </div>
+        ` : nothing}
+
+        ${exportPaymentToday !== null ? html`
+          <div class="kv">
+            <span class="kv-k">Export Payment Today</span>
+            <span class="kv-v">${fmtCurrencyGbp(exportPaymentToday)}</span>
+          </div>
+        ` : nothing}
+
+        ${netCost !== null ? html`
+          <div class="kv">
+            <span class="kv-k">Net Cost</span>
+            <span class="kv-v">${fmtCurrencyGbp(netCost)}</span>
           </div>
         ` : nothing}
 
