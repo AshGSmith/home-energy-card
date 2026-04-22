@@ -140,7 +140,7 @@ export class HecEnergyNode extends LitElement {
     .direction-icon {
       --mdc-icon-size: 14px;
       opacity: 0.72;
-      margin-top: -1px;
+      margin-top: -4px;
     }
 
     /* ── SOC text (only rendered when SOC is present) ── */
@@ -166,9 +166,9 @@ export class HecEnergyNode extends LitElement {
     const directionIcon =
       isGrid && this.power !== null
         ? this.power > 0
-          ? "mdi:arrow-down-thin"
+          ? "mdi:arrow-right-bold-circle"
           : this.power < 0
-            ? "mdi:arrow-up-thin"
+            ? "mdi:arrow-left-bold-circle"
             : ""
         : "";
     const pct    = hasSoc ? Math.max(0, Math.min(100, this.soc!)) : 0;
