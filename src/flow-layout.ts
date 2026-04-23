@@ -28,6 +28,8 @@ const LINE_COLOR: Record<string, string> = {
   ev:      "#42a5f5",
 };
 
+const EXPORT_MATCH_TOLERANCE_W = 75;
+
 interface LineVisualState {
   color: string;
   dur: string;
@@ -405,6 +407,8 @@ export class HecFlowLayout extends LitElement {
     const homeLoad = Math.max(homeFlow.power ?? 0, 0);
     const batteryCharge =
       batteryFlow.direction === "from-home" ? (batteryFlow.magnitude ?? 0) : 0;
+    const batteryDischarge =
+      batteryFlow.direction === "to-home" ? (batteryFlow.magnitude ?? 0) : 0;
     const evCharge =
       evFlow.direction === "from-home" ? (evFlow.magnitude ?? 0) : 0;
     const gridExport =
@@ -461,7 +465,17 @@ export class HecFlowLayout extends LitElement {
 
     const homeToBattery = Math.max(batteryCharge - solarToBattery, 0);
     const homeToEv = Math.max(evCharge - solarToEv, 0);
-    const homeToGrid = Math.max(gridExport - solarToGrid, 0);
+    const exportRemainingAfterSolar = Math.max(gridExport - solarToGrid, 0);
+    const remainingHomeAfterSolar = Math.max(homeLoad - solarToHome, 0);
+    const batteryToHome = Math.min(batteryDischarge, remainingHomeAfterSolar);
+    const batteryAvailableForGrid = Math.max(batteryDischarge - batteryToHome, 0);
+    const batteryToGrid = Math.min(exportRemainingAfterSolar, batteryAvailableForGrid);
+    const homeToGrid =
+      exportRemainingAfterSolar <= EXPORT_MATCH_TOLERANCE_W
+        ? 0
+        : batteryToGrid <= EXPORT_MATCH_TOLERANCE_W
+          ? 0
+          : batteryToGrid;
 
     if (gridFlow.direction === "to-home" && (gridFlow.magnitude ?? 0) > 0 && centers.grid) {
       segments.push({
@@ -478,8 +492,8 @@ export class HecFlowLayout extends LitElement {
         key: "home-grid",
         from: "home",
         to: "grid",
-        type: "grid",
-        color: this._lineVisualState.grid?.color ?? this._computeLineVisualState("grid").color,
+        type: "battery",
+        color: this._lineVisualState.battery?.color ?? this._computeLineVisualState("battery").color,
         magnitude: homeToGrid,
       });
     }
