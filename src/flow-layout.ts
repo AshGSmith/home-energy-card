@@ -88,6 +88,12 @@ export class HecFlowLayout extends LitElement {
       grid-row: 1;
       transform: translate(-49px, 0px);
     }  /* softened away from rigid C1 alignment */
+    .slot-custom-inset-right {
+      transform: translate(49px, 0px);
+    }
+    .slot-custom-inset-left {
+      transform: translate(-49px, 0px);
+    }
     .slot-grid    { grid-column: 1; grid-row: 2; }  /* A2 */
     .slot-home    { grid-column: 2; grid-row: 2; }  /* B2 */
     .slot-battery { grid-column: 3; grid-row: 2; }  /* C2 */
@@ -738,7 +744,11 @@ export class HecFlowLayout extends LitElement {
       <hec-energy-node
         data-node-type=${type}
         style="grid-column:${col}; grid-row:${row}"
-        class="${!visible ? "hidden" : ""}"
+        class="${[
+          !visible ? "hidden" : "",
+          type === "custom_1" || type === "custom_3" ? "slot-custom-inset-right" : "",
+          type === "custom_4" ? "slot-custom-inset-left" : "",
+        ].filter(Boolean).join(" ")}"
         .type=${type}
         .label=${cfg.label ?? type}
         .showLabel=${cfg.show_label ?? true}
