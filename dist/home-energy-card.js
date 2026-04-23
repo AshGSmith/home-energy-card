@@ -4139,7 +4139,7 @@ ft.styles = bt`
     .slot-ev      {
       grid-column: 3;
       grid-row: 1;
-      transform: translate(-14px, 12px);
+      transform: translate(-18px, 4px);
     }  /* softened away from rigid C1 alignment */
     .slot-grid    { grid-column: 1; grid-row: 2; }  /* A2 */
     .slot-home    { grid-column: 2; grid-row: 2; }  /* B2 */
