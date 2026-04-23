@@ -387,14 +387,41 @@ export class HecFlowLayout extends LitElement {
 
     if (!homeCenter || !this._lineLayout.width || !this._lineLayout.height) return nothing;
 
-    const segments: Array<{
+    const activeSegments: Array<{
       key: string;
+      pathKey: string;
       from: string;
       to: string;
       type: string;
       color: string;
       magnitude: number;
     }> = [];
+    const idleSegments: Array<{
+      key: string;
+      pathKey: string;
+      from: string;
+      to: string;
+      type: string;
+      color: string;
+    }> = [];
+
+    const addIdleSegment = (
+      pathKey: string,
+      from: string,
+      to: string,
+      type: string,
+      color: string,
+    ) => {
+      if (!centers[from] || !centers[to]) return;
+      idleSegments.push({
+        key: `idle-${pathKey}`,
+        pathKey,
+        from,
+        to,
+        type,
+        color,
+      });
+    };
 
     const solarFlow = this._flowInfo("solar");
     const homeFlow = this._flowInfo("home");
@@ -423,8 +450,9 @@ export class HecFlowLayout extends LitElement {
     const solarToGrid = Math.min(remainingSolar, gridExport);
 
     if (solarCenter && solarToHome > 0) {
-      segments.push({
+      activeSegments.push({
         key: "solar-home",
+        pathKey: "solar-home",
         from: "solar",
         to: "home",
         type: "solar",
@@ -433,8 +461,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (solarCenter && solarToBattery > 0 && centers.battery) {
-      segments.push({
+      activeSegments.push({
         key: "solar-battery",
+        pathKey: "solar-battery",
         from: "solar",
         to: "battery",
         type: "solar",
@@ -443,8 +472,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (solarCenter && solarToEv > 0 && centers.ev) {
-      segments.push({
+      activeSegments.push({
         key: "solar-ev",
+        pathKey: "solar-ev",
         from: "solar",
         to: "ev",
         type: "solar",
@@ -453,8 +483,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (solarCenter && solarToGrid > 0 && centers.grid) {
-      segments.push({
+      activeSegments.push({
         key: "solar-grid",
+        pathKey: "solar-grid",
         from: "solar",
         to: "grid",
         type: "solar",
@@ -478,8 +509,9 @@ export class HecFlowLayout extends LitElement {
           : batteryToGrid;
 
     if (gridFlow.direction === "to-home" && (gridFlow.magnitude ?? 0) > 0 && centers.grid) {
-      segments.push({
+      activeSegments.push({
         key: "grid-home",
+        pathKey: "home-grid",
         from: "grid",
         to: "home",
         type: "grid",
@@ -488,8 +520,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (homeToGrid > 0 && centers.grid) {
-      segments.push({
+      activeSegments.push({
         key: "home-grid",
+        pathKey: "home-grid",
         from: "home",
         to: "grid",
         type: "battery",
@@ -498,8 +531,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (batteryFlow.direction === "to-home" && (batteryFlow.magnitude ?? 0) > 0 && centers.battery) {
-      segments.push({
+      activeSegments.push({
         key: "battery-home",
+        pathKey: "home-battery",
         from: "battery",
         to: "home",
         type: "battery",
@@ -508,8 +542,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (homeToBattery > 0 && centers.battery) {
-      segments.push({
+      activeSegments.push({
         key: "home-battery",
+        pathKey: "home-battery",
         from: "home",
         to: "battery",
         type: "battery",
@@ -518,8 +553,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (evFlow.direction === "to-home" && (evFlow.magnitude ?? 0) > 0 && centers.ev) {
-      segments.push({
+      activeSegments.push({
         key: "ev-home",
+        pathKey: "home-ev",
         from: "ev",
         to: "home",
         type: "ev",
@@ -528,8 +564,9 @@ export class HecFlowLayout extends LitElement {
       });
     }
     if (homeToEv > 0 && centers.ev) {
-      segments.push({
+      activeSegments.push({
         key: "home-ev",
+        pathKey: "home-ev",
         from: "home",
         to: "ev",
         type: "ev",
@@ -541,30 +578,76 @@ export class HecFlowLayout extends LitElement {
     for (const type of this._customTypes()) {
       const flow = this._flowInfo(type);
       const center = centers[type];
+      const color =
+        this._lineVisualState[type]?.color ??
+        this._computeLineVisualState(type).color;
+      if (center) {
+        addIdleSegment(`home-${type}`, "home", type, type, color);
+      }
       if (!center || !flow.magnitude || flow.direction === "idle") continue;
-      segments.push({
+      activeSegments.push({
         key: `custom-${type}`,
+        pathKey: `home-${type}`,
         from: flow.direction === "to-home" ? type : "home",
         to: flow.direction === "to-home" ? "home" : type,
         type,
-        color:
-          this._lineVisualState[type]?.color ??
-          this._computeLineVisualState(type).color,
+        color,
         magnitude: flow.magnitude,
       });
     }
 
+    if (solarCenter) {
+      addIdleSegment("solar-home", "solar", "home", "solar", LINE_COLOR.solar);
+      if (centers.battery) addIdleSegment("solar-battery", "solar", "battery", "solar", LINE_COLOR.solar);
+      if (centers.ev) addIdleSegment("solar-ev", "solar", "ev", "solar", LINE_COLOR.solar);
+      if (centers.grid) addIdleSegment("solar-grid", "solar", "grid", "solar", LINE_COLOR.solar);
+    }
+    if (centers.grid) {
+      addIdleSegment(
+        "home-grid",
+        "home",
+        "grid",
+        "grid",
+        this._lineVisualState.grid?.color ?? this._computeLineVisualState("grid").color,
+      );
+    }
+    if (centers.battery) {
+      addIdleSegment(
+        "home-battery",
+        "home",
+        "battery",
+        "battery",
+        this._lineVisualState.battery?.color ?? this._computeLineVisualState("battery").color,
+      );
+    }
+    if (centers.ev) {
+      addIdleSegment(
+        "home-ev",
+        "home",
+        "ev",
+        "ev",
+        this._lineVisualState.ev?.color ?? this._computeLineVisualState("ev").color,
+      );
+    }
+
+    const activePathKeys = new Set(activeSegments.map((segment) => segment.pathKey));
+    const renderedSegments = [
+      ...idleSegments.filter((segment) => !activePathKeys.has(segment.pathKey)),
+      ...activeSegments,
+    ];
+
     return svg`
       ${repeat(
-        segments,
+        renderedSegments,
         (segment) => segment.key,
         (segment) => {
           const fromCenter = centers[segment.from];
           const toCenter = centers[segment.to];
-          if (!fromCenter || !toCenter || segment.magnitude <= 0) return nothing;
+          if (!fromCenter || !toCenter) return nothing;
           const visual = this._lineVisualState[segment.type] ?? this._computeLineVisualState(segment.type);
           const classes = [
             "flow-line",
+            "magnitude" in segment ? "" : "idle",
             visual.paused ? "paused" : "",
           ].filter(Boolean).join(" ");
 
