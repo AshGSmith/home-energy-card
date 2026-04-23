@@ -10,7 +10,9 @@ import {
   HomeAssistant,
   computeFlowInfo,
   FlowInfo,
+  entityIds,
   normalizePowerToWatts,
+  readEnergyKwh,
 } from "./flow.js";
 import { formatPower } from "./energy-node.js";
 
@@ -117,11 +119,11 @@ function readNum(states: HomeAssistant["states"], id?: string): number | null {
   return isNaN(v) ? null : v;
 }
 
-function readKwh(states: HomeAssistant["states"], id?: string): number | null {
-  const v = readNum(states, id);
-  if (v === null) return null;
-  const unit = states[id!]?.attributes.unit_of_measurement as string | undefined;
-  return unit === "Wh" ? v / 1000 : v;
+function readKwh(
+  states: HomeAssistant["states"],
+  id?: string | string[],
+): number | null {
+  return readEnergyKwh(states, id);
 }
 
 function fmtKwh(v: number | null, d: number): string {
@@ -156,6 +158,60 @@ function readRateGbpPerKwh(states: HomeAssistant["states"], id?: string): number
 function fmtCurrencyGbp(v: number | null): string {
   if (v === null) return "—";
   return `${v < 0 ? "-" : ""}£${Math.abs(v).toFixed(2)}`;
+}
+
+function sumHourlyBuckets(seriesList: (number | null)[][]): (number | null)[] {
+  if (!seriesList.length) return [];
+  const bucketCount = Math.max(...seriesList.map((series) => series.length), 0);
+  const output: (number | null)[] = Array(bucketCount).fill(null);
+
+  for (let i = 0; i < bucketCount; i++) {
+    let sum = 0;
+    let count = 0;
+    for (const series of seriesList) {
+      const value = series[i];
+      if (value === null || value === undefined) continue;
+      sum += value;
+      count += 1;
+    }
+    output[i] = count ? sum : null;
+  }
+
+  return output;
+}
+
+function combineHourlyBuckets(
+  positiveSeries: (number | null)[][],
+  negativeSeries: (number | null)[][] = [],
+): (number | null)[] {
+  const bucketCount = Math.max(
+    ...[...positiveSeries, ...negativeSeries].map((series) => series.length),
+    0,
+  );
+  const output: (number | null)[] = Array(bucketCount).fill(null);
+
+  for (let i = 0; i < bucketCount; i++) {
+    let sum = 0;
+    let count = 0;
+
+    for (const series of positiveSeries) {
+      const value = series[i];
+      if (value === null || value === undefined) continue;
+      sum += value;
+      count += 1;
+    }
+
+    for (const series of negativeSeries) {
+      const value = series[i];
+      if (value === null || value === undefined) continue;
+      sum -= value;
+      count += 1;
+    }
+
+    output[i] = count ? sum : null;
+  }
+
+  return output;
 }
 
 function parseRateValueGbpPerKwh(raw: unknown, unitHint?: string): number | null {
@@ -369,10 +425,10 @@ export class HecNodeDetail extends LitElement {
 
   private async _loadHistory() {
     const cfg = this.config?.entity_types?.[this.nodeType];
-    const entityId = cfg?.power_combined ?? cfg?.power_import ?? cfg?.power_export;
-    if (!entityId || !this.hass) return;
-    const unitOfMeasurement =
-      this.hass.states?.[entityId]?.attributes.unit_of_measurement as string | undefined;
+    const combinedIds = entityIds(cfg?.power_combined);
+    const importIds = entityIds(cfg?.power_import);
+    const exportIds = entityIds(cfg?.power_export);
+    if (!this.hass || (!combinedIds.length && !importIds.length && !exportIds.length)) return;
 
     this._loading = true;
     this._hourly  = [];
@@ -380,14 +436,30 @@ export class HecNodeDetail extends LitElement {
     try {
       const now   = new Date();
       const start = new Date(now.getTime() - 86_400_000);
-      const path  =
-        `history/period/${start.toISOString()}` +
-        `?filter_entity_id=${entityId}` +
-        `&minimal_response=true&no_attributes=true` +
-        `&end_time=${now.toISOString()}`;
+      const loadSeries = async (entityIdsToLoad: string[]) => Promise.all(
+        entityIdsToLoad.map(async (entityId) => {
+          const path =
+            `history/period/${start.toISOString()}` +
+            `?filter_entity_id=${entityId}` +
+            `&minimal_response=true&no_attributes=true` +
+            `&end_time=${now.toISOString()}`;
+          const raw = await this.hass!.callApi<HistoryEntry[][]>("GET", path);
+          const unitOfMeasurement =
+            this.hass!.states?.[entityId]?.attributes.unit_of_measurement as string | undefined;
+          return toHourlyAverages(raw?.[0] ?? [], unitOfMeasurement);
+        }),
+      );
 
-      const raw = await this.hass.callApi<HistoryEntry[][]>("GET", path);
-      this._hourly = toHourlyAverages(raw?.[0] ?? [], unitOfMeasurement);
+      if (combinedIds.length) {
+        const combinedSeries = await loadSeries(combinedIds);
+        this._hourly = sumHourlyBuckets(combinedSeries);
+      } else {
+        const [importSeries, exportSeries] = await Promise.all([
+          loadSeries(importIds),
+          loadSeries(exportIds),
+        ]);
+        this._hourly = combineHourlyBuckets(importSeries, exportSeries);
+      }
     } catch (err) {
       console.warn("[hec-node-detail] history fetch failed", err);
       this._hourly = [];

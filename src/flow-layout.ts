@@ -5,7 +5,7 @@ import "./energy-node.js";
 import "./node-detail.js";
 import type { CardConfig, EntityTypeConfig } from "./types.js";
 import { DEFAULT_ENTITY_TYPES, MAX_CUSTOM_TYPES } from "./types.js";
-import { HomeAssistant, FlowInfo, computeFlowInfo, computeRawPowerWatts, flowInfoFromNet } from "./flow.js";
+import { HomeAssistant, FlowInfo, computeFlowInfo, computeRawPowerWatts, flowInfoFromNet, readEnergyKwh } from "./flow.js";
 import { formatEnergyKwh } from "./energy-node.js";
 
 export type { HomeAssistant, FlowInfo };
@@ -226,14 +226,10 @@ export class HecFlowLayout extends LitElement {
   }
 
   private _dailyKwh(type: string): number | null {
-    const id = this.config?.entity_types?.[type]?.daily_usage;
-    if (!id || !this.hass) return null;
-    const s = this.hass.states[id];
-    if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-    const v = parseFloat(s.state);
-    if (isNaN(v)) return null;
-    const unit = s.attributes.unit_of_measurement as string | undefined;
-    return unit === "Wh" ? v / 1000 : v;
+    return readEnergyKwh(
+      this.hass?.states ?? {},
+      this.config?.entity_types?.[type]?.daily_usage,
+    );
   }
 
   // ── SVG lines ─────────────────────────────────────────────────────────────

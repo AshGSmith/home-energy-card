@@ -95,6 +95,55 @@ export class HomeEnergyCardEditor extends LitElement {
       color: var(--secondary-text-color);
       padding: 0 2px;
     }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 6px 0 2px;
+    }
+
+    .field-group-label {
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--primary-text-color);
+      padding: 0 2px;
+    }
+
+    .entity-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, var(--divider-color, #d0d0d0) 80%, transparent);
+      background: var(--card-background-color, #fff);
+      color: var(--secondary-text-color);
+      cursor: pointer;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .icon-button.delete {
+      color: var(--error-color);
+      border-color: color-mix(in srgb, var(--error-color) 40%, transparent);
+    }
+
+    .inline-action {
+      width: auto;
+      align-self: flex-start;
+      padding: 0 12px;
+      min-height: 36px;
+      font-weight: 500;
+    }
   `;
 
   setConfig(config: CardConfig) {
@@ -138,6 +187,60 @@ export class HomeEnergyCardEditor extends LitElement {
     this._dispatchConfig({
       ...this.config!,
       custom_types: customTypes,
+    });
+  }
+
+  private _multiEntityValue(value?: string | string[]) {
+    if (Array.isArray(value)) return value;
+    return value ? [value] : [];
+  }
+
+  private _customEntityValues(
+    customType: EntityTypeConfig,
+    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+  ): string[] {
+    const values = this._multiEntityValue(customType[field]);
+    return values.length ? values : [""];
+  }
+
+  private _setCustomTypeEntityAt(
+    index: number,
+    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+    entityIndex: number,
+    value: string | undefined,
+  ) {
+    const customType = this.config?.custom_types?.[index] ?? {};
+    const values = [...this._customEntityValues(customType, field)];
+    values[entityIndex] = value ?? "";
+    const next = values.map((entry) => entry.trim()).filter(Boolean);
+    this._setCustomType(index, {
+      [field]: next.length ? next : undefined,
+    });
+  }
+
+  private _addCustomTypeEntity(
+    index: number,
+    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+  ) {
+    const customType = this.config?.custom_types?.[index] ?? {};
+    const values = [...this._customEntityValues(customType, field)];
+    const next = [...values.filter((entry) => entry.trim()), ""];
+    this._setCustomType(index, {
+      [field]: next,
+    });
+  }
+
+  private _deleteCustomTypeEntity(
+    index: number,
+    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+    entityIndex: number,
+  ) {
+    const customType = this.config?.custom_types?.[index] ?? {};
+    const values = [...this._customEntityValues(customType, field)];
+    values.splice(entityIndex, 1);
+    const next = values.map((entry) => entry.trim()).filter(Boolean);
+    this._setCustomType(index, {
+      [field]: next.length ? next : undefined,
     });
   }
 
@@ -1415,44 +1518,136 @@ export class HomeEnergyCardEditor extends LitElement {
               Delete Custom Type
             </button>
 
-            <ha-selector
-              label="Custom Import Power"
-              .hass=${this.hass}
-              .selector=${{ entity: {} }}
-              .value=${customType.power_import ?? ""}
-              @value-changed=${(e: CustomEvent) =>
-                this._setCustomType(index, { power_import: e.detail.value || undefined })}
-            ></ha-selector>
+            <div class="field-group">
+              <div class="field-group-label">Import Power Entities</div>
+              ${this._customEntityValues(customType, "power_import").map((entityId, entityIndex) => html`
+                <div class="entity-row">
+                  <ha-selector
+                    label=${`Import Power Entity ${entityIndex + 1}`}
+                    .hass=${this.hass}
+                    .selector=${{ entity: {} }}
+                    .value=${entityId}
+                    @value-changed=${(e: CustomEvent) =>
+                      this._setCustomTypeEntityAt(index, "power_import", entityIndex, e.detail.value || undefined)}
+                  ></ha-selector>
+                  <button
+                    class="icon-button delete"
+                    type="button"
+                    aria-label="Delete Import Power Entity"
+                    @click=${() => this._deleteCustomTypeEntity(index, "power_import", entityIndex)}
+                  >
+                    <ha-icon icon="mdi:delete"></ha-icon>
+                  </button>
+                </div>
+              `)}
+              <button
+                class="action-button inline-action"
+                type="button"
+                @click=${() => this._addCustomTypeEntity(index, "power_import")}
+              >
+                <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
+                Add Entity
+              </button>
+            </div>
+
+            <div class="field-group">
+              <div class="field-group-label">Export Power Entities</div>
+              ${this._customEntityValues(customType, "power_export").map((entityId, entityIndex) => html`
+                <div class="entity-row">
+                  <ha-selector
+                    label=${`Export Power Entity ${entityIndex + 1}`}
+                    .hass=${this.hass}
+                    .selector=${{ entity: {} }}
+                    .value=${entityId}
+                    @value-changed=${(e: CustomEvent) =>
+                      this._setCustomTypeEntityAt(index, "power_export", entityIndex, e.detail.value || undefined)}
+                  ></ha-selector>
+                  <button
+                    class="icon-button delete"
+                    type="button"
+                    aria-label="Delete Export Power Entity"
+                    @click=${() => this._deleteCustomTypeEntity(index, "power_export", entityIndex)}
+                  >
+                    <ha-icon icon="mdi:delete"></ha-icon>
+                  </button>
+                </div>
+              `)}
+              <button
+                class="action-button inline-action"
+                type="button"
+                @click=${() => this._addCustomTypeEntity(index, "power_export")}
+              >
+                <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
+                Add Entity
+              </button>
+            </div>
+
+            <div class="field-group">
+              <div class="field-group-label">Combined Power Entities</div>
+              ${this._customEntityValues(customType, "power_combined").map((entityId, entityIndex) => html`
+                <div class="entity-row">
+                  <ha-selector
+                    label=${`Combined Power Entity ${entityIndex + 1}`}
+                    .hass=${this.hass}
+                    .selector=${{ entity: {} }}
+                    .value=${entityId}
+                    @value-changed=${(e: CustomEvent) =>
+                      this._setCustomTypeEntityAt(index, "power_combined", entityIndex, e.detail.value || undefined)}
+                  ></ha-selector>
+                  <button
+                    class="icon-button delete"
+                    type="button"
+                    aria-label="Delete Combined Power Entity"
+                    @click=${() => this._deleteCustomTypeEntity(index, "power_combined", entityIndex)}
+                  >
+                    <ha-icon icon="mdi:delete"></ha-icon>
+                  </button>
+                </div>
+              `)}
+              <button
+                class="action-button inline-action"
+                type="button"
+                @click=${() => this._addCustomTypeEntity(index, "power_combined")}
+              >
+                <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
+                Add Entity
+              </button>
+            </div>
+
+            <div class="field-group">
+              <div class="field-group-label">Daily Usage Entities</div>
+              ${this._customEntityValues(customType, "daily_usage").map((entityId, entityIndex) => html`
+                <div class="entity-row">
+                  <ha-selector
+                    label=${`Daily Usage Entity ${entityIndex + 1}`}
+                    .hass=${this.hass}
+                    .selector=${{ entity: {} }}
+                    .value=${entityId}
+                    @value-changed=${(e: CustomEvent) =>
+                      this._setCustomTypeEntityAt(index, "daily_usage", entityIndex, e.detail.value || undefined)}
+                  ></ha-selector>
+                  <button
+                    class="icon-button delete"
+                    type="button"
+                    aria-label="Delete Daily Usage Entity"
+                    @click=${() => this._deleteCustomTypeEntity(index, "daily_usage", entityIndex)}
+                  >
+                    <ha-icon icon="mdi:delete"></ha-icon>
+                  </button>
+                </div>
+              `)}
+              <button
+                class="action-button inline-action"
+                type="button"
+                @click=${() => this._addCustomTypeEntity(index, "daily_usage")}
+              >
+                <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
+                Add Entity
+              </button>
+            </div>
 
             <ha-selector
-              label="Custom Export Power"
-              .hass=${this.hass}
-              .selector=${{ entity: {} }}
-              .value=${customType.power_export ?? ""}
-              @value-changed=${(e: CustomEvent) =>
-                this._setCustomType(index, { power_export: e.detail.value || undefined })}
-            ></ha-selector>
-
-            <ha-selector
-              label="Custom Combined Power"
-              .hass=${this.hass}
-              .selector=${{ entity: {} }}
-              .value=${customType.power_combined ?? ""}
-              @value-changed=${(e: CustomEvent) =>
-                this._setCustomType(index, { power_combined: e.detail.value || undefined })}
-            ></ha-selector>
-
-            <ha-selector
-              label="Custom Daily Usage"
-              .hass=${this.hass}
-              .selector=${{ entity: {} }}
-              .value=${customType.daily_usage ?? ""}
-              @value-changed=${(e: CustomEvent) =>
-                this._setCustomType(index, { daily_usage: e.detail.value || undefined })}
-            ></ha-selector>
-
-            <ha-selector
-              label="Custom State of Charge"
+              label="State of Charge Entity"
               .hass=${this.hass}
               .selector=${{ entity: {} }}
               .value=${customType.soc ?? ""}

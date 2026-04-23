@@ -1,7 +1,7 @@
 // Shared types and flow-computation logic.
 // Kept separate to avoid circular imports between flow-layout ↔ node-detail.
 
-import type { EntityTypeConfig } from "./types.js";
+import type { EntityRef, EntityTypeConfig } from "./types.js";
 
 export interface HomeAssistant {
   states: Record<string, {
@@ -55,6 +55,16 @@ export function readNum(
   return isNaN(v) ? null : v;
 }
 
+export function entityIds(ref?: EntityRef): string[] {
+  if (Array.isArray(ref)) return ref.filter(Boolean);
+  if (typeof ref === "string" && ref) return [ref];
+  return [];
+}
+
+export function firstEntityId(ref?: EntityRef): string | undefined {
+  return entityIds(ref)[0];
+}
+
 export function normalizePowerToWatts(
   value: number,
   unitOfMeasurement?: string,
@@ -66,17 +76,50 @@ export function normalizePowerToWatts(
 
 export function readPowerWatts(
   states: HomeAssistant["states"],
-  entityId?: string,
+  ref?: EntityRef,
 ): number | null {
-  if (!entityId) return null;
-  const s = states[entityId];
-  if (!s || s.state === "unavailable" || s.state === "unknown") return null;
-  const value = parseFloat(s.state);
-  if (isNaN(value)) return null;
-  return normalizePowerToWatts(
-    value,
-    s.attributes?.unit_of_measurement as string | undefined,
-  );
+  const ids = entityIds(ref);
+  if (!ids.length) return null;
+
+  let sum = 0;
+  let count = 0;
+
+  for (const entityId of ids) {
+    const s = states[entityId];
+    if (!s || s.state === "unavailable" || s.state === "unknown") continue;
+    const value = parseFloat(s.state);
+    if (isNaN(value)) continue;
+    sum += normalizePowerToWatts(
+      value,
+      s.attributes?.unit_of_measurement as string | undefined,
+    );
+    count += 1;
+  }
+
+  return count ? sum : null;
+}
+
+export function readEnergyKwh(
+  states: HomeAssistant["states"],
+  ref?: EntityRef,
+): number | null {
+  const ids = entityIds(ref);
+  if (!ids.length) return null;
+
+  let sum = 0;
+  let count = 0;
+
+  for (const entityId of ids) {
+    const s = states[entityId];
+    if (!s || s.state === "unavailable" || s.state === "unknown") continue;
+    const value = parseFloat(s.state);
+    if (isNaN(value)) continue;
+    const unit = s.attributes?.unit_of_measurement as string | undefined;
+    sum += unit === "Wh" ? value / 1000 : value;
+    count += 1;
+  }
+
+  return count ? sum : null;
 }
 
 /**
