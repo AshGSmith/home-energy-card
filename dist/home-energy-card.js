@@ -4136,7 +4136,11 @@ ft.styles = bt`
 
     /* ── Standard slots ─────────────────────────────────────── */
     .slot-solar   { grid-column: 2; grid-row: 1; }  /* B1 */
-    .slot-ev      { grid-column: 3; grid-row: 1; }  /* C1 */
+    .slot-ev      {
+      grid-column: 3;
+      grid-row: 1;
+      transform: translate(-14px, 12px);
+    }  /* softened away from rigid C1 alignment */
     .slot-grid    { grid-column: 1; grid-row: 2; }  /* A2 */
     .slot-home    { grid-column: 2; grid-row: 2; }  /* B2 */
     .slot-battery { grid-column: 3; grid-row: 2; }  /* C2 */
