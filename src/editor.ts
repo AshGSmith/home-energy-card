@@ -2,6 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { autoDetect, mergeDetection } from "./auto-detect.js";
 import {
+  MAX_CUSTOM_TYPES,
   normalizeCardConfig,
   type CardConfig,
   type EntityTypeConfig,
@@ -87,6 +88,13 @@ export class HomeEnergyCardEditor extends LitElement {
       min-height: 40px;
       font-size: 0.95em;
     }
+
+    .helper-text {
+      font-size: 0.84em;
+      line-height: 1.35;
+      color: var(--secondary-text-color);
+      padding: 0 2px;
+    }
   `;
 
   setConfig(config: CardConfig) {
@@ -104,6 +112,7 @@ export class HomeEnergyCardEditor extends LitElement {
   }
 
   private _addCustomType() {
+    if ((this.config?.custom_types?.length ?? 0) >= MAX_CUSTOM_TYPES) return;
     const customTypes = [...(this.config?.custom_types ?? []), {}];
     this._dispatchConfig({
       ...this.config!,
@@ -134,6 +143,9 @@ export class HomeEnergyCardEditor extends LitElement {
 
   render() {
     if (!this.config) return nothing;
+    const customTypes = this.config.custom_types ?? [];
+    const renderedCustomTypes = customTypes.slice(0, MAX_CUSTOM_TYPES);
+    const maxCustomReached = customTypes.length >= MAX_CUSTOM_TYPES;
 
     return html`
       <ha-expansion-panel header="General">
@@ -1378,12 +1390,20 @@ export class HomeEnergyCardEditor extends LitElement {
         </div>
       </ha-expansion-panel>
 
-      <button class="action-button primary" type="button" @click=${() => this._addCustomType()}>
+      <button
+        class="action-button primary"
+        type="button"
+        ?disabled=${maxCustomReached}
+        @click=${() => this._addCustomType()}
+      >
         <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
         Add Custom Type
       </button>
+      ${maxCustomReached
+        ? html`<div class="helper-text">Maximum of 4 Custom types allowed</div>`
+        : nothing}
 
-      ${(this.config.custom_types ?? []).map((customType, index) => html`
+      ${renderedCustomTypes.map((customType, index) => html`
         <ha-expansion-panel header=${customType.label?.trim() || `Custom ${index + 1}`}>
           <div class="section-body">
             <button

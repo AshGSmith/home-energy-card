@@ -2,6 +2,7 @@ export const DEFAULT_ENTITY_TYPES = ["grid", "solar", "battery", "home", "ev"] a
 export type IntegrationType = "tesla" | "octopus" | "manual";
 export type DefaultEntityType = (typeof DEFAULT_ENTITY_TYPES)[number];
 export const CUSTOM_TYPE_PREFIX = "custom_";
+export const MAX_CUSTOM_TYPES = 4;
 
 export interface OctopusConfig {
   rate_entity?: string;        // current rate sensor (p/kWh or similar)

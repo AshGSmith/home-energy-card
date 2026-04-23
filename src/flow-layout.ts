@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import "./energy-node.js";
 import "./node-detail.js";
 import type { CardConfig, EntityTypeConfig } from "./types.js";
-import { DEFAULT_ENTITY_TYPES } from "./types.js";
+import { DEFAULT_ENTITY_TYPES, MAX_CUSTOM_TYPES } from "./types.js";
 import { HomeAssistant, FlowInfo, computeFlowInfo, computeRawPowerWatts, flowInfoFromNet } from "./flow.js";
 import { formatEnergyKwh } from "./energy-node.js";
 
@@ -717,7 +717,7 @@ export class HecFlowLayout extends LitElement {
   private _customTypes(): string[] {
     return Object.keys(this.config?.entity_types ?? {}).filter(
       k => !(DEFAULT_ENTITY_TYPES as readonly string[]).includes(k),
-    );
+    ).slice(0, MAX_CUSTOM_TYPES);
   }
 
   /**
