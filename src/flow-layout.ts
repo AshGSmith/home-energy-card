@@ -771,9 +771,7 @@ export class HecFlowLayout extends LitElement {
   render() {
     if (!this.config) return nothing;
 
-    const customTypes = this._customTypes();
-    // Rows: 2 base + 1 per every 3 custom types
-    const totalRows = 2 + Math.ceil(customTypes.length / 3);
+    const visibleCustomTypes = this._customTypes().filter((type) => this._isVisible(type));
 
     return html`
       <div class="grid" @hec-node-click=${this._onNodeClick}>
@@ -795,7 +793,7 @@ export class HecFlowLayout extends LitElement {
         ${this._node("battery", "slot-battery", true)}
 
         <!-- Rows 3+: custom types (B→A→C per row) -->
-        ${repeat(customTypes, (type) => type, (type, i) => {
+        ${repeat(visibleCustomTypes, (type) => type, (type, i) => {
           const [col, row] = this._customSlot(i);
           return this._customNode(type, col, row);
         })}

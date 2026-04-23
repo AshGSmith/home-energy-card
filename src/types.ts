@@ -16,6 +16,9 @@ export interface EntityTypeConfig {
   power_import?: EntityRef;
   power_export?: EntityRef;
   power_combined?: EntityRef;
+  import_power?: EntityRef;
+  export_power?: EntityRef;
+  combined_power?: EntityRef;
   daily_usage?: EntityRef;
   daily_export?: string;
   export_rate?: string;
@@ -71,23 +74,27 @@ export function customTypeKey(index: number): string {
 }
 
 function normalizeMultiEntityRef(value?: EntityRef): string[] | undefined {
-  const ids = Array.isArray(value)
-    ? value
-    : typeof value === "string" && value.trim()
-      ? [value]
-      : [];
-  const cleaned = ids
-    .map((id) => id?.trim())
-    .filter((id): id is string => Boolean(id));
-  return cleaned.length ? cleaned : undefined;
+  if (Array.isArray(value)) {
+    const normalized = value.map((id) => (typeof id === "string" ? id.trim() : ""));
+    return normalized.length ? normalized : undefined;
+  }
+  if (typeof value === "string" && value.trim()) return [value.trim()];
+  return undefined;
 }
 
 function normalizeCustomEntityType(config: EntityTypeConfig): EntityTypeConfig {
+  const importPower = normalizeMultiEntityRef(config.import_power ?? config.power_import);
+  const exportPower = normalizeMultiEntityRef(config.export_power ?? config.power_export);
+  const combinedPower = normalizeMultiEntityRef(config.combined_power ?? config.power_combined);
+
   return {
     ...config,
-    power_import: normalizeMultiEntityRef(config.power_import),
-    power_export: normalizeMultiEntityRef(config.power_export),
-    power_combined: normalizeMultiEntityRef(config.power_combined),
+    power_import: undefined,
+    power_export: undefined,
+    power_combined: undefined,
+    import_power: importPower,
+    export_power: exportPower,
+    combined_power: combinedPower,
     daily_usage: normalizeMultiEntityRef(config.daily_usage),
   };
 }

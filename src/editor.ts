@@ -197,7 +197,7 @@ export class HomeEnergyCardEditor extends LitElement {
 
   private _customEntityValues(
     customType: EntityTypeConfig,
-    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+    field: "import_power" | "export_power" | "combined_power" | "daily_usage",
   ): string[] {
     const values = this._multiEntityValue(customType[field]);
     return values.length ? values : [""];
@@ -205,26 +205,25 @@ export class HomeEnergyCardEditor extends LitElement {
 
   private _setCustomTypeEntityAt(
     index: number,
-    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+    field: "import_power" | "export_power" | "combined_power" | "daily_usage",
     entityIndex: number,
     value: string | undefined,
   ) {
     const customType = this.config?.custom_types?.[index] ?? {};
     const values = [...this._customEntityValues(customType, field)];
     values[entityIndex] = value ?? "";
-    const next = values.map((entry) => entry.trim()).filter(Boolean);
     this._setCustomType(index, {
-      [field]: next.length ? next : undefined,
+      [field]: values.map((entry) => entry.trim()),
     });
   }
 
   private _addCustomTypeEntity(
     index: number,
-    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+    field: "import_power" | "export_power" | "combined_power" | "daily_usage",
   ) {
     const customType = this.config?.custom_types?.[index] ?? {};
     const values = [...this._customEntityValues(customType, field)];
-    const next = [...values.filter((entry) => entry.trim()), ""];
+    const next = [...values, ""];
     this._setCustomType(index, {
       [field]: next,
     });
@@ -232,13 +231,13 @@ export class HomeEnergyCardEditor extends LitElement {
 
   private _deleteCustomTypeEntity(
     index: number,
-    field: "power_import" | "power_export" | "power_combined" | "daily_usage",
+    field: "import_power" | "export_power" | "combined_power" | "daily_usage",
     entityIndex: number,
   ) {
     const customType = this.config?.custom_types?.[index] ?? {};
     const values = [...this._customEntityValues(customType, field)];
     values.splice(entityIndex, 1);
-    const next = values.map((entry) => entry.trim()).filter(Boolean);
+    const next = values.map((entry) => entry.trim());
     this._setCustomType(index, {
       [field]: next.length ? next : undefined,
     });
@@ -1520,7 +1519,7 @@ export class HomeEnergyCardEditor extends LitElement {
 
             <div class="field-group">
               <div class="field-group-label">Import Power Entities</div>
-              ${this._customEntityValues(customType, "power_import").map((entityId, entityIndex) => html`
+              ${this._customEntityValues(customType, "import_power").map((entityId, entityIndex) => html`
                 <div class="entity-row">
                   <ha-selector
                     label=${`Import Power Entity ${entityIndex + 1}`}
@@ -1528,13 +1527,13 @@ export class HomeEnergyCardEditor extends LitElement {
                     .selector=${{ entity: {} }}
                     .value=${entityId}
                     @value-changed=${(e: CustomEvent) =>
-                      this._setCustomTypeEntityAt(index, "power_import", entityIndex, e.detail.value || undefined)}
+                      this._setCustomTypeEntityAt(index, "import_power", entityIndex, e.detail.value || undefined)}
                   ></ha-selector>
                   <button
                     class="icon-button delete"
                     type="button"
                     aria-label="Delete Import Power Entity"
-                    @click=${() => this._deleteCustomTypeEntity(index, "power_import", entityIndex)}
+                    @click=${() => this._deleteCustomTypeEntity(index, "import_power", entityIndex)}
                   >
                     <ha-icon icon="mdi:delete"></ha-icon>
                   </button>
@@ -1543,7 +1542,7 @@ export class HomeEnergyCardEditor extends LitElement {
               <button
                 class="action-button inline-action"
                 type="button"
-                @click=${() => this._addCustomTypeEntity(index, "power_import")}
+                @click=${() => this._addCustomTypeEntity(index, "import_power")}
               >
                 <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
                 Add Entity
@@ -1552,7 +1551,7 @@ export class HomeEnergyCardEditor extends LitElement {
 
             <div class="field-group">
               <div class="field-group-label">Export Power Entities</div>
-              ${this._customEntityValues(customType, "power_export").map((entityId, entityIndex) => html`
+              ${this._customEntityValues(customType, "export_power").map((entityId, entityIndex) => html`
                 <div class="entity-row">
                   <ha-selector
                     label=${`Export Power Entity ${entityIndex + 1}`}
@@ -1560,13 +1559,13 @@ export class HomeEnergyCardEditor extends LitElement {
                     .selector=${{ entity: {} }}
                     .value=${entityId}
                     @value-changed=${(e: CustomEvent) =>
-                      this._setCustomTypeEntityAt(index, "power_export", entityIndex, e.detail.value || undefined)}
+                      this._setCustomTypeEntityAt(index, "export_power", entityIndex, e.detail.value || undefined)}
                   ></ha-selector>
                   <button
                     class="icon-button delete"
                     type="button"
                     aria-label="Delete Export Power Entity"
-                    @click=${() => this._deleteCustomTypeEntity(index, "power_export", entityIndex)}
+                    @click=${() => this._deleteCustomTypeEntity(index, "export_power", entityIndex)}
                   >
                     <ha-icon icon="mdi:delete"></ha-icon>
                   </button>
@@ -1575,7 +1574,7 @@ export class HomeEnergyCardEditor extends LitElement {
               <button
                 class="action-button inline-action"
                 type="button"
-                @click=${() => this._addCustomTypeEntity(index, "power_export")}
+                @click=${() => this._addCustomTypeEntity(index, "export_power")}
               >
                 <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
                 Add Entity
@@ -1584,7 +1583,7 @@ export class HomeEnergyCardEditor extends LitElement {
 
             <div class="field-group">
               <div class="field-group-label">Combined Power Entities</div>
-              ${this._customEntityValues(customType, "power_combined").map((entityId, entityIndex) => html`
+              ${this._customEntityValues(customType, "combined_power").map((entityId, entityIndex) => html`
                 <div class="entity-row">
                   <ha-selector
                     label=${`Combined Power Entity ${entityIndex + 1}`}
@@ -1592,13 +1591,13 @@ export class HomeEnergyCardEditor extends LitElement {
                     .selector=${{ entity: {} }}
                     .value=${entityId}
                     @value-changed=${(e: CustomEvent) =>
-                      this._setCustomTypeEntityAt(index, "power_combined", entityIndex, e.detail.value || undefined)}
+                      this._setCustomTypeEntityAt(index, "combined_power", entityIndex, e.detail.value || undefined)}
                   ></ha-selector>
                   <button
                     class="icon-button delete"
                     type="button"
                     aria-label="Delete Combined Power Entity"
-                    @click=${() => this._deleteCustomTypeEntity(index, "power_combined", entityIndex)}
+                    @click=${() => this._deleteCustomTypeEntity(index, "combined_power", entityIndex)}
                   >
                     <ha-icon icon="mdi:delete"></ha-icon>
                   </button>
@@ -1607,7 +1606,7 @@ export class HomeEnergyCardEditor extends LitElement {
               <button
                 class="action-button inline-action"
                 type="button"
-                @click=${() => this._addCustomTypeEntity(index, "power_combined")}
+                @click=${() => this._addCustomTypeEntity(index, "combined_power")}
               >
                 <ha-icon class="action-icon" icon="mdi:plus"></ha-icon>
                 Add Entity

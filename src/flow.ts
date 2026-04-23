@@ -137,20 +137,23 @@ export function readEnergyKwh(
  */
 export function computeRawPowerWatts(
   type: string,
-  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "zero_tolerance" | "reverse_power_flow">,
+  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "combined_power" | "import_power" | "export_power" | "zero_tolerance" | "reverse_power_flow">,
   states: HomeAssistant["states"],
 ): number | null {
   let net: number | null;
+  const combinedRef = cfg.combined_power ?? cfg.power_combined;
+  const importRef = cfg.import_power ?? cfg.power_import;
+  const exportRef = cfg.export_power ?? cfg.power_export;
 
-  if (cfg.power_combined) {
-    net = readPowerWatts(states, cfg.power_combined);
+  if (combinedRef) {
+    net = readPowerWatts(states, combinedRef);
   } else {
-    const hasImp = Boolean(cfg.power_import);
-    const hasExp = Boolean(cfg.power_export);
+    const hasImp = Boolean(importRef);
+    const hasExp = Boolean(exportRef);
     if (!hasImp && !hasExp) return null;
 
-    const imp = hasImp ? readPowerWatts(states, cfg.power_import) : null;
-    const exp = hasExp ? readPowerWatts(states, cfg.power_export) : null;
+    const imp = hasImp ? readPowerWatts(states, importRef) : null;
+    const exp = hasExp ? readPowerWatts(states, exportRef) : null;
 
     if ((hasImp ? imp === null : true) && (hasExp ? exp === null : true)) return null;
     net = (imp ?? 0) - (exp ?? 0);
@@ -162,7 +165,7 @@ export function computeRawPowerWatts(
 
 export function computeFlowInfo(
   type: string,
-  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "zero_tolerance" | "reverse_power_flow">,
+  cfg: Pick<EntityTypeConfig, "power_combined" | "power_import" | "power_export" | "combined_power" | "import_power" | "export_power" | "zero_tolerance" | "reverse_power_flow">,
   states: HomeAssistant["states"],
 ): FlowInfo {
   return flowInfoFromNet(

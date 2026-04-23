@@ -425,9 +425,9 @@ export class HecNodeDetail extends LitElement {
 
   private async _loadHistory() {
     const cfg = this.config?.entity_types?.[this.nodeType];
-    const combinedIds = entityIds(cfg?.power_combined);
-    const importIds = entityIds(cfg?.power_import);
-    const exportIds = entityIds(cfg?.power_export);
+    const combinedIds = entityIds(cfg?.combined_power ?? cfg?.power_combined);
+    const importIds = entityIds(cfg?.import_power ?? cfg?.power_import);
+    const exportIds = entityIds(cfg?.export_power ?? cfg?.power_export);
     if (!this.hass || (!combinedIds.length && !importIds.length && !exportIds.length)) return;
 
     this._loading = true;
