@@ -379,29 +379,185 @@ export class HecFlowLayout extends LitElement {
   }
 
   private _svgLines() {
-    const homeCenter = this._lineLayout.centers.home;
+    const centers = this._lineLayout.centers;
+    const homeCenter = centers.home;
+    const solarCenter = centers.solar;
 
     if (!homeCenter || !this._lineLayout.width || !this._lineLayout.height) return nothing;
 
+    const segments: Array<{
+      key: string;
+      from: string;
+      to: string;
+      type: string;
+      color: string;
+      magnitude: number;
+    }> = [];
+
+    const solarFlow = this._flowInfo("solar");
+    const homeFlow = this._flowInfo("home");
+    const batteryFlow = this._flowInfo("battery");
+    const evFlow = this._flowInfo("ev");
+    const gridFlow = this._flowInfo("grid");
+
+    const solarAvailable =
+      solarCenter && solarFlow.direction === "to-home" ? (solarFlow.magnitude ?? 0) : 0;
+    const homeLoad = Math.max(homeFlow.power ?? 0, 0);
+    const batteryCharge =
+      batteryFlow.direction === "from-home" ? (batteryFlow.magnitude ?? 0) : 0;
+    const evCharge =
+      evFlow.direction === "from-home" ? (evFlow.magnitude ?? 0) : 0;
+    const gridExport =
+      gridFlow.direction === "from-home" ? (gridFlow.magnitude ?? 0) : 0;
+
+    const solarToHome = Math.min(solarAvailable, homeLoad);
+    let remainingSolar = Math.max(solarAvailable - solarToHome, 0);
+    const solarToBattery = Math.min(remainingSolar, batteryCharge);
+    remainingSolar = Math.max(remainingSolar - solarToBattery, 0);
+    const solarToEv = Math.min(remainingSolar, evCharge);
+    remainingSolar = Math.max(remainingSolar - solarToEv, 0);
+    const solarToGrid = Math.min(remainingSolar, gridExport);
+
+    if (solarCenter && solarToHome > 0) {
+      segments.push({
+        key: "solar-home",
+        from: "solar",
+        to: "home",
+        type: "solar",
+        color: LINE_COLOR.solar,
+        magnitude: solarToHome,
+      });
+    }
+    if (solarCenter && solarToBattery > 0 && centers.battery) {
+      segments.push({
+        key: "solar-battery",
+        from: "solar",
+        to: "battery",
+        type: "solar",
+        color: LINE_COLOR.solar,
+        magnitude: solarToBattery,
+      });
+    }
+    if (solarCenter && solarToEv > 0 && centers.ev) {
+      segments.push({
+        key: "solar-ev",
+        from: "solar",
+        to: "ev",
+        type: "solar",
+        color: LINE_COLOR.solar,
+        magnitude: solarToEv,
+      });
+    }
+    if (solarCenter && solarToGrid > 0 && centers.grid) {
+      segments.push({
+        key: "solar-grid",
+        from: "solar",
+        to: "grid",
+        type: "solar",
+        color: LINE_COLOR.solar,
+        magnitude: solarToGrid,
+      });
+    }
+
+    const homeToBattery = Math.max(batteryCharge - solarToBattery, 0);
+    const homeToEv = Math.max(evCharge - solarToEv, 0);
+    const homeToGrid = Math.max(gridExport - solarToGrid, 0);
+
+    if (gridFlow.direction === "to-home" && (gridFlow.magnitude ?? 0) > 0 && centers.grid) {
+      segments.push({
+        key: "grid-home",
+        from: "grid",
+        to: "home",
+        type: "grid",
+        color: this._lineVisualState.grid?.color ?? this._computeLineVisualState("grid").color,
+        magnitude: gridFlow.magnitude ?? 0,
+      });
+    }
+    if (homeToGrid > 0 && centers.grid) {
+      segments.push({
+        key: "home-grid",
+        from: "home",
+        to: "grid",
+        type: "grid",
+        color: this._lineVisualState.grid?.color ?? this._computeLineVisualState("grid").color,
+        magnitude: homeToGrid,
+      });
+    }
+    if (batteryFlow.direction === "to-home" && (batteryFlow.magnitude ?? 0) > 0 && centers.battery) {
+      segments.push({
+        key: "battery-home",
+        from: "battery",
+        to: "home",
+        type: "battery",
+        color: this._lineVisualState.battery?.color ?? this._computeLineVisualState("battery").color,
+        magnitude: batteryFlow.magnitude ?? 0,
+      });
+    }
+    if (homeToBattery > 0 && centers.battery) {
+      segments.push({
+        key: "home-battery",
+        from: "home",
+        to: "battery",
+        type: "battery",
+        color: this._lineVisualState.battery?.color ?? this._computeLineVisualState("battery").color,
+        magnitude: homeToBattery,
+      });
+    }
+    if (evFlow.direction === "to-home" && (evFlow.magnitude ?? 0) > 0 && centers.ev) {
+      segments.push({
+        key: "ev-home",
+        from: "ev",
+        to: "home",
+        type: "ev",
+        color: this._lineVisualState.ev?.color ?? this._computeLineVisualState("ev").color,
+        magnitude: evFlow.magnitude ?? 0,
+      });
+    }
+    if (homeToEv > 0 && centers.ev) {
+      segments.push({
+        key: "home-ev",
+        from: "home",
+        to: "ev",
+        type: "ev",
+        color: this._lineVisualState.ev?.color ?? this._computeLineVisualState("ev").color,
+        magnitude: homeToEv,
+      });
+    }
+
+    for (const type of this._customTypes()) {
+      const flow = this._flowInfo(type);
+      const center = centers[type];
+      if (!center || !flow.magnitude || flow.direction === "idle") continue;
+      segments.push({
+        key: `custom-${type}`,
+        from: flow.direction === "to-home" ? type : "home",
+        to: flow.direction === "to-home" ? "home" : type,
+        type,
+        color:
+          this._lineVisualState[type]?.color ??
+          this._computeLineVisualState(type).color,
+        magnitude: flow.magnitude,
+      });
+    }
+
     return svg`
       ${repeat(
-        this._lineTypes(),
-        (type) => type,
-        (type) => {
-          const center = this._lineLayout.centers[type];
-          if (!center) return nothing;
-          const visual = this._lineVisualState[type] ?? this._computeLineVisualState(type);
+        segments,
+        (segment) => segment.key,
+        (segment) => {
+          const fromCenter = centers[segment.from];
+          const toCenter = centers[segment.to];
+          if (!fromCenter || !toCenter || segment.magnitude <= 0) return nothing;
+          const visual = this._lineVisualState[segment.type] ?? this._computeLineVisualState(segment.type);
           const classes = [
             "flow-line",
-            visual.reverse ? "reverse" : "",
-            visual.idle    ? "idle"    : "",
-            visual.paused  ? "paused"  : "",
+            visual.paused ? "paused" : "",
           ].filter(Boolean).join(" ");
 
           return svg`
             <line
-              x1="${center.x}" y1="${center.y}" x2="${homeCenter.x}" y2="${homeCenter.y}"
-              stroke="${visual.color}"
+              x1="${fromCenter.x}" y1="${fromCenter.y}" x2="${toCenter.x}" y2="${toCenter.y}"
+              stroke="${segment.color}"
               class="${classes}"
               style="--flow-dur:${visual.dur}"
               pathLength="100"
