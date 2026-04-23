@@ -190,12 +190,17 @@ export class HecFlowLayout extends LitElement {
     const homeNet = computeRawPowerWatts("home", cfg, states);
     if (homeNet === null) return flowInfoFromNet("home", null, cfg.zero_tolerance ?? 0);
 
+    const evSubtract =
+      this.config?.ev_subtract_from_home
+        ? (computeFlowInfo("ev", this.config?.entity_types?.ev ?? {}, states).power ?? 0)
+        : 0;
+
     const subtractTotal = this._customTypes().reduce((sum, customType) => {
       const customCfg: EntityTypeConfig = this.config?.entity_types?.[customType] ?? {};
       if (!customCfg.subtract_from_home) return sum;
       const customFlow = computeFlowInfo(customType, customCfg, states);
       return sum + (customFlow.power ?? 0);
-    }, 0);
+    }, evSubtract);
 
     return flowInfoFromNet(
       "home",

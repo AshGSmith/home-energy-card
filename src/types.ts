@@ -57,6 +57,7 @@ export interface CardConfig {
   show_header?: boolean;
   show_header_values?: boolean;
   dynamic_custom_placement?: boolean;
+  ev_subtract_from_home?: boolean;
   tariff_entity?: string;
   entity_types?: Record<string, EntityTypeConfig>;
   custom_types?: EntityTypeConfig[];

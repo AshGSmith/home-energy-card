@@ -1414,6 +1414,25 @@ export class HomeEnergyCardEditor extends LitElement {
               )}
           ></ha-textfield>
           <div class="switch-row">
+            <span>Subtract from Home</span>
+            <ha-switch
+              .checked=${this.config.ev_subtract_from_home ?? false}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        ev_subtract_from_home: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
+          <div class="switch-row">
             <span>Show Label</span>
             <ha-switch
               .checked=${this.config.entity_types?.ev?.show_label ?? true}
