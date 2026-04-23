@@ -326,6 +326,26 @@ export class HomeEnergyCardEditor extends LitElement {
                 )}
             ></ha-switch>
           </div>
+
+          <div class="switch-row">
+            <span>Dynamic Custom Placement</span>
+            <ha-switch
+              .checked=${this.config.dynamic_custom_placement ?? true}
+              @change=${(e: Event) =>
+                this.dispatchEvent(
+                  new CustomEvent("config-changed", {
+                    detail: {
+                      config: {
+                        ...this.config!,
+                        dynamic_custom_placement: (e.target as HTMLInputElement).checked,
+                      },
+                    },
+                    bubbles: true,
+                    composed: true,
+                  })
+                )}
+            ></ha-switch>
+          </div>
         </div>
       </ha-expansion-panel>
 

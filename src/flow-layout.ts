@@ -726,8 +726,15 @@ export class HecFlowLayout extends LitElement {
     return [[2, 1, 3][offset % 3], 3 + Math.floor(offset / 3)];
   }
 
+  private _customSlotClasses(slotIndex: number): string {
+    return [
+      slotIndex === 0 || slotIndex === 2 ? "slot-custom-inset-right" : "",
+      slotIndex === 3 ? "slot-custom-inset-left" : "",
+    ].filter(Boolean).join(" ");
+  }
+
   /** Render a custom node with inline grid placement. */
-  private _customNode(type: string, col: number, row: number) {
+  private _customNode(type: string, col: number, row: number, slotIndex: number) {
     const visible = this._isVisible(type);
     const cfg: EntityTypeConfig = this.config?.entity_types?.[type] ?? {};
     const display = this.config?.display ?? {};
@@ -742,8 +749,7 @@ export class HecFlowLayout extends LitElement {
         style="grid-column:${col}; grid-row:${row}"
         class="${[
           !visible ? "hidden" : "",
-          type === "custom_1" || type === "custom_3" ? "slot-custom-inset-right" : "",
-          type === "custom_4" ? "slot-custom-inset-left" : "",
+          this._customSlotClasses(slotIndex),
         ].filter(Boolean).join(" ")}"
         .type=${type}
         .label=${cfg.label ?? type}
@@ -771,7 +777,16 @@ export class HecFlowLayout extends LitElement {
   render() {
     if (!this.config) return nothing;
 
-    const visibleCustomTypes = this._customTypes().filter((type) => this._isVisible(type));
+    const allCustomTypes = this._customTypes();
+    const dynamicCustomPlacement = this.config.dynamic_custom_placement ?? true;
+    const renderedCustomTypes = dynamicCustomPlacement
+      ? allCustomTypes.filter((type) => this._isVisible(type)).map((type, slotIndex) => ({
+          type,
+          slotIndex,
+        }))
+      : allCustomTypes
+          .map((type, slotIndex) => ({ type, slotIndex }))
+          .filter(({ type }) => this._isVisible(type));
 
     return html`
       <div class="grid" @hec-node-click=${this._onNodeClick}>
@@ -793,9 +808,9 @@ export class HecFlowLayout extends LitElement {
         ${this._node("battery", "slot-battery", true)}
 
         <!-- Rows 3+: custom types (B→A→C per row) -->
-        ${repeat(visibleCustomTypes, (type) => type, (type, i) => {
-          const [col, row] = this._customSlot(i);
-          return this._customNode(type, col, row);
+        ${repeat(renderedCustomTypes, ({ type }) => type, ({ type, slotIndex }) => {
+          const [col, row] = this._customSlot(slotIndex);
+          return this._customNode(type, col, row, slotIndex);
         })}
       </div>
 

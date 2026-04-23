@@ -296,10 +296,10 @@ const _i = (e, t) => {
   let o, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", r = At;
   for (let a = 0; a < s; a++) {
     const c = e[a];
-    let d, u, p = -1, g = 0;
-    for (; g < c.length && (r.lastIndex = g, u = r.exec(c), u !== null); ) g = r.lastIndex, r === At ? u[1] === "!--" ? r = Ps : u[1] !== void 0 ? r = Ms : u[2] !== void 0 ? (ei.test(u[2]) && (o = RegExp("</" + u[2], "g")), r = at) : u[3] !== void 0 && (r = at) : r === at ? u[0] === ">" ? (r = o ?? At, p = -1) : u[1] === void 0 ? p = -2 : (p = r.lastIndex - u[2].length, d = u[1], r = u[3] === void 0 ? at : u[3] === '"' ? Os : Ls) : r === Os || r === Ls ? r = at : r === Ps || r === Ms ? r = At : (r = at, o = void 0);
+    let d, p, u = -1, g = 0;
+    for (; g < c.length && (r.lastIndex = g, p = r.exec(c), p !== null); ) g = r.lastIndex, r === At ? p[1] === "!--" ? r = Ps : p[1] !== void 0 ? r = Ms : p[2] !== void 0 ? (ei.test(p[2]) && (o = RegExp("</" + p[2], "g")), r = at) : p[3] !== void 0 && (r = at) : r === at ? p[0] === ">" ? (r = o ?? At, u = -1) : p[1] === void 0 ? u = -2 : (u = r.lastIndex - p[2].length, d = p[1], r = p[3] === void 0 ? at : p[3] === '"' ? Os : Ls) : r === Os || r === Ls ? r = at : r === Ps || r === Ms ? r = At : (r = at, o = void 0);
     const y = r === at && e[a + 1].startsWith("/>") ? " " : "";
-    n += r === At ? c + gi : p >= 0 ? (i.push(d), c.slice(0, p) + Qs + c.slice(p) + Z + y) : c + Z + (p === -2 ? a : y);
+    n += r === At ? c + gi : u >= 0 ? (i.push(d), c.slice(0, u) + Qs + c.slice(u) + Z + y) : c + Z + (u === -2 ? a : y);
   }
   return [ii(e, n + (e[s] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
@@ -308,29 +308,29 @@ class Nt {
     let o;
     this.parts = [];
     let n = 0, r = 0;
-    const a = t.length - 1, c = this.parts, [d, u] = _i(t, s);
+    const a = t.length - 1, c = this.parts, [d, p] = _i(t, s);
     if (this.el = Nt.createElement(d, i), dt.currentNode = this.el.content, s === 2 || s === 3) {
-      const p = this.el.content.firstChild;
-      p.replaceWith(...p.childNodes);
+      const u = this.el.content.firstChild;
+      u.replaceWith(...u.childNodes);
     }
     for (; (o = dt.nextNode()) !== null && c.length < a; ) {
       if (o.nodeType === 1) {
-        if (o.hasAttributes()) for (const p of o.getAttributeNames()) if (p.endsWith(Qs)) {
-          const g = u[r++], y = o.getAttribute(p).split(Z), f = /([.?@])?(.*)/.exec(g);
-          c.push({ type: 1, index: n, name: f[2], strings: y, ctor: f[1] === "." ? bi : f[1] === "?" ? wi : f[1] === "@" ? $i : te }), o.removeAttribute(p);
-        } else p.startsWith(Z) && (c.push({ type: 6, index: n }), o.removeAttribute(p));
+        if (o.hasAttributes()) for (const u of o.getAttributeNames()) if (u.endsWith(Qs)) {
+          const g = p[r++], y = o.getAttribute(u).split(Z), f = /([.?@])?(.*)/.exec(g);
+          c.push({ type: 1, index: n, name: f[2], strings: y, ctor: f[1] === "." ? bi : f[1] === "?" ? wi : f[1] === "@" ? $i : te }), o.removeAttribute(u);
+        } else u.startsWith(Z) && (c.push({ type: 6, index: n }), o.removeAttribute(u));
         if (ei.test(o.tagName)) {
-          const p = o.textContent.split(Z), g = p.length - 1;
+          const u = o.textContent.split(Z), g = u.length - 1;
           if (g > 0) {
             o.textContent = Xt ? Xt.emptyScript : "";
-            for (let y = 0; y < g; y++) o.append(p[y], Ot()), dt.nextNode(), c.push({ type: 2, index: ++n });
-            o.append(p[g], Ot());
+            for (let y = 0; y < g; y++) o.append(u[y], Ot()), dt.nextNode(), c.push({ type: 2, index: ++n });
+            o.append(u[g], Ot());
           }
         }
       } else if (o.nodeType === 8) if (o.data === ti) c.push({ type: 2, index: n });
       else {
-        let p = -1;
-        for (; (p = o.data.indexOf(Z, p + 1)) !== -1; ) c.push({ type: 7, index: n }), p += Z.length - 1;
+        let u = -1;
+        for (; (u = o.data.indexOf(Z, u + 1)) !== -1; ) c.push({ type: 7, index: n }), u += Z.length - 1;
       }
       n++;
     }
@@ -663,20 +663,20 @@ function Ti(e, t, s) {
     s
   );
   d && (a.rate_entity = d, r.push("rate"));
-  const u = A(
+  const p = A(
     n,
     e,
     Vt(["_current_accumulative_cost"]),
     s
   );
-  u && (a.cost_entity = u, r.push("cost"));
-  const p = A(
+  p && (a.cost_entity = p, r.push("cost"));
+  const u = A(
     n,
     e,
     Vt(["_current_day_rates"]),
     s
   );
-  p && (a.slots_entity = p, r.push("slots"));
+  u && (a.slots_entity = u, r.push("slots"));
   const g = A(
     o.filter((_) => _.startsWith("binary_sensor.")),
     e,
@@ -744,14 +744,14 @@ function ki(e, t, s) {
     );
     _ && (f.daily_usage = _), Object.keys(f).length && (d.battery = f, c.push("Powerwall"));
   }
-  const u = A(
+  const p = A(
     n,
     e,
     ht("solar"),
     s
   );
-  if (u) {
-    const f = { power_combined: u }, m = A(
+  if (p) {
+    const f = { power_combined: p }, m = A(
       n,
       e,
       vt("solar"),
@@ -759,14 +759,14 @@ function ki(e, t, s) {
     );
     m && (f.daily_usage = m), d.solar = f, c.push("solar");
   }
-  const p = A(
+  const u = A(
     n,
     e,
     ht("load", "home", "house"),
     s
   );
-  if (p) {
-    const f = { power_combined: p }, m = A(
+  if (u) {
+    const f = { power_combined: u }, m = A(
       n,
       e,
       vt("load", "home", "house"),
@@ -814,12 +814,12 @@ function Pi(e) {
   };
   if (n && (a.integration_type = "tesla", Object.assign(a.entity_types, n.entity_types), a.summary.push(...n.summary ?? [])), r) {
     if (a.integration_type !== "tesla" && (a.integration_type = "octopus"), (c = r.entity_types) != null && c.grid) {
-      const u = r.entity_types.grid;
+      const p = r.entity_types.grid;
       a.entity_types.grid = {
         ...a.entity_types.grid,
-        ...u,
+        ...p,
         // When octopus found separate import/export, drop any combined tesla grid entry
-        power_combined: u.power_import || (d = a.entity_types.grid) == null ? void 0 : d.power_combined
+        power_combined: p.power_import || (d = a.entity_types.grid) == null ? void 0 : d.power_combined
       };
     }
     r.tariff_entity && (a.tariff_entity = r.tariff_entity), a.summary.push(...r.summary ?? []);
@@ -832,8 +832,8 @@ function Mi(e, t, s = !1) {
   const o = e.entity_types ?? {}, n = { ...o };
   for (const [r, a] of Object.entries(t.entity_types)) {
     const c = o[r] ?? {}, d = { ...c };
-    for (const [u, p] of Object.entries(a))
-      p !== void 0 && (s || !c[u]) && (d[u] = p);
+    for (const [p, u] of Object.entries(a))
+      u !== void 0 && (s || !c[p]) && (d[p] = u);
     n[r] = d;
   }
   return i.entity_types = n, i;
@@ -959,7 +959,7 @@ let Ht = class extends j {
     });
   }
   render() {
-    var i, o, n, r, a, c, d, u, p, g, y, f, m, b, _, S, k, C, T, P, O, z, H, R, D, V, F, Ct, Q, Y, tt, et, st, it, ot, K, W, nt, St, $, M, I, B, mt, ve, be, we, $e, xe, Ee, Ce, Se, Ae, Te, ke, Pe, Me, Le, Oe, ze, Ne, He, Re, De, Ie, Ue, Ve, Fe, Be, je, Ge, Ke, We, qe, Ye, Ze, Xe, Je, Qe, ts, es, ss, is, os, ns, rs, as, cs, ls, hs, ds, us, ps, fs, ys, gs, ms, _s, vs, bs, ws, $s;
+    var i, o, n, r, a, c, d, p, u, g, y, f, m, b, _, S, k, C, T, P, O, z, H, R, D, V, F, Ct, Q, Y, tt, et, st, it, ot, K, W, nt, St, $, M, I, B, mt, ve, be, we, $e, xe, Ee, Ce, Se, Ae, Te, ke, Pe, Me, Le, Oe, ze, Ne, He, Re, De, Ie, Ue, Ve, Fe, Be, je, Ge, Ke, We, qe, Ye, Ze, Xe, Je, Qe, ts, es, ss, is, os, ns, rs, as, cs, ls, hs, ds, us, ps, fs, ys, gs, ms, _s, vs, bs, ws, $s;
     if (!this.config) return v;
     const e = this.config.custom_types ?? [], t = e.slice(0, Wt), s = e.length >= Wt;
     return w`
@@ -1027,6 +1027,25 @@ let Ht = class extends j {
           config: {
             ...this.config,
             show_header_values: h.target.checked
+          }
+        },
+        bubbles: !0,
+        composed: !0
+      })
+    )}
+            ></ha-switch>
+          </div>
+
+          <div class="switch-row">
+            <span>Dynamic Custom Placement</span>
+            <ha-switch
+              .checked=${this.config.dynamic_custom_placement ?? !0}
+              @change=${(h) => this.dispatchEvent(
+      new CustomEvent("config-changed", {
+        detail: {
+          config: {
+            ...this.config,
+            dynamic_custom_placement: h.target.checked
           }
         },
         bubbles: !0,
@@ -1128,7 +1147,7 @@ let Ht = class extends j {
             label="Grid Daily Usage"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((u = (d = this.config.entity_types) == null ? void 0 : d.grid) == null ? void 0 : u.daily_usage) ?? ""}
+            .value=${((p = (d = this.config.entity_types) == null ? void 0 : d.grid) == null ? void 0 : p.daily_usage) ?? ""}
             @value-changed=${(h) => {
       var l;
       return this.dispatchEvent(
@@ -1155,7 +1174,7 @@ let Ht = class extends j {
             label="Export Current Rate"
             .hass=${this.hass}
             .selector=${{ entity: {} }}
-            .value=${((g = (p = this.config.entity_types) == null ? void 0 : p.grid) == null ? void 0 : g.export_rate) ?? ""}
+            .value=${((g = (u = this.config.entity_types) == null ? void 0 : u.grid) == null ? void 0 : g.export_rate) ?? ""}
             @value-changed=${(h) => {
       var l;
       return this.dispatchEvent(
@@ -2686,7 +2705,7 @@ let yt = class extends j {
   render() {
     var _, S, k, C, T, P, O, z, H, R, D;
     if (!this.config) return v;
-    const e = ((_ = this.hass) == null ? void 0 : _.states) ?? {}, t = this.config.entity_types ?? {}, s = ((S = this.config.display) == null ? void 0 : S.decimal_places) ?? 1, i = this.config.tariff_entity ? (k = e[this.config.tariff_entity]) == null ? void 0 : k.state : null, o = i && i !== "unavailable" && i !== "unknown" ? Di(i) : null, n = Bt(e, (C = t.solar) == null ? void 0 : C.daily_usage), r = Bt(e, (T = t.home) == null ? void 0 : T.daily_usage), a = Bt(e, (P = t.grid) == null ? void 0 : P.daily_usage), c = Bt(e, (O = t.grid) == null ? void 0 : O.daily_export), d = !!((z = t.solar) != null && z.daily_usage), u = !!((H = t.home) != null && H.daily_usage), p = !!((R = t.grid) != null && R.daily_usage), g = !!((D = t.grid) != null && D.daily_export), y = p || g, f = d || u || y, m = this.showValues && f, b = this.showTitle || o;
+    const e = ((_ = this.hass) == null ? void 0 : _.states) ?? {}, t = this.config.entity_types ?? {}, s = ((S = this.config.display) == null ? void 0 : S.decimal_places) ?? 1, i = this.config.tariff_entity ? (k = e[this.config.tariff_entity]) == null ? void 0 : k.state : null, o = i && i !== "unavailable" && i !== "unknown" ? Di(i) : null, n = Bt(e, (C = t.solar) == null ? void 0 : C.daily_usage), r = Bt(e, (T = t.home) == null ? void 0 : T.daily_usage), a = Bt(e, (P = t.grid) == null ? void 0 : P.daily_usage), c = Bt(e, (O = t.grid) == null ? void 0 : O.daily_export), d = !!((z = t.solar) != null && z.daily_usage), p = !!((H = t.home) != null && H.daily_usage), u = !!((R = t.grid) != null && R.daily_usage), g = !!((D = t.grid) != null && D.daily_export), y = u || g, f = d || p || y, m = this.showValues && f, b = this.showTitle || o;
     return !b && !m ? v : w`
       <div class="header">
 
@@ -2713,7 +2732,7 @@ let yt = class extends j {
               </div>
             ` : v}
 
-            ${u ? w`
+            ${p ? w`
               <div class="stat">
                 <span class="stat-label" style="color:#e91e63;">⌂ Home</span>
                 <span class="stat-val">${jt(r, s)}</span>
@@ -2725,7 +2744,7 @@ let yt = class extends j {
               <div class="stat">
                 <span class="stat-label" style="color:#1e88e5;">⚡ Grid</span>
                 <div class="grid-pair">
-                  ${p ? w`
+                  ${u ? w`
                     <div class="grid-half">
                       <span class="arrow" style="color:#1e88e5;">↓</span>
                       <span class="stat-val">${jt(a, s)}</span>
@@ -2909,8 +2928,8 @@ const { I: Fi } = Ei, Ds = (e) => e, Is = () => document.createComment(""), Tt =
     if (r !== o || c) {
       let d = s._$AA;
       for (; d !== r; ) {
-        const u = Ds(d).nextSibling;
-        Ds(i).insertBefore(d, o), d = u;
+        const p = Ds(d).nextSibling;
+        Ds(i).insertBefore(d, o), d = p;
       }
     }
   }
@@ -2946,28 +2965,28 @@ const Us = (e, t, s) => {
     const o = Gi(e), { values: n, keys: r } = this.dt(t, s, i);
     if (!Array.isArray(o)) return this.ut = r, n;
     const a = this.ut ?? (this.ut = []), c = [];
-    let d, u, p = 0, g = o.length - 1, y = 0, f = n.length - 1;
-    for (; p <= g && y <= f; ) if (o[p] === null) p++;
+    let d, p, u = 0, g = o.length - 1, y = 0, f = n.length - 1;
+    for (; u <= g && y <= f; ) if (o[u] === null) u++;
     else if (o[g] === null) g--;
-    else if (a[p] === r[y]) c[y] = ct(o[p], n[y]), p++, y++;
+    else if (a[u] === r[y]) c[y] = ct(o[u], n[y]), u++, y++;
     else if (a[g] === r[f]) c[f] = ct(o[g], n[f]), g--, f--;
-    else if (a[p] === r[f]) c[f] = ct(o[p], n[f]), Tt(e, c[f + 1], o[p]), p++, f--;
-    else if (a[g] === r[y]) c[y] = ct(o[g], n[y]), Tt(e, o[p], o[g]), g--, y++;
-    else if (d === void 0 && (d = Us(r, y, f), u = Us(a, p, g)), d.has(a[p])) if (d.has(a[g])) {
-      const m = u.get(r[y]), b = m !== void 0 ? o[m] : null;
+    else if (a[u] === r[f]) c[f] = ct(o[u], n[f]), Tt(e, c[f + 1], o[u]), u++, f--;
+    else if (a[g] === r[y]) c[y] = ct(o[g], n[y]), Tt(e, o[u], o[g]), g--, y++;
+    else if (d === void 0 && (d = Us(r, y, f), p = Us(a, u, g)), d.has(a[u])) if (d.has(a[g])) {
+      const m = p.get(r[y]), b = m !== void 0 ? o[m] : null;
       if (b === null) {
-        const _ = Tt(e, o[p]);
+        const _ = Tt(e, o[u]);
         ct(_, n[y]), c[y] = _;
-      } else c[y] = ct(b, n[y]), Tt(e, o[p], b), o[m] = null;
+      } else c[y] = ct(b, n[y]), Tt(e, o[u], b), o[m] = null;
       y++;
     } else ne(o[g]), g--;
-    else ne(o[p]), p++;
+    else ne(o[u]), u++;
     for (; y <= f; ) {
       const m = Tt(e, c[f + 1]);
       ct(m, n[y]), c[y++] = m;
     }
-    for (; p <= g; ) {
-      const m = o[p++];
+    for (; u <= g; ) {
+      const m = o[u++];
       m !== null && ne(m);
     }
     return this.ut = r, ji(e, c), ft;
@@ -3251,9 +3270,9 @@ function ri(e, t, s) {
   else {
     const a = !!n, c = !!r;
     if (!a && !c) return null;
-    const d = a ? re(s, n) : null, u = c ? re(s, r) : null;
-    if ((!a || d === null) && (!c || u === null)) return null;
-    i = (d ?? 0) - (u ?? 0);
+    const d = a ? re(s, n) : null, p = c ? re(s, r) : null;
+    if ((!a || d === null) && (!c || p === null)) return null;
+    i = (d ?? 0) - (p ?? 0);
   }
   return e === "battery" && t.reverse_power_flow && (i *= -1), i;
 }
@@ -3294,10 +3313,10 @@ function eo(e, t) {
   for (let n = 0; n < 24; n++) {
     const r = i + n * 36e5, a = r + 36e5;
     let c = 0, d = 0;
-    for (let u = 0; u < e.length; u++) {
-      const p = new Date(e[u].last_changed).getTime(), g = u + 1 < e.length ? new Date(e[u + 1].last_changed).getTime() : s, y = Math.max(p, r), f = Math.min(g, a);
+    for (let p = 0; p < e.length; p++) {
+      const u = new Date(e[p].last_changed).getTime(), g = p + 1 < e.length ? new Date(e[p + 1].last_changed).getTime() : s, y = Math.max(u, r), f = Math.min(g, a);
       if (f <= y) continue;
-      const m = parseFloat(e[u].state);
+      const m = parseFloat(e[p].state);
       if (isNaN(m)) continue;
       const b = oi(m, t), _ = f - y;
       c += Math.abs(b) * _, d += _;
@@ -3409,9 +3428,9 @@ function Ws(e, t, s) {
     if (!Number.isFinite(r) || !Number.isFinite(a) || a <= r) continue;
     const c = parseFloat(e[n - 1].state), d = parseFloat(e[n].state);
     if (isNaN(c) || isNaN(d)) continue;
-    const u = ao(d - c, t);
-    if (u <= 0) continue;
-    const p = a - r, g = [];
+    const p = ao(d - c, t);
+    if (p <= 0) continue;
+    const u = a - r, g = [];
     let y = 0;
     for (const f of s) {
       const m = Math.max(r, f.startMs), b = Math.min(a, f.endMs);
@@ -3425,9 +3444,9 @@ function Ws(e, t, s) {
       });
     }
     if (y > 0) {
-      y < p && (o = !0);
+      y < u && (o = !0);
       for (const f of g) {
-        const m = u * (f.overlapMs / y);
+        const m = p * (f.overlapMs / y);
         i.push({
           startMs: f.startMs,
           endMs: f.endMs,
@@ -3437,7 +3456,7 @@ function Ws(e, t, s) {
           costGbp: m * f.rateGbpPerKwh
         });
       }
-    } else p > 0 && (o = !0);
+    } else u > 0 && (o = !0);
   }
   return i.length ? { intervals: i, hasCoverageGap: o } : null;
 }
@@ -3476,9 +3495,9 @@ let G = class extends j {
       this._loading = !0, this._hourly = [];
       try {
         const r = /* @__PURE__ */ new Date(), a = new Date(r.getTime() - 864e5), c = async (d) => Promise.all(
-          d.map(async (u) => {
+          d.map(async (p) => {
             var f, m;
-            const p = `history/period/${a.toISOString()}?filter_entity_id=${u}&minimal_response=true&no_attributes=true&end_time=${r.toISOString()}`, g = await this.hass.callApi("GET", p), y = (m = (f = this.hass.states) == null ? void 0 : f[u]) == null ? void 0 : m.attributes.unit_of_measurement;
+            const u = `history/period/${a.toISOString()}?filter_entity_id=${p}&minimal_response=true&no_attributes=true&end_time=${r.toISOString()}`, g = await this.hass.callApi("GET", u), y = (m = (f = this.hass.states) == null ? void 0 : f[p]) == null ? void 0 : m.attributes.unit_of_measurement;
             return eo((g == null ? void 0 : g[0]) ?? [], y);
           })
         );
@@ -3486,11 +3505,11 @@ let G = class extends j {
           const d = await c(t);
           this._hourly = oo(d);
         } else {
-          const [d, u] = await Promise.all([
+          const [d, p] = await Promise.all([
             c(s),
             c(i)
           ]);
-          this._hourly = no(d, u);
+          this._hourly = no(d, p);
         }
       } catch (r) {
         console.warn("[hec-node-detail] history fetch failed", r), this._hourly = [];
@@ -3500,15 +3519,15 @@ let G = class extends j {
     }
   }
   async _loadGridMoney() {
-    var c, d, u, p, g, y, f, m, b, _, S, k;
+    var c, d, p, u, g, y, f, m, b, _, S, k;
     const e = (d = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : d.grid, t = e == null ? void 0 : e.octopus;
     if (!this.hass || !e || !t) {
       this._gridMoney = null;
       return;
     }
     const s = Gs(
-      t.slots_entity ? (u = this.hass.states) == null ? void 0 : u[t.slots_entity] : void 0
-    ), i = e.export_rate ? (p = this.hass.states) == null ? void 0 : p[e.export_rate] : void 0, o = Gs(
+      t.slots_entity ? (p = this.hass.states) == null ? void 0 : p[t.slots_entity] : void 0
+    ), i = e.export_rate ? (u = this.hass.states) == null ? void 0 : u[e.export_rate] : void 0, o = Gs(
       i
     ), n = /* @__PURE__ */ new Date();
     n.setHours(0, 0, 0, 0);
@@ -3575,13 +3594,13 @@ let G = class extends j {
     var O, z, H, R, D, V, F;
     const i = ((O = to[this.nodeType]) == null ? void 0 : O[e.direction]) ?? "";
     if (this.nodeType !== "grid" || e.direction !== "from-home" || !this.hass) return i;
-    const o = this.hass.states, n = ((H = (z = this.config) == null ? void 0 : z.entity_types) == null ? void 0 : H.solar) ?? {}, r = ((D = (R = this.config) == null ? void 0 : R.entity_types) == null ? void 0 : D.home) ?? {}, a = ((F = (V = this.config) == null ? void 0 : V.entity_types) == null ? void 0 : F.battery) ?? {}, c = bt("solar", n, o), d = bt("home", r, o), u = bt("battery", a, o), p = e.magnitude ?? 0;
-    if (p <= 0) return i;
-    const g = c.direction === "to-home" ? c.magnitude ?? 0 : 0, y = Math.max(d.power ?? 0, 0), f = u.direction === "to-home" ? u.magnitude ?? 0 : 0, m = Math.max(g - y, 0), b = Math.min(p, m), _ = Math.min(
-      Math.max(p - b, 0),
+    const o = this.hass.states, n = ((H = (z = this.config) == null ? void 0 : z.entity_types) == null ? void 0 : H.solar) ?? {}, r = ((D = (R = this.config) == null ? void 0 : R.entity_types) == null ? void 0 : D.home) ?? {}, a = ((F = (V = this.config) == null ? void 0 : V.entity_types) == null ? void 0 : F.battery) ?? {}, c = bt("solar", n, o), d = bt("home", r, o), p = bt("battery", a, o), u = e.magnitude ?? 0;
+    if (u <= 0) return i;
+    const g = c.direction === "to-home" ? c.magnitude ?? 0 : 0, y = Math.max(d.power ?? 0, 0), f = p.direction === "to-home" ? p.magnitude ?? 0 : 0, m = Math.max(g - y, 0), b = Math.min(u, m), _ = Math.min(
+      Math.max(u - b, 0),
       f
     ), S = b + _;
-    if (Math.max(p - S, 0) > Math.max(lt, p * 0.1))
+    if (Math.max(u - S, 0) > Math.max(lt, u * 0.1))
       return i;
     const C = b > lt && _ <= lt, T = _ > lt && b <= lt, P = b > lt && _ > lt;
     return C ? "Exporting solely from excess solar production" : T ? "Exporting solely from the battery" : P ? `Exporting ${Yt(b, t, s)} from excess solar production and ${Yt(_, t, s)} from the battery` : i;
@@ -3607,10 +3626,10 @@ let G = class extends j {
     return e.daily_usage && n.push([i, js(Gt(t, e.daily_usage), s)]), e.daily_export && n.push([o, js(Gt(t, e.daily_export), s)]), n.length ? w`
       <div class="section">
         <div class="s-title">Today</div>
-        ${n.map(([d, u]) => w`
+        ${n.map(([d, p]) => w`
           <div class="kv">
             <span class="kv-k">${d}</span>
-            <span class="kv-v">${u}</span>
+            <span class="kv-v">${p}</span>
           </div>
         `)}
       </div>
@@ -3618,8 +3637,8 @@ let G = class extends j {
   }
   _sectionOctopus(e) {
     var y, f, m, b;
-    const t = ((y = this.hass) == null ? void 0 : y.states) ?? {}, s = e.rate_entity ? t[e.rate_entity] : null, i = e.slots_entity ? t[e.slots_entity] : null, o = s == null ? void 0 : s.state, n = (s == null ? void 0 : s.attributes.unit_of_measurement) ?? "p/kWh", r = (i == null ? void 0 : i.attributes.rates) ?? (i == null ? void 0 : i.attributes.upcoming_interval_rates) ?? (i == null ? void 0 : i.attributes.today_rates) ?? [], a = Date.now(), c = r.filter((_) => new Date(_.end ?? _.end_time ?? 0).getTime() > a).slice(0, 6), d = o && o !== "unavailable" && o !== "unknown", u = ((f = this._gridMoney) == null ? void 0 : f.importCostToday) ?? null, p = ((m = this._gridMoney) == null ? void 0 : m.exportPaymentToday) ?? null, g = ((b = this._gridMoney) == null ? void 0 : b.netCost) ?? null;
-    return !d && !c.length && u === null && p === null && g === null ? v : w`
+    const t = ((y = this.hass) == null ? void 0 : y.states) ?? {}, s = e.rate_entity ? t[e.rate_entity] : null, i = e.slots_entity ? t[e.slots_entity] : null, o = s == null ? void 0 : s.state, n = (s == null ? void 0 : s.attributes.unit_of_measurement) ?? "p/kWh", r = (i == null ? void 0 : i.attributes.rates) ?? (i == null ? void 0 : i.attributes.upcoming_interval_rates) ?? (i == null ? void 0 : i.attributes.today_rates) ?? [], a = Date.now(), c = r.filter((_) => new Date(_.end ?? _.end_time ?? 0).getTime() > a).slice(0, 6), d = o && o !== "unavailable" && o !== "unknown", p = ((f = this._gridMoney) == null ? void 0 : f.importCostToday) ?? null, u = ((m = this._gridMoney) == null ? void 0 : m.exportPaymentToday) ?? null, g = ((b = this._gridMoney) == null ? void 0 : b.netCost) ?? null;
+    return !d && !c.length && p === null && u === null && g === null ? v : w`
       <div class="section">
         <div class="s-title">Octopus</div>
 
@@ -3632,12 +3651,12 @@ let G = class extends j {
 
         <div class="kv">
           <span class="kv-k">Import Cost Today</span>
-          <span class="kv-v">${ae(u)}</span>
+          <span class="kv-v">${ae(p)}</span>
         </div>
 
         <div class="kv">
           <span class="kv-k">Export Payment Today</span>
-          <span class="kv-v">${ae(p)}</span>
+          <span class="kv-v">${ae(u)}</span>
         </div>
 
         <div class="kv">
@@ -3700,13 +3719,13 @@ let G = class extends j {
   }
   // ── Main render ───────────────────────────────────────────────────────────
   render() {
-    var c, d, u;
+    var c, d, p;
     if (!this.open || !this.nodeType) return v;
-    const e = ((d = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : d[this.nodeType]) ?? {}, t = ((u = this.hass) == null ? void 0 : u.states) ?? {}, s = e.colour || (Qi[this.nodeType] ?? "#9e9e9e"), i = e.icon || Ji[this.nodeType] || "mdi:lightning-bolt", o = e.label || this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1), n = bt(this.nodeType, e, t), r = !!e.soc && (["battery", "ev"].includes(this.nodeType) || !Jt.includes(this.nodeType)), a = r ? so(t, e.soc) : null;
+    const e = ((d = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : d[this.nodeType]) ?? {}, t = ((p = this.hass) == null ? void 0 : p.states) ?? {}, s = e.colour || (Qi[this.nodeType] ?? "#9e9e9e"), i = e.icon || Ji[this.nodeType] || "mdi:lightning-bolt", o = e.label || this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1), n = bt(this.nodeType, e, t), r = !!e.soc && (["battery", "ev"].includes(this.nodeType) || !Jt.includes(this.nodeType)), a = r ? so(t, e.soc) : null;
     return w`
       <div
         class="overlay"
-        @click=${(p) => p.target === p.currentTarget && this._close()}
+        @click=${(u) => u.target === u.currentTarget && this._close()}
       >
         <div class="panel" role="dialog" aria-modal="true">
           ${this._header(s, i, o)}
@@ -3986,10 +4005,10 @@ let gt = class extends j {
     if (i === null) return le("home", null, t.zero_tolerance ?? 0);
     const o = this._customTypes().reduce((c, d) => {
       var g, y;
-      const u = ((y = (g = this.config) == null ? void 0 : g.entity_types) == null ? void 0 : y[d]) ?? {};
-      if (!u.subtract_from_home) return c;
-      const p = bt(d, u, s);
-      return c + (p.power ?? 0);
+      const p = ((y = (g = this.config) == null ? void 0 : g.entity_types) == null ? void 0 : y[d]) ?? {};
+      if (!p.subtract_from_home) return c;
+      const u = bt(d, p, s);
+      return c + (u.power ?? 0);
     }, 0);
     return le(
       "home",
@@ -4096,10 +4115,10 @@ let gt = class extends j {
     return t;
   }
   _computeLineVisualState(e) {
-    var n, r, a, c, d, u, p;
+    var n, r, a, c, d, p, u;
     const t = ((r = (n = this.config) == null ? void 0 : n.display) == null ? void 0 : r.dynamic_animation_speed) ?? !1, s = ((c = (a = this.config) == null ? void 0 : a.display) == null ? void 0 : c.animation) !== !1, i = this._flowInfo(e), o = this._smoothedMagnitudes[e] ?? i.magnitude;
     return {
-      color: q[e] ?? ((p = (u = (d = this.config) == null ? void 0 : d.entity_types) == null ? void 0 : u[e]) == null ? void 0 : p.colour) ?? "#9e9e9e",
+      color: q[e] ?? ((u = (p = (d = this.config) == null ? void 0 : d.entity_types) == null ? void 0 : p[e]) == null ? void 0 : u.colour) ?? "#9e9e9e",
       dur: fo(o, t && i.direction !== "idle"),
       idle: i.direction === "idle",
       paused: !s,
@@ -4136,8 +4155,8 @@ let gt = class extends j {
         type: B,
         color: mt
       });
-    }, r = this._flowInfo("solar"), a = this._flowInfo("home"), c = this._flowInfo("battery"), d = this._flowInfo("ev"), u = this._flowInfo("grid"), p = s && r.direction === "to-home" ? r.magnitude ?? 0 : 0, g = Math.max(a.power ?? 0, 0), y = c.direction === "from-home" ? c.magnitude ?? 0 : 0, f = c.direction === "to-home" ? c.magnitude ?? 0 : 0, m = d.direction === "from-home" ? d.magnitude ?? 0 : 0, b = u.direction === "from-home" ? u.magnitude ?? 0 : 0, _ = Math.min(p, g);
-    let S = Math.max(p - _, 0);
+    }, r = this._flowInfo("solar"), a = this._flowInfo("home"), c = this._flowInfo("battery"), d = this._flowInfo("ev"), p = this._flowInfo("grid"), u = s && r.direction === "to-home" ? r.magnitude ?? 0 : 0, g = Math.max(a.power ?? 0, 0), y = c.direction === "from-home" ? c.magnitude ?? 0 : 0, f = c.direction === "to-home" ? c.magnitude ?? 0 : 0, m = d.direction === "from-home" ? d.magnitude ?? 0 : 0, b = p.direction === "from-home" ? p.magnitude ?? 0 : 0, _ = Math.min(u, g);
+    let S = Math.max(u - _, 0);
     const k = Math.min(S, y);
     S = Math.max(S - k, 0);
     const C = Math.min(S, m);
@@ -4177,14 +4196,14 @@ let gt = class extends j {
       magnitude: T
     });
     const P = Math.max(y - k, 0), O = Math.max(m - C, 0), z = Math.max(b - T, 0), H = Math.max(g - _, 0), R = Math.min(f, H), D = Math.max(f - R, 0), V = Math.min(z, D), F = z <= Zs || V <= Zs ? 0 : V;
-    u.direction === "to-home" && (u.magnitude ?? 0) > 0 && e.grid && i.push({
+    p.direction === "to-home" && (p.magnitude ?? 0) > 0 && e.grid && i.push({
       key: "grid-home",
       pathKey: "home-grid",
       from: "grid",
       to: "home",
       type: "grid",
       color: ((Y = this._lineVisualState.grid) == null ? void 0 : Y.color) ?? this._computeLineVisualState("grid").color,
-      magnitude: u.magnitude ?? 0
+      magnitude: p.magnitude ?? 0
     }), F > 0 && e.grid && i.push({
       key: "home-grid",
       pathKey: "home-grid",
@@ -4288,8 +4307,8 @@ let gt = class extends j {
   }
   // ── Node render ───────────────────────────────────────────────────────────
   _node(e, t, s = !1) {
-    var c, d, u;
-    const i = e === "home" ? !0 : this._isVisible(e), o = ((d = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : d[e]) ?? {}, n = ((u = this.config) == null ? void 0 : u.display) ?? {}, r = this._flowInfo(e), a = e === "solar" ? Bs(this._dailyKwh(e), n.decimal_places ?? 1) : "";
+    var c, d, p;
+    const i = e === "home" ? !0 : this._isVisible(e), o = ((d = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : d[e]) ?? {}, n = ((p = this.config) == null ? void 0 : p.display) ?? {}, r = this._flowInfo(e), a = e === "solar" ? Bs(this._dailyKwh(e), n.decimal_places ?? 1) : "";
     return w`
       <hec-energy-node
         data-node-type=${e}
@@ -4324,32 +4343,37 @@ let gt = class extends j {
     const t = e - 1;
     return [[2, 1, 3][t % 3], 3 + Math.floor(t / 3)];
   }
+  _customSlotClasses(e) {
+    return [
+      e === 0 || e === 2 ? "slot-custom-inset-right" : "",
+      e === 3 ? "slot-custom-inset-left" : ""
+    ].filter(Boolean).join(" ");
+  }
   /** Render a custom node with inline grid placement. */
-  _customNode(e, t, s) {
-    var c, d, u;
-    const i = this._isVisible(e), o = ((d = (c = this.config) == null ? void 0 : c.entity_types) == null ? void 0 : d[e]) ?? {}, n = ((u = this.config) == null ? void 0 : u.display) ?? {}, r = this._flowInfo(e), a = Bs(
+  _customNode(e, t, s, i) {
+    var d, p, u;
+    const o = this._isVisible(e), n = ((p = (d = this.config) == null ? void 0 : d.entity_types) == null ? void 0 : p[e]) ?? {}, r = ((u = this.config) == null ? void 0 : u.display) ?? {}, a = this._flowInfo(e), c = Bs(
       this._dailyKwh(e),
-      n.decimal_places ?? 1
+      r.decimal_places ?? 1
     );
     return w`
       <hec-energy-node
         data-node-type=${e}
         style="grid-column:${t}; grid-row:${s}"
         class="${[
-      i ? "" : "hidden",
-      e === "custom_1" || e === "custom_3" ? "slot-custom-inset-right" : "",
-      e === "custom_4" ? "slot-custom-inset-left" : ""
+      o ? "" : "hidden",
+      this._customSlotClasses(i)
     ].filter(Boolean).join(" ")}"
         .type=${e}
-        .label=${o.label ?? e}
-        .showLabel=${o.show_label ?? !0}
-        .icon=${o.icon ?? ""}
-        .bottomText=${a}
-        .colour=${o.colour ?? ""}
-        .power=${r.power}
-        .soc=${o.soc ? this._soc(e) : null}
-        .unit=${n.unit ?? "auto"}
-        .decimalPlaces=${n.decimal_places ?? 1}
+        .label=${n.label ?? e}
+        .showLabel=${n.show_label ?? !0}
+        .icon=${n.icon ?? ""}
+        .bottomText=${c}
+        .colour=${n.colour ?? ""}
+        .power=${a.power}
+        .soc=${n.soc ? this._soc(e) : null}
+        .unit=${r.unit ?? "auto"}
+        .decimalPlaces=${r.decimal_places ?? 1}
       ></hec-energy-node>
     `;
   }
@@ -4361,7 +4385,10 @@ let gt = class extends j {
   // ── Main render ───────────────────────────────────────────────────────────
   render() {
     if (!this.config) return v;
-    const e = this._customTypes().filter((t) => this._isVisible(t));
+    const e = this._customTypes(), s = this.config.dynamic_custom_placement ?? !0 ? e.filter((i) => this._isVisible(i)).map((i, o) => ({
+      type: i,
+      slotIndex: o
+    })) : e.map((i, o) => ({ type: i, slotIndex: o })).filter(({ type: i }) => this._isVisible(i));
     return w`
       <div class="grid" @hec-node-click=${this._onNodeClick}>
         <svg
@@ -4382,9 +4409,9 @@ let gt = class extends j {
         ${this._node("battery", "slot-battery", !0)}
 
         <!-- Rows 3+: custom types (B→A→C per row) -->
-        ${Vs(e, (t) => t, (t, s) => {
-      const [i, o] = this._customSlot(s);
-      return this._customNode(t, i, o);
+        ${Vs(s, ({ type: i }) => i, ({ type: i, slotIndex: o }) => {
+      const [n, r] = this._customSlot(o);
+      return this._customNode(i, n, r, o);
     })}
       </div>
 
