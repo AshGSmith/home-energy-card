@@ -338,6 +338,8 @@ function socColor(soc: number): string {
   return "#66bb6a";
 }
 
+const EXPORT_SOURCE_TOLERANCE_W = 50;
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 @customElement("hec-node-detail")
@@ -518,7 +520,7 @@ export class HecNodeDetail extends LitElement {
   private _sectionPower(flow: FlowInfo) {
     const d     = this.config?.display?.decimal_places ?? 1;
     const u     = this.config?.display?.unit ?? "auto";
-    const label = FLOW_LABEL[this.nodeType]?.[flow.direction] ?? "";
+    const label = this._powerSubtitle(flow, u, d);
 
     return html`
       <div class="section">
@@ -527,6 +529,59 @@ export class HecNodeDetail extends LitElement {
         ${label ? html`<div class="power-sub">${label}</div>` : nothing}
       </div>
     `;
+  }
+
+  private _powerSubtitle(
+    flow: FlowInfo,
+    unit: "W" | "kW" | "auto",
+    decimals: number,
+  ): string {
+    const fallback = FLOW_LABEL[this.nodeType]?.[flow.direction] ?? "";
+    if (this.nodeType !== "grid" || flow.direction !== "from-home" || !this.hass) return fallback;
+
+    const states = this.hass.states;
+    const solarCfg = this.config?.entity_types?.solar ?? {};
+    const homeCfg = this.config?.entity_types?.home ?? {};
+    const batteryCfg = this.config?.entity_types?.battery ?? {};
+    const solarFlow = computeFlowInfo("solar", solarCfg, states);
+    const homeFlow = computeFlowInfo("home", homeCfg, states);
+    const batteryFlow = computeFlowInfo("battery", batteryCfg, states);
+
+    const exportWatts = flow.magnitude ?? 0;
+    if (exportWatts <= 0) return fallback;
+
+    const solarGeneration = solarFlow.direction === "to-home" ? (solarFlow.magnitude ?? 0) : 0;
+    const homeLoad = Math.max(homeFlow.power ?? 0, 0);
+    const batteryDischarge =
+      batteryFlow.direction === "to-home" ? (batteryFlow.magnitude ?? 0) : 0;
+
+    const excessSolar = Math.max(solarGeneration - homeLoad, 0);
+    const solarContribution = Math.min(exportWatts, excessSolar);
+    const batteryContribution = Math.min(
+      Math.max(exportWatts - solarContribution, 0),
+      batteryDischarge,
+    );
+    const explained = solarContribution + batteryContribution;
+    const unexplained = Math.max(exportWatts - explained, 0);
+
+    if (unexplained > Math.max(EXPORT_SOURCE_TOLERANCE_W, exportWatts * 0.1)) {
+      return fallback;
+    }
+
+    const solarOnly = solarContribution > EXPORT_SOURCE_TOLERANCE_W &&
+      batteryContribution <= EXPORT_SOURCE_TOLERANCE_W;
+    const batteryOnly = batteryContribution > EXPORT_SOURCE_TOLERANCE_W &&
+      solarContribution <= EXPORT_SOURCE_TOLERANCE_W;
+    const mixed = solarContribution > EXPORT_SOURCE_TOLERANCE_W &&
+      batteryContribution > EXPORT_SOURCE_TOLERANCE_W;
+
+    if (solarOnly) return "Exporting solely from excess solar production";
+    if (batteryOnly) return "Exporting solely from the battery";
+    if (mixed) {
+      return `Exporting ${formatPower(solarContribution, unit, decimals)} from excess solar production and ${formatPower(batteryContribution, unit, decimals)} from the battery`;
+    }
+
+    return fallback;
   }
 
   private _sectionSoc(soc: number | null) {
