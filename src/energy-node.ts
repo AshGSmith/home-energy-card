@@ -8,7 +8,7 @@ export interface NodeStyles {
   icon: string;
 }
 
-const TYPE_STYLES: Record<string, NodeStyles> = {
+export const TYPE_STYLES: Record<string, NodeStyles> = {
   solar:   { gradStart: "#fff8e1", gradEnd: "#ffe082", accent: "#f9a825", icon: "mdi:solar-power-variant" },
   grid:    { gradStart: "#f3e5f5", gradEnd: "#ce93d8", accent: "#8e24aa", icon: "mdi:transmission-tower" },
   battery: { gradStart: "#ffebee", gradEnd: "#ef9a9a", accent: "#e53935", icon: "mdi:home-battery" },
@@ -16,7 +16,7 @@ const TYPE_STYLES: Record<string, NodeStyles> = {
   ev:      { gradStart: "#e3f2fd", gradEnd: "#90caf9", accent: "#1e88e5", icon: "mdi:car-electric" },
 };
 
-const FALLBACK_STYLES: NodeStyles = {
+export const FALLBACK_STYLES: NodeStyles = {
   gradStart: "#f5f5f5",
   gradEnd: "#e0e0e0",
   accent: "#9e9e9e",

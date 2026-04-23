@@ -14,7 +14,7 @@ import {
   normalizePowerToWatts,
   readEnergyKwh,
 } from "./flow.js";
-import { formatPower } from "./energy-node.js";
+import { FALLBACK_STYLES, TYPE_STYLES, formatPower } from "./energy-node.js";
 
 // ── Static maps ───────────────────────────────────────────────────────────────
 
@@ -24,14 +24,6 @@ const TYPE_ICON: Record<string, string> = {
   battery: "mdi:home-battery",
   home:    "mdi:home-lightning-bolt",
   ev:      "mdi:car-electric",
-};
-
-const TYPE_ACCENT: Record<string, string> = {
-  solar:   "#f9a825",
-  grid:    "#e91e63",
-  battery: "#43a047",
-  home:    "#388e3c",
-  ev:      "#1e88e5",
 };
 
 // Human-readable flow direction per type
@@ -837,7 +829,7 @@ export class HecNodeDetail extends LitElement {
 
     const cfg    = this.config?.entity_types?.[this.nodeType] ?? {};
     const states = this.hass?.states ?? {};
-    const accent = cfg.colour || (TYPE_ACCENT[this.nodeType] ?? "#9e9e9e");
+    const accent = cfg.colour || TYPE_STYLES[this.nodeType]?.accent || FALLBACK_STYLES.accent;
     const icon   = cfg.icon || TYPE_ICON[this.nodeType] || "mdi:lightning-bolt";
     const label  = cfg.label
       || this.nodeType.charAt(0).toUpperCase() + this.nodeType.slice(1);
