@@ -29,6 +29,11 @@ const LINE_COLOR: Record<string, string> = {
 };
 
 const EXPORT_MATCH_TOLERANCE_W = 75;
+const SUPPRESSED_IDLE_PATHS = new Set([
+  "solar-battery",
+  "solar-ev",
+  "solar-grid",
+]);
 
 interface LineVisualState {
   color: string;
@@ -412,6 +417,7 @@ export class HecFlowLayout extends LitElement {
       type: string,
       color: string,
     ) => {
+      if (SUPPRESSED_IDLE_PATHS.has(pathKey)) return;
       if (!centers[from] || !centers[to]) return;
       idleSegments.push({
         key: `idle-${pathKey}`,
