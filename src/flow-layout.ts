@@ -170,7 +170,7 @@ export class HecFlowLayout extends LitElement {
   }
 
   protected updated(changed: Map<string, unknown>) {
-    if (changed.has("config")) this._scheduleMeasureLineLayout();
+    if (changed.has("config") || changed.has("hass")) this._scheduleMeasureLineLayout();
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -400,6 +400,7 @@ export class HecFlowLayout extends LitElement {
     const centers = this._lineLayout.centers;
     const homeCenter = centers.home;
     const solarCenter = centers.solar;
+    const visibleCustomTypes = this._customTypes().filter((type) => this._isVisible(type));
 
     if (!homeCenter || !this._lineLayout.width || !this._lineLayout.height) return nothing;
 
@@ -457,6 +458,18 @@ export class HecFlowLayout extends LitElement {
       evFlow.direction === "from-home" ? (evFlow.magnitude ?? 0) : 0;
     const gridExport =
       gridFlow.direction === "from-home" ? (gridFlow.magnitude ?? 0) : 0;
+    const customLoads = visibleCustomTypes.map((type) => {
+      const flow = this._flowInfo(type);
+      return {
+        type,
+        flow,
+        center: centers[type],
+        color:
+          this._lineVisualState[type]?.color ??
+          this._computeLineVisualState(type).color,
+        load: flow.direction === "from-home" ? (flow.magnitude ?? 0) : 0,
+      };
+    });
 
     const solarToHome = Math.min(solarAvailable, homeLoad);
     let remainingSolar = Math.max(solarAvailable - solarToHome, 0);
@@ -464,6 +477,12 @@ export class HecFlowLayout extends LitElement {
     remainingSolar = Math.max(remainingSolar - solarToBattery, 0);
     const solarToEv = Math.min(remainingSolar, evCharge);
     remainingSolar = Math.max(remainingSolar - solarToEv, 0);
+    const solarToCustomByType: Record<string, number> = {};
+    for (const custom of customLoads) {
+      const solarToCustom = Math.min(remainingSolar, custom.load);
+      solarToCustomByType[custom.type] = solarToCustom;
+      remainingSolar = Math.max(remainingSolar - solarToCustom, 0);
+    }
     const solarToGrid = Math.min(remainingSolar, gridExport);
 
     if (solarCenter && solarToHome > 0) {
@@ -508,6 +527,19 @@ export class HecFlowLayout extends LitElement {
         type: "solar",
         color: LINE_COLOR.solar,
         magnitude: solarToGrid,
+      });
+    }
+    for (const custom of customLoads) {
+      const solarToCustom = solarToCustomByType[custom.type] ?? 0;
+      if (!solarCenter || !custom.center || solarToCustom <= 0) continue;
+      activeSegments.push({
+        key: `solar-${custom.type}`,
+        pathKey: `solar-${custom.type}`,
+        from: "solar",
+        to: custom.type,
+        type: "solar",
+        color: LINE_COLOR.solar,
+        magnitude: solarToCustom,
       });
     }
 
@@ -592,21 +624,32 @@ export class HecFlowLayout extends LitElement {
       });
     }
 
-    for (const type of this._customTypes()) {
-      const flow = this._flowInfo(type);
-      const center = centers[type];
-      const color =
-        this._lineVisualState[type]?.color ??
-        this._computeLineVisualState(type).color;
-      if (center) {
+    for (const custom of customLoads) {
+      const { type, flow, center, color } = custom;
+      const solarToCustom = solarToCustomByType[type] ?? 0;
+      const homeToCustom = Math.max(custom.load - solarToCustom, 0);
+      if (center && solarToCustom <= 0) {
         addIdleSegment(`home-${type}`, "home", type, type, color);
       }
       if (!center || !flow.magnitude || flow.direction === "idle") continue;
+      if (flow.direction === "from-home") {
+        if (homeToCustom <= 0) continue;
+        activeSegments.push({
+          key: `custom-${type}`,
+          pathKey: `home-${type}`,
+          from: "home",
+          to: type,
+          type,
+          color,
+          magnitude: homeToCustom,
+        });
+        continue;
+      }
       activeSegments.push({
         key: `custom-${type}`,
         pathKey: `home-${type}`,
-        from: flow.direction === "to-home" ? type : "home",
-        to: flow.direction === "to-home" ? "home" : type,
+        from: type,
+        to: "home",
         type,
         color,
         magnitude: flow.magnitude,
